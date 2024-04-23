@@ -3,7 +3,6 @@ import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { TableModule } from 'primeng/table';
 import { ConlumnsDefinition } from './interfaces';
 import { AvatarModule } from 'primeng/avatar';
-import { AvatarGroupModule } from 'primeng/avatargroup';
 import { ChipModule } from 'primeng/chip';
 
 @Component({
@@ -13,8 +12,12 @@ import { ChipModule } from 'primeng/chip';
   templateUrl: './ng-table.component.html'
 })
 export class NgTableComponent {
+  DEFAULT_VALUE_SORT_ORDER: number = 1;
+
   defVisiblesConlumn: ConlumnsDefinition[] = [];
   dataSource: any = []
+  sortFieldValue:string | undefined;
+  sortOrderValue: number = this.DEFAULT_VALUE_SORT_ORDER;
 
   _data: any;
   get data(): any{
@@ -54,7 +57,6 @@ export class NgTableComponent {
     console.log("reloadConfig");
 
     this.loadData();
-    // this.loadConlumnsDefinition();
   }
 
   loadData() {
@@ -74,7 +76,21 @@ export class NgTableComponent {
       this.conlumnsDefinition.map(item => {
         if (item.visible != false){
           this.defVisiblesConlumn.push(item)
-        }});
+        }
+
+        if(item.activeSortable) {
+          this.sortFieldValue = item.key;
+
+          let sortableOrder = this.DEFAULT_VALUE_SORT_ORDER;
+
+          if (item.sortableOrder != undefined) {
+            sortableOrder = item.sortableOrder == 'asc' ? 1 : -1;
+          }
+
+          this.sortOrderValue = sortableOrder
+        }
+
+      });
     }
   }
 }
