@@ -1,0 +1,109 @@
+[
+  {
+    "key": "name",
+    "value": "Nombre",
+    "order": 2,
+    "sortable": false,
+    "supportImageKey": "photos"
+  },
+  {
+    "key": "officalPos",
+    "value": "Pos",
+    "order": 1,
+    "sortable": true,
+    "activeSortable": true
+  },
+  {
+    "key": "officialTime",
+    "value": "off. Time",
+    "order": 4,
+    "sortable": true
+  },
+  {
+    "key": "officalCatPos",
+    "value": "off. Cat Pos",
+    "order": 5,
+    "sortable": true
+  },
+  {
+    "key": "officialGenPos",
+    "value": "off. Gen Pos",
+    "order": 6,
+    "sortable": true
+  },
+  {
+    "key": "officialAverageNet",
+    "value": "off. Ritmo",
+    "order": 7,
+    "sortable": true
+  },
+  {
+    "key": "realTime",
+    "value": "T. Real",
+    "order": 8,
+    "sortable": true
+  },
+  {
+    "key": "realPos",
+    "value": "Pos. Real",
+    "order": 9,
+    "sortable": true
+  },
+  {
+    "key": "realCatPos",
+    "value": "Pos. Cat. Real",
+    "order": 10,
+    "sortable": true
+  },
+  {
+    "key": "realGenPos",
+    "value": "Pos. Gen. Real",
+    "order": 11,
+    "sortable": true
+  },
+  {
+    "key": "realAverageNet",
+    "value": "Ritmo Real",
+    "order": 12,
+    "sortable": true
+  },
+
+
+
+  {
+    "key": "dorsal",
+    "value": "Dorsal",
+    "order": 0,
+    "visible": false
+  },
+  {
+    "key": "club",
+    "value": "Club",
+    "order": 0,
+    "visible": false
+  },
+  {
+    "key": "nationality",
+    "value": "Nacionalidad",
+    "order": 0,
+    "visible": false
+  },
+  {
+    "key": "finishedRace",
+    "value": "Finisher",
+    "order": 0,
+    "visible": false
+  },
+  {
+    "key": "gender",
+    "value": "Genero",
+    "order": 0,
+    "visible": false
+  },
+  {
+    "key": "category",
+    "value": "Category",
+    "order": 0,
+    "visible": false
+  }
+]
