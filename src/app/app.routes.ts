@@ -1,12 +1,14 @@
 import { Routes } from '@angular/router';
 import { AppLayoutComponent } from './layout/app.layout.component';
-import { LeagueComponent } from './page/league.component';
+import { RankingComponent } from './page/ranking/ranking.component';
+import { RankingListComponent } from './page/ranking-list/ranking-list.component';
 
 export const routes: Routes = [
   {
     path: '', component: AppLayoutComponent,
     children: [
-      { path: 'ligas', component: LeagueComponent }
+      { path: '', component: RankingListComponent },
+      { path: 'ranking/:idRanking', component: RankingComponent }
     ]
   }
 ];
