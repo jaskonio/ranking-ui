@@ -1,16 +1,20 @@
 
 <div class="surface-ground px-4 py-5 md:px-6 lg:px-8">
-  <div class="grid">
 
-    @for (rankingId of rankingIds; track rankingIds) {
-      <div class="col-12 md:col-6 lg:col-4">
-        <div class="surface-card p-4 shadow-2 border-round custom-card" (click)="goToRanking(rankingId)">
-          <div class="text-xl font-medium text-900 mb-3">Liga {{ rankingId }} </div>
-          <div style="height: 50px" class="border-2 border-dashed surface-border"></div>
-        </div>
+  @for (season of seasons; track season.id) {
+    <div class="card">
+      <h5> {{season.name}}</h5>
+      <div class="grid">
+        @for (league of season.leagues; track league.id) {
+          <div class="col-12 md:col-6 lg:col-4">
+            <div class="surface-card p-4 shadow-2 border-round custom-card" (click)="goToRanking(league.resultId)">
+              <div class="text-xl font-medium text-900 mb-3">{{ league.name }} </div>
+              <div style="height: 50px" class="border-2 border-dashed surface-border"></div>
+            </div>
+          </div>
+        }
       </div>
-    }
-  </div>
+    </div>
+  }
+
 </div>
-
-
