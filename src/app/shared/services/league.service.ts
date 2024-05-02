@@ -1,8 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ConlumnsDefinition } from '../components/table/interfaces';
-import { LeagueInfoView } from './interfaces';
-
+import { LeagueRawViewResponse } from './interfaces';
 
 
 @Injectable({
@@ -14,7 +13,7 @@ export class LeagueService {
 
   }
 
-  getAllLeagueInfo() {
-    return this.http.get<LeagueInfoView[]>('/assets/data/ranking/leagues.json')
+  getByRawById(league_id: string) {
+    return this.http.get<LeagueRawViewResponse>('http://127.0.0.1:8000/leagues/raw/' + league_id)
   }
 }

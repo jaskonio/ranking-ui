@@ -11,18 +11,17 @@ import { SeasonService } from '../../shared/services/seasson.service';
   styleUrl: './ranking-list.component.scss'
 })
 export class RankingListComponent {
-  rankingIds = [1,2,3,4,5,6]
-
   seasons: SeasonInfoView[] = [];
+
   constructor(private router: Router,
     private seasonService: SeasonService
   ){
     this.seasonService.getAllSeasonInfo().subscribe( data => {
-      this.seasons = data;
+      this.seasons = data.data;
     });
   }
 
-  goToRanking(id: number) {
-    this.router.navigateByUrl("/ranking/" + id.toString())
+  goToRanking(league_id: string) {
+    this.router.navigateByUrl("/ranking/" + league_id)
   }
 }

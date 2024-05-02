@@ -18,7 +18,7 @@
         <div>
 
           @if (col.supportImageKey != undefined ) {
-            <p-chip label="{{ rowData[col.key] }}" image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" alt="{{rowData[col.key]}}" styleClass="p-chip-custom"></p-chip>
+            <p-chip label="{{ rowData[col.key] }}" image="{{rowData['photo_url']}}" alt="{{rowData[col.key]}}" styleClass="p-chip-custom"></p-chip>
           }@else {
             <span class="ml-1 vertical-align-middle"> {{ rowData[col.key] }} </span>
           }

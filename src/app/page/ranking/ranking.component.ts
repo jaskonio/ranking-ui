@@ -1,7 +1,9 @@
 import { Component, Input } from '@angular/core';
 import { ConlumnsDefinition } from '../../shared/components/table/interfaces';
 import {TableService} from '../../shared/services/table.service'
+import {LeagueService} from '../../shared/services/league.service'
 import { NgTableComponent } from '../../shared/components/table/ng-table.component';
+import { RunnerRankingModel } from '../../shared/services/interfaces';
 
 @Component({
   selector: 'app-ranking',
@@ -12,27 +14,27 @@ import { NgTableComponent } from '../../shared/components/table/ng-table.compone
 })
 export class RankingComponent {
 
-  _idRanking: number = 0;
-  get idRanking(): number{
+  _idRanking: string = '';
+  get idRanking(): string{
     return this._idRanking
   }
   @Input('idRanking') set idRanking(value:any){
     this._idRanking = value;
 
-    if (this._idRanking > 0 ) {
-      this.loadData();
-    }
+    this.loadData();
   }
 
-  data: any = []
+  data: RunnerRankingModel[] = []
   columns: ConlumnsDefinition[] = []
 
-  constructor(private tableService: TableService){}
+  constructor(private tableService: TableService,
+    private leagueService: LeagueService
+  ){}
 
   loadData() {
-    this.tableService.getData().subscribe( data => {
-      console.log("tableService.getData")
-      this.data = data;
+    this.leagueService.getByRawById(this.idRanking).subscribe( result => {
+      console.log("leagueService.getData")
+      this.data = result.data.history_ranking[0].data;
     })
 
     this.tableService.getConfig().subscribe( data => {

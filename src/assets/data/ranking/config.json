@@ -1,108 +1,81 @@
 [
   {
-    "key": "name",
+    "key": "first_name",
     "value": "Nombre",
     "order": 2,
     "sortable": false,
     "supportImageKey": "photos"
   },
   {
-    "key": "officalPos",
+    "key": "position",
     "value": "Pos",
     "order": 1,
     "sortable": true,
     "activeSortable": true
   },
   {
-    "key": "officialTime",
-    "value": "off. Time",
-    "order": 4,
-    "sortable": true
-  },
-  {
-    "key": "officalCatPos",
-    "value": "off. Cat Pos",
+    "key": "last_name",
+    "value": "Apellido",
     "order": 5,
     "sortable": true
   },
   {
-    "key": "officialGenPos",
-    "value": "off. Gen Pos",
+    "key": "dorsal",
+    "value": "Dorsal",
     "order": 6,
     "sortable": true
   },
   {
-    "key": "officialAverageNet",
-    "value": "off. Ritmo",
+    "key": "points",
+    "value": "Puntos",
     "order": 7,
     "sortable": true
   },
   {
-    "key": "realTime",
-    "value": "T. Real",
+    "key": "pos_last_race",
+    "value": "Ultima pos",
     "order": 8,
     "sortable": true
   },
   {
-    "key": "realPos",
-    "value": "Pos. Real",
+    "key": "top_five",
+    "value": "Top Five",
     "order": 9,
     "sortable": true
   },
   {
-    "key": "realCatPos",
-    "value": "Pos. Cat. Real",
+    "key": "participations",
+    "value": "Participaciones",
     "order": 10,
     "sortable": true
   },
   {
-    "key": "realGenPos",
-    "value": "Pos. Gen. Real",
+    "key": "best_position",
+    "value": "Mejor Pos",
     "order": 11,
     "sortable": true
   },
   {
-    "key": "realAverageNet",
-    "value": "Ritmo Real",
+    "key": "last_position_race",
+    "value": "Ultima pos en carrea",
     "order": 12,
     "sortable": true
   },
-
-
-
   {
-    "key": "dorsal",
-    "value": "Dorsal",
+    "key": "best_avegare_peace",
+    "value": "Mejor media Ritmo",
     "order": 0,
     "visible": false
   },
   {
-    "key": "club",
-    "value": "Club",
+    "key": "best_position_real",
+    "value": "Mejor Pos real",
     "order": 0,
     "visible": false
   },
   {
     "key": "nationality",
     "value": "Nacionalidad",
-    "order": 0,
-    "visible": false
-  },
-  {
-    "key": "finishedRace",
-    "value": "Finisher",
-    "order": 0,
-    "visible": false
-  },
-  {
-    "key": "gender",
-    "value": "Genero",
-    "order": 0,
-    "visible": false
-  },
-  {
-    "key": "category",
-    "value": "Category",
     "order": 0,
     "visible": false
   }
