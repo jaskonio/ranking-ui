@@ -1,5 +1,4 @@
 
-
 export interface SeasonInfoView {
   id: number;
   name: string;
@@ -62,4 +61,20 @@ export interface LeagueRawViewResponse {
   status: string;
   message: string;
   data: LeagueRawView
+}
+
+// Persons
+export interface PersonResponse {
+  id: string;
+  first_name: string;
+  last_name: string;
+  gender: string;
+  photo_url: string;
+}
+
+export interface PersonRequest {
+  first_name: string;
+  last_name: string;
+  gender?: string;
+  photo_url?: string;
 }
