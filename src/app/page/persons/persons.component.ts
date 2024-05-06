@@ -12,6 +12,8 @@ import { CommonModule } from '@angular/common';
 import { FileUploadModule } from 'primeng/fileupload';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
+import { NgFormComponent } from '../../shared/components/form/ng-form.component';
+import { CustomFormField } from '../../shared/components/form/interfaces';
 
 @Component({
   selector: 'app-persons',
@@ -25,12 +27,54 @@ import { ButtonModule } from 'primeng/button';
 		InputTextModule,
 		FileUploadModule,
     ReactiveFormsModule,
-    ButtonModule],
+    ButtonModule,
+    NgFormComponent],
   providers: [MessageService],
   templateUrl: './persons.component.html',
   styleUrl: './persons.component.scss'
 })
 export class PersonsComponent {
+  title_form = "Añadir Nueva Persona"
+  form_configuration: CustomFormField[] = [
+    {
+      label: "Nombre",
+      placeholder: "Nombre",
+      control_name: "first_name",
+      control_type:"text",
+      default_value: null,
+      validators: [Validators.required]
+    },
+    {
+      label: "Apellido",
+      placeholder: "Apellido",
+      control_name: "last_name",
+      control_type: "text",
+      default_value: null,
+      validators: [Validators.required]
+    },
+    {
+      label: "Genero",
+      placeholder: "Genero",
+      control_name: "gender",
+      control_type:"text",
+      default_value: 'M',
+      validators: [Validators.required]
+    },
+    {
+      label: "Foto",
+      control_name: "photo_url",
+      control_type:"image",
+      validators: [Validators.required],
+      input_image_options: {
+        url: () => {
+          return 'http://localhost:8000/image?image_name=' + Math.floor(new Date().getTime() / 1000).toString()
+        },
+        method: 'post',
+        field_parameter: 'file_image'
+      }
+    }
+  ]
+
   personsList: PersonResponse[] = [];
   personsColumns: ConlumnsDefinition[] = [
     {
@@ -57,8 +101,7 @@ export class PersonsComponent {
 
 
   constructor(
-    private personService: PersonService,
-    private messageService: MessageService
+    private personService: PersonService
   ){
     this.loadPersonTable()
   }
@@ -70,36 +113,16 @@ export class PersonsComponent {
     });
   }
 
-  personForm = new FormGroup({
-    first_name:  new FormControl('', Validators.required),
-    last_name: new FormControl(null, Validators.required),
-    gender: new FormControl(null, Validators.required),
-    photo_url: new FormControl(null)
-  });
-
-  onUpload(event: any) {
-    console.log("File Uploaded")
-    console.log(event)
-    this.personForm.controls.photo_url.setValue(event['originalEvent']['body'])
-    console.log(this.personForm.value)
-    this.messageService.add({ severity: 'info', summary: 'Success', detail: 'File Uploaded' });
-  }
-
-  sendPerson() {
+  sendPerson(content:any) {
     console.log("sendPerson")
-    console.log(this.personForm.value)
-    this.personService.add(this.personForm.value).subscribe(res => { console.log(res)})
+    this.personService.add(content).subscribe(res => { console.log(res)})
 
     this.loadPersonTable()
   }
 
-  buildNameOfImage() {
-    return Math.floor(new Date().getTime() / 1000).toString()
-  }
-
-  buildUrlToUploadImage() {
-    let name = this.buildNameOfImage()
-    let url="http://127.0.0.1:8000/image?image_name=" + name
-    return url
+  onSubmitPersonForm(event:any) {
+    console.log("PersonsComponent: ")
+    console.log(event)
+    this.sendPerson(event)
   }
 }

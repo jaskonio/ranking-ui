@@ -1,0 +1,32 @@
+    <form [formGroup]="customForm" (ngSubmit)="onSubmit()" novalidate>
+      <div class="card p-fluid">
+        <h5>{{title_form}}</h5>
+
+        @for (form_conf of form_configuration; track form_conf) {
+          @if (form_conf.control_type == "text") {
+            <div class="field">
+              <label htmlFor="{{form_conf['control_name']}}">{{form_conf['label']}}</label>
+              <input pInputText id="{{form_conf['control_name']}}" formControlName="{{form_conf['control_name']}}" type="{{form_conf['control_type']}}" placeholder="{{form_conf['placeholder']}}"/>
+              <small class="p-error block" *ngIf="customForm.get(form_conf['control_name'])?.invalid && customForm.get(form_conf['control_name'])?.dirty">
+              Por favor relleno el campo
+              </small>
+            </div>
+          }
+          @else if (form_conf.control_type == "image") {
+            <p-fileUpload
+                mode="basic"
+                name="{{form_conf.input_image_options?.field_parameter}}"
+                (onUpload)="onUploadImage($event, form_conf.control_name)"
+                [multiple]="false"
+                accept="image/*"
+                [maxFileSize]="1000000"
+                url="{{form_conf.input_image_options?.url()}}"
+                method="post">
+            </p-fileUpload>
+          }
+        }
+        <div class="field">
+          <button pButton label="submit" label="Enviar" [disabled]="customForm.invalid"></button>
+        </div>
+      </div>
+    </form>

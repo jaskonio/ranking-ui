@@ -1,34 +1,7 @@
 <div class="grid">
 	<div class="col-12 md:col-6">
-    <form [formGroup]="personForm" (ngSubmit)="sendPerson()" novalidate>
-      <div class="card p-fluid">
-        <h5>Añadir Nueva Persona</h5>
-        <div class="field">
-          <label htmlFor="first_name">Nombre</label>
-          <input pInputText id="first_name" formControlName="first_name" type="text" />
-          <small class="p-error block" *ngIf="personForm.get('first_name')?.invalid && personForm.get('first_name')?.dirty">
-            Enter your username to reset your password.
-          </small>
-        </div>
-        <div class="field">
-          <label htmlFor="last_name">Apellido</label>
-          <input pInputText id="last_name" formControlName="last_name" type="text" />
-        </div>
-        <div class="field">
-          <label htmlFor="gender">Genero</label>
-          <input pInputText id="gender" formControlName="gender" type="text" />
-        </div>
-
-        <p-fileUpload name="file_image" (onUpload)="onUpload($event)" [multiple]="false" accept="image/*" [maxFileSize]="1000000" [url]="buildUrlToUploadImage()" method="post">
-        </p-fileUpload>
-
-        <div class="field">
-          <button pButton label="submit" label="Enviar" [disabled]="personForm.invalid"></button>
-        </div>
-      </div>
-    </form>
+    <app-ng-form [title_form]="title_form" [form_configuration]="form_configuration" (newContentEvent)="onSubmitPersonForm($event)"></app-ng-form>
   </div>
 </div>
-
 
 <app-ng-table [data]="personsList"  [conlumnsDefinition]="personsColumns"></app-ng-table>
