@@ -27,7 +27,8 @@ import { CustomFormField } from './interfaces';
 		InputTextModule,
 		FileUploadModule,
     ReactiveFormsModule,
-    ButtonModule],
+    ButtonModule
+  ],
   templateUrl: './ng-form.component.html'
 })
 export class NgFormComponent {

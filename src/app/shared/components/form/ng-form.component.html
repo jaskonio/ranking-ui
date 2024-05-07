@@ -13,16 +13,22 @@
             </div>
           }
           @else if (form_conf.control_type == "image") {
-            <p-fileUpload
-                mode="basic"
-                name="{{form_conf.input_image_options?.field_parameter}}"
-                (onUpload)="onUploadImage($event, form_conf.control_name)"
-                [multiple]="false"
-                accept="image/*"
-                [maxFileSize]="1000000"
-                url="{{form_conf.input_image_options?.url()}}"
-                method="post">
-            </p-fileUpload>
+            <div class="field">
+              <p-fileUpload
+              mode="basic"
+              chooseIcon="pi pi-upload"
+              name="{{form_conf.input_image_options?.field_parameter}}"
+              (onUpload)="onUploadImage($event, form_conf.control_name)"
+              [multiple]="false"
+              accept="image/*"
+              [maxFileSize]="1000000"
+              url="{{form_conf.input_image_options?.url()}}"
+              method="post"
+              label="Import"
+              chooseLabel="Subir Imagen"
+              class="mr-2 inline-block">
+          </p-fileUpload>
+            </div>
           }
         }
         <div class="field">
