@@ -1,7 +1,1 @@
-<div class="grid">
-	<div class="col-12 md:col-6">
-    <app-ng-form [title_form]="title_form" [form_configuration]="form_configuration" (newContentEvent)="onSubmitPersonForm($event)"></app-ng-form>
-  </div>
-</div>
-
-<app-ng-table [data]="personsList"  [conlumnsDefinition]="personsColumns"></app-ng-table>
+<app-crud [service]="personService"></app-crud>

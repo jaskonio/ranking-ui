@@ -1,9 +1,9 @@
 import { Component, Input } from '@angular/core';
-import { ConlumnsDefinition } from '../../shared/components/table/interfaces';
 import {TableService} from '../../shared/services/table.service'
 import {LeagueService} from '../../shared/services/league.service'
 import { NgTableComponent } from '../../shared/components/table/ng-table.component';
 import { RunnerRankingModel } from '../../shared/services/interfaces';
+import { ConlumnsDefinition } from '../../shared/interfaces/interfaces';
 
 @Component({
   selector: 'app-ranking',

@@ -1,6 +1,9 @@
-<p-table [columns]="defVisiblesConlumn" [value]="dataSource" styleClass="p-datatable-striped"
-  sortField="{{sortFieldValue}}"
-  [sortOrder]="sortOrderValue"
+<p-table
+[columns]="defVisiblesConlumn"
+[value]="dataSource"
+styleClass="p-datatable-striped"
+sortField="{{sortFieldValue}}"
+[sortOrder]="sortOrderValue"
   >
   <ng-template pTemplate="header" let-columns>
     <tr>

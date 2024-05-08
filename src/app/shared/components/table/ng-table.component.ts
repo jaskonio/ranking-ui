@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { TableModule } from 'primeng/table';
-import { ConlumnsDefinition } from './interfaces';
 import { AvatarModule } from 'primeng/avatar';
 import { ChipModule } from 'primeng/chip';
+import { ConlumnsDefinition } from '../../interfaces/interfaces';
 
 @Component({
   selector: 'app-ng-table',

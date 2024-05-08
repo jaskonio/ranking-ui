@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ConlumnsDefinition } from '../components/table/interfaces';
 import { LeagueRawViewResponse } from './interfaces';
 
 

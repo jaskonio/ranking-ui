@@ -1,10 +1,18 @@
 [
   {
+    "key": "id",
+    "value": "ID",
+    "order": 99,
+    "sortable": false,
+    "foreign_key": true
+  },
+  {
     "key": "first_name",
     "value": "Nombre",
     "order": 2,
     "sortable": false,
-    "supportImageKey": "photos"
+    "supportImageKey": "photos",
+    "supportFilter": true
   },
   {
     "key": "position",
@@ -17,7 +25,8 @@
     "key": "last_name",
     "value": "Apellido",
     "order": 5,
-    "sortable": true
+    "sortable": true,
+    "supportFilter": true
   },
   {
     "key": "dorsal",
