@@ -2,24 +2,20 @@ import { Component } from '@angular/core';
 import { PersonService } from '../../shared/services/person.service';
 import { PersonResponse } from '../../shared/services/interfaces';
 import { Validators } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 import { MessageService } from 'primeng/api';
 import { CustomFormField } from '../../shared/components/form/interfaces';
-import { CrudModule } from '../../shared/components/crud/crud.module';
+import { CrudComponent } from '../../shared/components/crud/crud.component';
 
 @Component({
   selector: 'app-persons',
   standalone: true,
-  imports: [
-    CommonModule,
-    CrudModule],
+  imports: [CrudComponent],
   providers: [MessageService],
   templateUrl: './persons.component.html',
   styleUrl: './persons.component.scss'
 })
 export class PersonsComponent {
-  title_form = "Añadir Nueva Persona"
-  form_configuration: CustomFormField[] = [
+  fields_configuration: CustomFormField[] = [
     {
       label: "Nombre",
       placeholder: "Nombre",
@@ -59,31 +55,16 @@ export class PersonsComponent {
     }
   ]
 
+  form_configuration = {
+    title_form: "",
+    fields_configuration: this.fields_configuration,
+    submitButtonEnabled: false,
+  }
+
   personsList: PersonResponse[] = [];
 
   constructor(
     public personService: PersonService
   ){
-    // this.loadPersonTable()
-  }
-
-  loadPersonTable(){
-    this.personService.get_data().subscribe( persons => {
-      console.log(persons)
-      this.personsList = persons;
-    });
-  }
-
-  sendPerson(content:any) {
-    console.log("sendPerson")
-    this.personService.save_item(content).subscribe(res => { console.log(res)})
-
-    this.loadPersonTable()
-  }
-
-  onSubmitPersonForm(event:any) {
-    console.log("PersonsComponent: ")
-    console.log(event)
-    this.sendPerson(event)
   }
 }

@@ -37,6 +37,7 @@ export class NgFormComponent {
 
   @Input() title_form: string = '';
   @Input() form_configuration: CustomFormField[] = [];
+  @Input() submitButtonEnabled: boolean = true;
 
   customForm = new FormGroup({});
 

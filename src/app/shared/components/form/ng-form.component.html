@@ -32,7 +32,7 @@
           }
         }
         <div class="field">
-          <button pButton label="submit" label="Enviar" [disabled]="customForm.invalid"></button>
+          <button pButton label="submit" label="Enviar" [disabled]="customForm.invalid" *ngIf="submitButtonEnabled"></button>
         </div>
       </div>
     </form>

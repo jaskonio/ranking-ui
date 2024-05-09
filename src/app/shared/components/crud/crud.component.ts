@@ -1,13 +1,57 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { MessageService } from 'primeng/api';
+import { MessageService, PrimeNGConfig } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { ConlumnsDefinition, ICrudService } from '../../interfaces/interfaces';
+import { FileUploadModule } from 'primeng/fileupload';
+import { ButtonModule } from 'primeng/button';
+import { BadgeModule } from 'primeng/badge';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { FormsModule } from '@angular/forms';
+import { CrudRoutingModule } from './crud-routing.module';
+
+import { TableModule } from 'primeng/table';
 
 
+import { RippleModule } from 'primeng/ripple';
+import { ToastModule } from 'primeng/toast';
+import { ToolbarModule } from 'primeng/toolbar';
+import { RatingModule } from 'primeng/rating';
+import { InputTextModule } from 'primeng/inputtext';
+import { InputTextareaModule } from 'primeng/inputtextarea';
+import { DropdownModule } from 'primeng/dropdown';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { DialogModule } from 'primeng/dialog';
+import { ChipModule } from 'primeng/chip';
+import { CommonModule } from '@angular/common';
+import { NgFormComponent } from '../form/ng-form.component';
 @Component({
   selector: 'app-crud',
-    templateUrl: './crud.component.html',
-    providers: [MessageService]
+  templateUrl: './crud.component.html',
+  providers: [MessageService],
+  standalone: true,
+  imports: [
+    BadgeModule,
+    ProgressBarModule,
+    CommonModule,
+    CrudRoutingModule,
+    TableModule,
+    FileUploadModule,
+    FormsModule,
+    ButtonModule,
+    RippleModule,
+    ToastModule,
+    ToolbarModule,
+    RatingModule,
+    InputTextModule,
+    InputTextareaModule,
+    DropdownModule,
+    RadioButtonModule,
+    InputNumberModule,
+    DialogModule,
+    ChipModule,
+    NgFormComponent
+  ]
 })
 export class CrudComponent implements OnInit {
   DEFAULT_VALUE_SORT_ORDER: number = 1;
@@ -21,16 +65,18 @@ export class CrudComponent implements OnInit {
   def_visibles_conlumn: ConlumnsDefinition[] = [];
 
   @Input() service?:ICrudService = undefined;
+  @Input() formConfiguration?: any = undefined;
 
   sortFieldValue:string | undefined;
   sortOrderValue: number = this.DEFAULT_VALUE_SORT_ORDER;
 
-    productDialog: boolean = false;
+    dialog_to_view_or_edit: boolean = false;
 
     deleteProductDialog: boolean = false;
 
     deleteProductsDialog: boolean = false;
 
+    dialog_title_to_edit_or_update_or_delete: string = ''
 
     item_to_edit_or_update_or_delete: any = {};
 
@@ -40,7 +86,9 @@ export class CrudComponent implements OnInit {
 
     rowsPerPageOptions = [5, 10, 20];
 
-    constructor(private messageService: MessageService) { }
+    constructor(private messageService: MessageService
+      ,private config: PrimeNGConfig
+    ) { }
 
     ngOnInit() {
       this.loadConlumnsDefinition();
@@ -50,17 +98,19 @@ export class CrudComponent implements OnInit {
     openNew() {
         this.item_to_edit_or_update_or_delete = {};
         this.submitted = false;
-        this.productDialog = true;
+        this.dialog_to_view_or_edit = true;
+        this.dialog_title_to_edit_or_update_or_delete = "Nuevo Corredor"
     }
 
-    deleteSelectedProducts() {
+    deleteSelectedItems() {
         this.deleteProductsDialog = true;
     }
 
     editRow(item: any) {
         this.item_to_edit_or_update_or_delete = { ...item };
-        this.productDialog = true;
+        this.dialog_to_view_or_edit = true;
         this.service?.update_item(this.item_to_edit_or_update_or_delete)
+        this.dialog_title_to_edit_or_update_or_delete = "Datos Corredor"
     }
 
     deleteRow(row_data: any) {
@@ -87,7 +137,7 @@ export class CrudComponent implements OnInit {
     }
 
     hideDialog() {
-        this.productDialog = false;
+        this.dialog_to_view_or_edit = false;
         this.submitted = false;
     }
 

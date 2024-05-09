@@ -38,7 +38,7 @@ import { ChipModule } from 'primeng/chip';
         DialogModule,
         ChipModule
     ],
-    declarations: [CrudComponent],
-    exports: [CrudComponent]
+    // declarations: [CrudComponent],
+    // exports: [CrudComponent]
 })
 export class CrudModule { }
