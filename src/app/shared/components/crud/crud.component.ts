@@ -120,20 +120,33 @@ export class CrudComponent implements OnInit {
 
     confirmDeleteSelected() {
         this.deleteProductsDialog = false;
-        this.selectedRow.forEach( item =>{
-          this.service?.delete_item(item)
-        })
+        this.selectedRow.forEach( (item, index:number) =>{
+          this.service?.delete_item(item).subscribe(is_ok => {
+            if (is_ok){
+              this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
+            }
 
+            if (this.selectedRow.length == index) {
+              this.loadData();
+              this.selectedRow = [];
+            }
+          })
+        })
         this.selectedRow = [];
-        this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
     }
 
     confirmDelete() {
         this.deleteProductDialog = false;
-        this.service?.delete_item(this.item_to_edit_or_update_or_delete)
+        this.service?.delete_item(this.item_to_edit_or_update_or_delete).subscribe(is_ok => {
+          if (is_ok){
+            this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
+          }
+
+          this.loadData();
+        })
 
         this.item_to_edit_or_update_or_delete = {};
-        this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
+
     }
 
     hideDialog() {

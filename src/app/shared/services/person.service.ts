@@ -94,8 +94,8 @@ export class PersonService implements ICrudService{
     );
   }
 
-  delete_item(newPerson:any) {
-    return this.http.post(this.url, newPerson)
+  delete_item(person:any) {
+    return this.http.delete(this.url + '/' + person.id)
     .pipe(
       map((response: any) => {return true}),
       catchError((err, caught) => {
