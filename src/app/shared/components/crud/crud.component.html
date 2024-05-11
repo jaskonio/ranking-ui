@@ -96,15 +96,16 @@
 
               <app-ng-form [title_form]="formConfiguration.title_form"
                 [form_configuration]="formConfiguration.fields_configuration"
-                [submitButtonEnabled]="formConfiguration.submitButtonEnabled">
+                [submitButtonEnabled]="formConfiguration.submitButtonEnabled"
+                [data]="item_to_edit_or_update_or_delete">
               </app-ng-form>
 
             </ng-template>
 
-            <ng-template pTemplate="footer">
-                <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
-                <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveItem()"></button>
-            </ng-template>
+            <!-- <ng-template pTemplate="footer"> -->
+                <!-- <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button> -->
+                <!-- <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveItem()"></button> -->
+            <!-- </ng-template> -->
         </p-dialog>
 
         <p-dialog [(visible)]="deleteProductDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">

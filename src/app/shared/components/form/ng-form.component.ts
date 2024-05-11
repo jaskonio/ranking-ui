@@ -11,6 +11,8 @@ import { InputTextModule } from "primeng/inputtext";
 import { FileUploadModule } from 'primeng/fileupload';
 import { ButtonModule } from 'primeng/button';
 import { CustomFormField } from './interfaces';
+import { ImageModule } from 'primeng/image';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-ng-form',
@@ -27,7 +29,8 @@ import { CustomFormField } from './interfaces';
 		InputTextModule,
 		FileUploadModule,
     ReactiveFormsModule,
-    ButtonModule
+    ButtonModule,
+    ImageModule,
   ],
   templateUrl: './ng-form.component.html'
 })
@@ -38,6 +41,7 @@ export class NgFormComponent {
   @Input() title_form: string = '';
   @Input() form_configuration: CustomFormField[] = [];
   @Input() submitButtonEnabled: boolean = true;
+  @Input() data: any = null;
 
   customForm = new FormGroup({});
 
@@ -54,10 +58,25 @@ export class NgFormComponent {
     console.log("ngAfterViewInit");
   }
 
+  getImageUrl(control_name:string) {
+    if (this.customForm.get(control_name) == undefined){
+      return ''
+    }
+    console.log(this.customForm.get(control_name)?.value)
+    return this.customForm.get(control_name)?.value
+  }
+
   createFormGroup() {
     this.form_configuration.forEach(field => {
 
-      let new_control = new FormControl(field['default_value'], field['validators'])
+      let defaultValue = ''
+      if (this.data != null ){
+        defaultValue = this.data[field.control_name]
+      }else{
+        defaultValue = field['default_value']
+      }
+
+      let new_control = new FormControl(defaultValue, field['validators'])
       this.customForm.setControl(field.control_name, new_control)
     });
   }
@@ -68,7 +87,8 @@ export class NgFormComponent {
   }
 
   onSubmit(){
-    console.log("NgFormComponent: " + this.customForm.value)
+    console.log("NgFormComponent: ")
+    console.log(this.customForm.value)
     this.newContentEvent.emit(this.customForm.value)
   }
 }

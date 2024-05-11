@@ -13,6 +13,13 @@
             </div>
           }
           @else if (form_conf.control_type == "image") {
+            <div class="flex justify-content-center" *ngIf="getImageUrl(form_conf['control_name']) != ''">
+              <p-image
+                  [src]="getImageUrl(form_conf['control_name'])"
+                  alt="Image"
+                  width="50"/>
+            </div>
+
             <div class="field">
               <p-fileUpload
               mode="basic"
@@ -31,8 +38,11 @@
             </div>
           }
         }
-        <div class="field">
-          <button pButton label="submit" label="Enviar" [disabled]="customForm.invalid" *ngIf="submitButtonEnabled"></button>
-        </div>
+
+          <div p-buttonGroup class="flex gap-2 justify-content-center">
+            <!-- <button pButton label="submit" label="Enviar" [disabled]="customForm.invalid"></button> -->
+            <button pButton pRipple icon="pi pi-times" label="cancelar" severity="danger" class="col-6"></button>
+            <button pButton pRipple icon="pi pi-check" label="enviar" severity="success" class="col-6" [disabled]="customForm.invalid"></button>
+          </div>
       </div>
     </form>
