@@ -70,7 +70,9 @@ export class CrudComponent implements OnInit {
   sortFieldValue:string | undefined;
   sortOrderValue: number = this.DEFAULT_VALUE_SORT_ORDER;
 
-    dialog_to_view_or_edit: boolean = false;
+  dialog_action: string = ''
+
+  dialog_to_view_or_edit: boolean = false;
 
     deleteProductDialog: boolean = false;
 
@@ -81,8 +83,6 @@ export class CrudComponent implements OnInit {
     item_to_edit_or_update_or_delete: any = {};
 
     selectedRow: any[] = [];
-
-    submitted: boolean = false;
 
     rowsPerPageOptions = [5, 10, 20];
 
@@ -97,8 +97,8 @@ export class CrudComponent implements OnInit {
 
     openNew() {
         this.item_to_edit_or_update_or_delete = {};
-        this.submitted = false;
         this.dialog_to_view_or_edit = true;
+        this.dialog_action = 'add'
         this.dialog_title_to_edit_or_update_or_delete = "Nuevo Corredor"
     }
 
@@ -109,7 +109,7 @@ export class CrudComponent implements OnInit {
     editRow(item: any) {
         this.item_to_edit_or_update_or_delete = { ...item };
         this.dialog_to_view_or_edit = true;
-        this.service?.update_item(this.item_to_edit_or_update_or_delete)
+        this.dialog_action = 'edit'
         this.dialog_title_to_edit_or_update_or_delete = "Datos Corredor"
     }
 
@@ -151,14 +151,6 @@ export class CrudComponent implements OnInit {
 
     hideDialog() {
         this.dialog_to_view_or_edit = false;
-        this.submitted = false;
-    }
-
-    saveItem() {
-        this.submitted = true;
-        this.item_to_edit_or_update_or_delete = {};
-        // TODO
-        this.service?.save_item(this.item_to_edit_or_update_or_delete)
     }
 
     onGlobalFilter(table: Table, event: Event) {
@@ -174,7 +166,6 @@ export class CrudComponent implements OnInit {
     loadData() {
       console.log("loadData");
       this.data_source = [];
-      // this.data_source =
       this.service?.get_data().subscribe((data) => {
         console.log("get_data")
         console.log(data)
@@ -227,5 +218,30 @@ export class CrudComponent implements OnInit {
           }
         });
       })
+    }
+
+    onSubmitForm(event:any) {
+      console.log("onSubmitForm")
+      console.log(event)
+
+      this.hideDialog()
+
+      if (event == null){
+        return;
+      }
+
+      if (this.dialog_action == 'edit') {
+        event['id'] = this.item_to_edit_or_update_or_delete['id']
+        this.service?.update_item(event).subscribe(item => {
+          console.log(item);
+          this.loadData();
+        })
+      }
+      else if (this.dialog_action == 'add') {
+        this.service?.save_item(event).subscribe( item => {
+          console.log(item);
+          this.loadData();
+        })
+      }
     }
 }

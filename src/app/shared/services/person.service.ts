@@ -83,7 +83,7 @@ export class PersonService implements ICrudService{
   }
 
   update_item(newPerson:any) {
-    return this.http.post(this.url, newPerson)
+    return this.http.put(this.url + '/' + newPerson.id, newPerson)
     .pipe(
       map((response: any) => {return response['data']}),
       map((response: any) => {return true}),

@@ -8,14 +8,20 @@
               <label htmlFor="{{form_conf['control_name']}}">{{form_conf['label']}}</label>
               <input pInputText id="{{form_conf['control_name']}}" formControlName="{{form_conf['control_name']}}" type="{{form_conf['control_type']}}" placeholder="{{form_conf['placeholder']}}"/>
               <small class="p-error block" *ngIf="customForm.get(form_conf['control_name'])?.invalid && customForm.get(form_conf['control_name'])?.dirty">
-              Por favor relleno el campo
+              Por favor rellene el campo con un valor valido
               </small>
             </div>
+          }
+          @else if (form_conf.control_type == "dropdown") {
+            <p-dropdown
+            formControlName="{{form_conf['control_name']}}"
+            [options]="form_conf['dropdown_options']"
+            placeholder="{{form_conf['label']}}"/>
           }
           @else if (form_conf.control_type == "image") {
             <div class="flex justify-content-center" *ngIf="getImageUrl(form_conf['control_name']) != ''">
               <p-image
-                  [src]="getImageUrl(form_conf['control_name'])"
+                  [src]="this.customForm.get(form_conf['control_name'])?.value"
                   alt="Image"
                   width="50"/>
             </div>
@@ -29,7 +35,7 @@
               [multiple]="false"
               accept="image/*"
               [maxFileSize]="1000000"
-              url="{{form_conf.input_image_options?.url()}}"
+              url="{{form_conf.input_image_options?.url(uniqueId)}}"
               method="post"
               label="Import"
               chooseLabel="Subir Imagen"
@@ -40,8 +46,7 @@
         }
 
           <div p-buttonGroup class="flex gap-2 justify-content-center">
-            <!-- <button pButton label="submit" label="Enviar" [disabled]="customForm.invalid"></button> -->
-            <button pButton pRipple icon="pi pi-times" label="cancelar" severity="danger" class="col-6"></button>
+            <button pButton pRipple icon="pi pi-times" label="cancelar" severity="danger" class="col-6" type="button" (click)="cancelButton()"></button>
             <button pButton pRipple icon="pi pi-check" label="enviar" severity="success" class="col-6" [disabled]="customForm.invalid"></button>
           </div>
       </div>

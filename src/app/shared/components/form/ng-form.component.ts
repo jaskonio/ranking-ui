@@ -12,7 +12,8 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { ButtonModule } from 'primeng/button';
 import { CustomFormField } from './interfaces';
 import { ImageModule } from 'primeng/image';
-import { filter } from 'rxjs';
+import { DropdownModule } from 'primeng/dropdown';
+
 
 @Component({
   selector: 'app-ng-form',
@@ -31,12 +32,13 @@ import { filter } from 'rxjs';
     ReactiveFormsModule,
     ButtonModule,
     ImageModule,
+    DropdownModule,
   ],
   templateUrl: './ng-form.component.html'
 })
 export class NgFormComponent {
-  @Output() newContentEvent = new EventEmitter<{}>();
 
+  @Output() newContentEvent = new EventEmitter<{}|null>();
 
   @Input() title_form: string = '';
   @Input() form_configuration: CustomFormField[] = [];
@@ -45,8 +47,11 @@ export class NgFormComponent {
 
   customForm = new FormGroup({});
 
+  uniqueId:string = '';
+
   constructor(private cdref: ChangeDetectorRef) {
     console.log("constructor")
+    this.uniqueId = Math.floor(new Date().getTime() / 1000).toString()
   }
 
   ngOnInit() {
@@ -62,7 +67,7 @@ export class NgFormComponent {
     if (this.customForm.get(control_name) == undefined){
       return ''
     }
-    console.log(this.customForm.get(control_name)?.value)
+
     return this.customForm.get(control_name)?.value
   }
 
@@ -89,6 +94,18 @@ export class NgFormComponent {
   onSubmit(){
     console.log("NgFormComponent: ")
     console.log(this.customForm.value)
-    this.newContentEvent.emit(this.customForm.value)
+
+    if (this.data == null) {
+      this.data = {}
+    }
+      this.form_configuration.forEach(field => {
+        this.data[field.control_name] = this.customForm.get(field.control_name)?.value
+      });
+
+    this.newContentEvent.emit(this.data)
+  }
+
+  cancelButton(){
+    this.newContentEvent.emit(null)
   }
 }

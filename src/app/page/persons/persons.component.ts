@@ -22,7 +22,7 @@ export class PersonsComponent {
       control_name: "first_name",
       control_type:"text",
       default_value: null,
-      validators: [Validators.required]
+      validators: [Validators.required, Validators.maxLength(20)]
     },
     {
       label: "Apellido",
@@ -30,15 +30,16 @@ export class PersonsComponent {
       control_name: "last_name",
       control_type: "text",
       default_value: null,
-      validators: [Validators.required]
+      validators: [Validators.required, Validators.maxLength(20)]
     },
     {
       label: "Genero",
       placeholder: "Genero",
       control_name: "gender",
-      control_type:"text",
+      control_type:"dropdown",
+      dropdown_options: ['H', 'M'],
       default_value: 'M',
-      validators: [Validators.required]
+      validators: [Validators.required, , Validators.maxLength(1)]
     },
     {
       label: "Foto",
