@@ -12,35 +12,22 @@ import { RippleModule } from 'primeng/ripple';
 // import { AppMenuComponent } from './app.menu.component';
 // import { AppMenuitemComponent } from './app.menuitem.component';
 import { RouterModule } from '@angular/router';
-import { AppTopBarComponent } from './topbar/app.topbar.component';
-import { AppFooterComponent } from './footer/app.footer.component';
+import { AppTopBarComponent } from '../topbar/app.topbar.component';
+import { AppFooterComponent } from '../footer/app.footer.component';
 // import { AppConfigModule } from '../config/config.module';
-import { AppSidebarComponent } from "./sidebar/app.sidebar.component";
-import { AppLayoutComponent } from "./app.layout.component";
+import { AppSidebarComponent } from "../sidebar/app.sidebar.component";
 import { CommonModule } from '@angular/common';
+import { AppAdminLayoutComponent } from './app.admin.layout.component';
+import { AppLayoutModule } from '../app.layout.module';
 
 @NgModule({
     declarations: [
-        // AppMenuitemComponent,
-        AppTopBarComponent,
-        AppFooterComponent,
-        // AppMenuComponent,
-        AppSidebarComponent,
-        AppLayoutComponent,
+        AppAdminLayoutComponent,
     ],
-    imports: [
-        CommonModule,
-        FormsModule,
-        HttpClientModule,
-        InputTextModule,
-        SidebarModule,
-        BadgeModule,
-        RadioButtonModule,
-        InputSwitchModule,
-        RippleModule,
-        RouterModule,
-        // AppConfigModule
+    imports: [CommonModule,
+      RouterModule,
+      AppLayoutModule
     ],
-    exports: [AppLayoutComponent, AppTopBarComponent, AppFooterComponent, AppSidebarComponent]
+    exports: [AppAdminLayoutComponent]
 })
-export class AppLayoutModule { }
+export class AppAdminLayoutModule { }
