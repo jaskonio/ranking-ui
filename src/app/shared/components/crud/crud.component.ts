@@ -55,7 +55,7 @@ import { NgFormComponent } from '../form/ng-form.component';
 })
 export class CrudComponent implements OnInit {
   DEFAULT_VALUE_SORT_ORDER: number = 1;
-  //
+
   title_table: string = "Lista de Corredores"
   property_id:string = ""
   fields_filter_support: string[] = []
@@ -123,7 +123,7 @@ export class CrudComponent implements OnInit {
         this.selectedRow.forEach( (item, index:number) =>{
           this.service?.delete_item(item).subscribe(is_ok => {
             if (is_ok){
-              this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
+              this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Registro Eliminado', life: 3000 });
             }
 
             if (this.selectedRow.length == index) {
@@ -139,7 +139,7 @@ export class CrudComponent implements OnInit {
         this.deleteProductDialog = false;
         this.service?.delete_item(this.item_to_edit_or_update_or_delete).subscribe(is_ok => {
           if (is_ok){
-            this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
+            this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Registro Eliminado', life: 3000 });
           }
 
           this.loadData();
@@ -182,7 +182,7 @@ export class CrudComponent implements OnInit {
       }
 
       this.fields_filter_support = []
-      // this.def_visibles_conlumn =
+
       this.service.get_definition_columns().subscribe( (data) => {
         console.log("get_definition_columns")
         console.log(data)

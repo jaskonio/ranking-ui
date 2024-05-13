@@ -67,7 +67,6 @@ export class PersonService implements ICrudService{
   get_definition_columns(): Observable<ConlumnsDefinition[]> {
     console.log(this.definition_cdolumns)
     return from([this.definition_cdolumns])
-    // of(this.definition_cdolumns)
   }
 
   save_item(newPerson:any) {
