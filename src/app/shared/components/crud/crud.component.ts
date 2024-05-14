@@ -8,10 +8,7 @@ import { BadgeModule } from 'primeng/badge';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { FormsModule } from '@angular/forms';
 import { CrudRoutingModule } from './crud-routing.module';
-
 import { TableModule } from 'primeng/table';
-
-
 import { RippleModule } from 'primeng/ripple';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
@@ -25,6 +22,12 @@ import { DialogModule } from 'primeng/dialog';
 import { ChipModule } from 'primeng/chip';
 import { CommonModule } from '@angular/common';
 import { NgFormComponent } from '../form/ng-form.component';
+import { BehaviorSubject, catchError, flatMap, forkJoin, map, mergeMap, Observable, of, switchMap } from 'rxjs';
+import { NotificationService } from '../../services/notification.service';
+import { NotificationEvent } from '../../services/interfaces';
+import { combineLatest, timer } from "rxjs";
+
+
 @Component({
   selector: 'app-crud',
   templateUrl: './crud.component.html',
@@ -64,7 +67,7 @@ export class CrudComponent implements OnInit {
   all_visibles_conlumn: ConlumnsDefinition[] = [];
   def_visibles_conlumn: ConlumnsDefinition[] = [];
 
-  @Input() service?:ICrudService = undefined;
+  @Input() service!:ICrudService;
   @Input() formConfiguration?: any = undefined;
 
   sortFieldValue:string | undefined;
@@ -74,26 +77,41 @@ export class CrudComponent implements OnInit {
 
   dialog_to_view_or_edit: boolean = false;
 
-    deleteProductDialog: boolean = false;
+  deleteProductDialog: boolean = false;
 
-    deleteProductsDialog: boolean = false;
+  deleteProductsDialog: boolean = false;
 
-    dialog_title_to_edit_or_update_or_delete: string = ''
+  dialog_title_to_edit_or_update_or_delete: string = ''
 
-    item_to_edit_or_update_or_delete: any = {};
+  item_to_edit_or_update_or_delete: any = {};
 
-    selectedRow: any[] = [];
+  selectedRow: any[] = [];
 
-    rowsPerPageOptions = [5, 10, 20];
+  rowsPerPageOptions = [5, 10, 20];
 
-    constructor(private messageService: MessageService
-      ,private config: PrimeNGConfig
-    ) { }
+  public definitionColumnsObservable$!: Observable<ConlumnsDefinition[]>;
 
-    ngOnInit() {
-      this.loadConlumnsDefinition();
-      this.loadData();
-    }
+  public rowDataObservable$!: Observable<any[]>;
+
+  constructor(private notificationService: NotificationService
+    ,private config: PrimeNGConfig
+  ) { }
+
+  ngOnInit() {
+    this.definitionColumnsObservable$ = this.service.get_definition_columns();
+    this.rowDataObservable$ = this.service.get_data()
+      .pipe(
+        catchError((error:any, caught: Observable<any[]>) => {
+          console.log(error)
+          console.log(caught)
+          this.notificationService.notification = { severity: 'error', summary: 'Error Peticion', detail: 'No ha precesado la petición', life: 3000 }
+          throw new Error(error)
+        }
+      ));
+
+    this.loadConlumnsDefinition();
+    this.loadData();
+  }
 
     openNew() {
         this.item_to_edit_or_update_or_delete = {};
@@ -120,33 +138,46 @@ export class CrudComponent implements OnInit {
 
     confirmDeleteSelected() {
         this.deleteProductsDialog = false;
-        this.selectedRow.forEach( (item, index:number) =>{
-          this.service?.delete_item(item).subscribe(is_ok => {
-            if (is_ok){
-              this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Registro Eliminado', life: 3000 });
-            }
+        let observer = of(this.selectedRow)
 
-            if (this.selectedRow.length == index) {
-              this.loadData();
-              this.selectedRow = [];
-            }
+        observer.pipe(
+          switchMap((items) => {
+            const obs$: Observable<boolean>[] = []
+            items.map((item => {
+              obs$.push(this.service.delete_item(item))
+            }))
+
+            return combineLatest(obs$)
           })
+        ).subscribe(
+          {
+            next: (value) => {
+              value .forEach( x => {
+                if (x) {
+                  this.notificationService.notification =  { severity: 'success', summary: 'Successful', detail: 'Registro Eliminado', life: 3000 }
+                }
+              })
+
+            },
+            error: err => this.notificationService.notification =  { severity: 'error', summary: 'eroor', detail: 'error al processar', life: 3000 },
+            complete: () => {
+              this.selectedRow = [];
+              this.loadData();
+            }
         })
-        this.selectedRow = [];
     }
 
     confirmDelete() {
         this.deleteProductDialog = false;
         this.service?.delete_item(this.item_to_edit_or_update_or_delete).subscribe(is_ok => {
           if (is_ok){
-            this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Registro Eliminado', life: 3000 });
+            this.notificationService.notification = { severity: 'success', summary: 'Successful', detail: 'Registro Eliminado', life: 3000 }
           }
 
           this.loadData();
         })
 
         this.item_to_edit_or_update_or_delete = {};
-
     }
 
     hideDialog() {
@@ -157,67 +188,62 @@ export class CrudComponent implements OnInit {
         table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
     }
 
-    reloadConfig() {
-      console.log("reloadConfig");
-
-      this.loadData();
-    }
-
     loadData() {
       console.log("loadData");
-      this.data_source = [];
-      this.service?.get_data().subscribe((data) => {
-        console.log("get_data")
-        console.log(data)
 
-        this.data_source = data;
+      this.rowDataObservable$.subscribe((data) => {
+        console.log("get_data")
+        this.setNewDataIntoTable(data)
       })
+    }
+
+    setNewDataIntoTable(data: any) {
+      this.data_source = [];
+      this.data_source = data;
     }
 
     loadConlumnsDefinition() {
       console.log("loadConlumnsDefinition");
 
-      if (this.service == undefined){
-        return
-      }
+      this.definitionColumnsObservable$.subscribe( (data) => {
+        this.setNewColumnsDefinition(data)
+      })
+    }
 
+    setNewColumnsDefinition(data: ConlumnsDefinition[]) {
+      console.log("setNewColumnsDefinition")
       this.fields_filter_support = []
 
-      this.service.get_definition_columns().subscribe( (data) => {
-        console.log("get_definition_columns")
-        console.log(data)
+      this.all_visibles_conlumn = data
+      this.def_visibles_conlumn = []
 
-        this.all_visibles_conlumn = data
-        this.def_visibles_conlumn = []
+      this.all_visibles_conlumn.sort((a,b) => a.order - b.order);
 
-        this.all_visibles_conlumn.sort((a,b) => a.order - b.order);
+      this.all_visibles_conlumn.map(item => {
+        if (item.foreign_key == true) {
+          this.property_id = item.key
+        }
 
-        this.all_visibles_conlumn.map(item => {
-          if (item.foreign_key == true) {
-            this.property_id = item.key
+        if (item.visible != false){
+          this.def_visibles_conlumn.push(item)
+        }
+
+        if(item.activeSortable) {
+          this.sortFieldValue = item.key;
+
+          let sortableOrder = this.DEFAULT_VALUE_SORT_ORDER;
+
+          if (item.sortableOrder != undefined) {
+            sortableOrder = item.sortableOrder == 'asc' ? 1 : -1;
           }
 
-          if (item.visible != false){
-            this.def_visibles_conlumn.push(item)
-          }
+          this.sortOrderValue = sortableOrder
+        }
 
-          if(item.activeSortable) {
-            this.sortFieldValue = item.key;
-
-            let sortableOrder = this.DEFAULT_VALUE_SORT_ORDER;
-
-            if (item.sortableOrder != undefined) {
-              sortableOrder = item.sortableOrder == 'asc' ? 1 : -1;
-            }
-
-            this.sortOrderValue = sortableOrder
-          }
-
-          if (item.supportFilter) {
-            this.fields_filter_support.push(item.key);
-          }
-        });
-      })
+        if (item.supportFilter) {
+          this.fields_filter_support.push(item.key);
+        }
+      });
     }
 
     onSubmitForm(event:any) {
@@ -237,6 +263,7 @@ export class CrudComponent implements OnInit {
           this.loadData();
         })
       }
+
       else if (this.dialog_action == 'add') {
         this.service?.save_item(event).subscribe( item => {
           console.log(item);

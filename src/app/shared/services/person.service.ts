@@ -59,7 +59,7 @@ export class PersonService implements ICrudService{
       map((response: any) => {return response['data']}),
       catchError((err, caught) => {
         console.log('API Error: ' + JSON.stringify(err));
-        return caught
+        throw new Error(err)
       })
     );
   }
@@ -73,10 +73,9 @@ export class PersonService implements ICrudService{
     return this.http.post(this.url, newPerson)
     .pipe(
       map((response: any) => {return response['data']}),
-      map((response: any) => {return true}),
       catchError((err, caught) => {
         console.log('API Error: ' + JSON.stringify(err));
-        return caught
+        throw new Error(err)
       })
     );
   }
@@ -85,10 +84,9 @@ export class PersonService implements ICrudService{
     return this.http.put(this.url + '/' + newPerson.id, newPerson)
     .pipe(
       map((response: any) => {return response['data']}),
-      map((response: any) => {return true}),
       catchError((err, caught) => {
         console.log('API Error: ' + JSON.stringify(err));
-        return caught
+        throw new Error(err)
       })
     );
   }
@@ -96,11 +94,11 @@ export class PersonService implements ICrudService{
   delete_item(person:any) {
     return this.http.delete(this.url + '/' + person.id)
     .pipe(
-      map((response: any) => {return true}),
+      map(x => x as boolean),
       catchError((err, caught) => {
         console.log('API Error: ' + JSON.stringify(err));
-        return caught
+        throw new Error(err)
       })
-    );
+    )
   }
 }

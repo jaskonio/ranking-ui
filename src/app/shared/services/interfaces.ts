@@ -78,3 +78,9 @@ export interface PersonRequest {
   gender?: string;
   photo_url?: string;
 }
+export interface NotificationEvent {
+  severity: string;
+  summary: string;
+  detail: string;
+  life: number;
+}

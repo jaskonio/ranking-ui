@@ -17,7 +17,7 @@ export interface ConlumnsDefinition {
 export interface ICrudService {
   get_data(): Observable<any[]>;
   get_definition_columns(): Observable<ConlumnsDefinition[]>;
-  save_item(item: any): Observable<boolean>;
-  update_item(item: any): Observable<boolean>;
+  save_item(item: any): Observable<any>;
+  update_item(item: any): Observable<any>;
   delete_item(item: any): Observable<boolean>;
 }
