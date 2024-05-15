@@ -1,14 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { PersonRequest, PersonResponse } from './interfaces';
+import { PersonResponse } from './interfaces';
 import { catchError, from, map, Observable, of, switchMap, combineLatest } from 'rxjs';
 import {ConlumnsDefinition, ICrudService} from '../interfaces/interfaces'
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PersonService implements ICrudService{
-  baseUrl: string = "http://localhost:8000/"
+  baseUrl: string = environment.apiUrlBase
   enpoint: string = 'persons'
   url: string = this.baseUrl + this.enpoint
 
