@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { PersonRequest, PersonResponse } from './interfaces';
-import { catchError, from, map, Observable, of } from 'rxjs';
+import { catchError, from, map, Observable, of, switchMap, combineLatest } from 'rxjs';
 import {ConlumnsDefinition, ICrudService} from '../interfaces/interfaces'
 
 @Injectable({
@@ -98,6 +98,21 @@ export class PersonService implements ICrudService{
       catchError((err, caught) => {
         console.log('API Error: ' + JSON.stringify(err));
         throw new Error(err)
+      })
+    )
+  }
+
+  delete_items(items:any[]) {
+    let observer = of(items)
+
+    return observer.pipe(
+      switchMap((persons) => {
+        const obs$: Observable<boolean>[] = []
+        persons.map((person => {
+          obs$.push(this.delete_item(person))
+        }))
+
+        return combineLatest(obs$)
       })
     )
   }

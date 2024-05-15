@@ -20,4 +20,5 @@ export interface ICrudService {
   save_item(item: any): Observable<any>;
   update_item(item: any): Observable<any>;
   delete_item(item: any): Observable<boolean>;
+  delete_items(items: any[]): Observable<boolean[]>;
 }

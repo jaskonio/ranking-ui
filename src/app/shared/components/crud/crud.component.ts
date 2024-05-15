@@ -22,16 +22,14 @@ import { DialogModule } from 'primeng/dialog';
 import { ChipModule } from 'primeng/chip';
 import { CommonModule } from '@angular/common';
 import { NgFormComponent } from '../form/ng-form.component';
-import { BehaviorSubject, catchError, flatMap, forkJoin, map, mergeMap, Observable, of, switchMap } from 'rxjs';
+import { catchError, Observable } from 'rxjs';
 import { NotificationService } from '../../services/notification.service';
-import { NotificationEvent } from '../../services/interfaces';
-import { combineLatest, timer } from "rxjs";
 
 
 @Component({
   selector: 'app-crud',
   templateUrl: './crud.component.html',
-  providers: [MessageService],
+  providers: [NotificationService],
   standalone: true,
   imports: [
     BadgeModule,
@@ -89,6 +87,8 @@ export class CrudComponent implements OnInit {
 
   rowsPerPageOptions = [5, 10, 20];
 
+  tableErrorMessage: string = ""
+  tableEmptyMessage: string = "No hay registros"
   public definitionColumnsObservable$!: Observable<ConlumnsDefinition[]>;
 
   public rowDataObservable$!: Observable<any[]>;
@@ -102,9 +102,8 @@ export class CrudComponent implements OnInit {
     this.rowDataObservable$ = this.service.get_data()
       .pipe(
         catchError((error:any, caught: Observable<any[]>) => {
-          console.log(error)
-          console.log(caught)
-          this.notificationService.notification = { severity: 'error', summary: 'Error Peticion', detail: 'No ha precesado la petición', life: 3000 }
+          this.tableErrorMessage = "Error al recuperar los datos"
+          this.notificationService.notification = { severity: 'error', summary: 'Error Peticion', detail: 'No se ha precesado la petición', life: 3000 }
           throw new Error(error)
         }
       ));
@@ -138,46 +137,12 @@ export class CrudComponent implements OnInit {
 
     confirmDeleteSelected() {
         this.deleteProductsDialog = false;
-        let observer = of(this.selectedRow)
-
-        observer.pipe(
-          switchMap((items) => {
-            const obs$: Observable<boolean>[] = []
-            items.map((item => {
-              obs$.push(this.service.delete_item(item))
-            }))
-
-            return combineLatest(obs$)
-          })
-        ).subscribe(
-          {
-            next: (value) => {
-              value .forEach( x => {
-                if (x) {
-                  this.notificationService.notification =  { severity: 'success', summary: 'Successful', detail: 'Registro Eliminado', life: 3000 }
-                }
-              })
-
-            },
-            error: err => this.notificationService.notification =  { severity: 'error', summary: 'eroor', detail: 'error al processar', life: 3000 },
-            complete: () => {
-              this.selectedRow = [];
-              this.loadData();
-            }
-        })
+        this.deleteItems(this.selectedRow);
     }
 
     confirmDelete() {
         this.deleteProductDialog = false;
-        this.service?.delete_item(this.item_to_edit_or_update_or_delete).subscribe(is_ok => {
-          if (is_ok){
-            this.notificationService.notification = { severity: 'success', summary: 'Successful', detail: 'Registro Eliminado', life: 3000 }
-          }
-
-          this.loadData();
-        })
-
-        this.item_to_edit_or_update_or_delete = {};
+        this.deleteItem(this.item_to_edit_or_update_or_delete)
     }
 
     hideDialog() {
@@ -194,6 +159,7 @@ export class CrudComponent implements OnInit {
       this.rowDataObservable$.subscribe((data) => {
         console.log("get_data")
         this.setNewDataIntoTable(data)
+        this.tableErrorMessage = ""
       })
     }
 
@@ -202,6 +168,13 @@ export class CrudComponent implements OnInit {
       this.data_source = data;
     }
 
+    tableMessage() {
+      if (this.data_source.length == 0 && this.tableErrorMessage != "") {
+        return this.tableErrorMessage
+      }
+
+      return this.tableEmptyMessage
+    }
     loadConlumnsDefinition() {
       console.log("loadConlumnsDefinition");
 
@@ -258,17 +231,83 @@ export class CrudComponent implements OnInit {
 
       if (this.dialog_action == 'edit') {
         event['id'] = this.item_to_edit_or_update_or_delete['id']
-        this.service?.update_item(event).subscribe(item => {
-          console.log(item);
-          this.loadData();
-        })
+        this.updateItem(event)
       }
 
       else if (this.dialog_action == 'add') {
-        this.service?.save_item(event).subscribe( item => {
-          console.log(item);
-          this.loadData();
-        })
+        this.saveItem(event)
       }
+    }
+
+    saveItem(item: any) {
+      this.service.save_item(item).subscribe(
+        {
+          next: (item) => {
+            if (item){
+              this.notificationService.notification = { severity: 'success', summary: 'Successful', detail: 'Registro Añadido', life: 3000 }
+            }
+          },
+          error: err => {
+            console.error(err)
+            this.notificationService.notification =  { severity: 'error', summary: 'eroor', detail: 'error al processar', life: 3000 }
+          },
+          complete: () => {
+            this.loadData();
+          }
+        })
+    }
+
+    updateItem(item: any) {
+      this.service?.update_item(item).subscribe(
+        {
+          next: (item) => {
+            if (item){
+              this.notificationService.notification = { severity: 'success', summary: 'Successful', detail: 'Registro Actualizado', life: 3000 }
+            }
+          },
+          error: err => {
+            console.error(err)
+            this.notificationService.notification =  { severity: 'error', summary: 'error', detail: 'error al processar', life: 3000 }
+          },
+          complete: () => {
+            this.loadData();
+          }
+        })
+    }
+
+    deleteItem(item:any) {
+      this.service.delete_item(item).subscribe(
+        {
+        next: (is_ok) => {
+          if (is_ok){
+            this.notificationService.notification = { severity: 'success', summary: 'Successful', detail: 'Registro Eliminado', life: 3000 }
+          }
+        },
+        error: err => this.notificationService.notification =  { severity: 'error', summary: 'eroor', detail: 'error al processar', life: 3000 },
+        complete: () => {
+          this.selectedRow = [];
+          this.loadData();
+          this.item_to_edit_or_update_or_delete = {};
+        }
+      })
+    }
+
+    deleteItems(items: any[]) {
+      this.service.delete_items(items).subscribe(
+        {
+          next: (value) => {
+            value .forEach( x => {
+              if (x) {
+                this.notificationService.notification =  { severity: 'success', summary: 'Successful', detail: 'Registro Eliminado', life: 3000 }
+              }
+            })
+
+          },
+          error: err => this.notificationService.notification =  { severity: 'error', summary: 'eroor', detail: 'error al processar', life: 3000 },
+          complete: () => {
+            this.selectedRow = [];
+            this.loadData();
+          }
+      })
     }
 }

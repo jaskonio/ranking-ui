@@ -1,4 +1,3 @@
-import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { MessageService } from "primeng/api";
 import { BehaviorSubject, Observable } from "rxjs";
@@ -8,7 +7,7 @@ import { NotificationEvent } from "./interfaces";
   providedIn: 'root',
 
 })
-export class NotificationService {
+export class NotificationService{
 
   private message: BehaviorSubject<NotificationEvent|null> = new BehaviorSubject<NotificationEvent|null>(null)
 
