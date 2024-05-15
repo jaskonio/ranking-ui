@@ -4,6 +4,8 @@ import { RankingComponent } from './page/ranking/ranking.component';
 import { RankingListComponent } from './page/ranking-list/ranking-list.component';
 import { PersonsComponent } from './page/persons/persons.component';
 import { AppAdminLayoutComponent } from './layout/admin/app.admin.layout.component';
+import { NotFoundComponent } from './page/not-found/not-found.component';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -17,6 +19,11 @@ export const routes: Routes = [
     path: 'admin', component: AppAdminLayoutComponent,
     children: [
       { path: 'persons', component: PersonsComponent }
-    ]
+    ],
+    canActivate: [authGuard]
+  },
+  {
+    path: '**',
+    component: NotFoundComponent
   }
 ];
