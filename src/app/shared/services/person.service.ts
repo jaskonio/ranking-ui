@@ -10,7 +10,7 @@ import { environment } from '../../../environments/environment';
 })
 export class PersonService implements ICrudService{
   baseUrl: string = environment.apiUrlBase
-  enpoint: string = 'persons'
+  enpoint: string = 'persons/'
   url: string = this.baseUrl + this.enpoint
 
   constructor(private http: HttpClient) {
@@ -82,7 +82,7 @@ export class PersonService implements ICrudService{
   }
 
   update_item(newPerson:any) {
-    return this.http.put(this.url + '/' + newPerson.id, newPerson)
+    return this.http.put(this.url + newPerson.id, newPerson)
     .pipe(
       map((response: any) => {return response['data']}),
       catchError((err, caught) => {
@@ -93,7 +93,7 @@ export class PersonService implements ICrudService{
   }
 
   delete_item(person:any) {
-    return this.http.delete(this.url + '/' + person.id)
+    return this.http.delete(this.url + person.id)
     .pipe(
       map(x => x as boolean),
       catchError((err, caught) => {
