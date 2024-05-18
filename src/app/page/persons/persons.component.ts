@@ -5,6 +5,7 @@ import { Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { CustomFormField } from '../../shared/components/form/interfaces';
 import { CrudComponent } from '../../shared/components/crud/crud.component';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-persons',
@@ -15,6 +16,8 @@ import { CrudComponent } from '../../shared/components/crud/crud.component';
   styleUrl: './persons.component.scss'
 })
 export class PersonsComponent {
+  imageBaseUrl: string = environment.apiUrlBase + 'image'
+
   fields_configuration: CustomFormField[] = [
     {
       label: "Nombre",
@@ -48,7 +51,7 @@ export class PersonsComponent {
       validators: [Validators.required],
       input_image_options: {
         url: () => {
-          return 'http://localhost:8000/image?image_name=' + Math.floor(new Date().getTime() / 1000).toString()
+          return this.imageBaseUrl +'?image_name=' + Math.floor(new Date().getTime() / 1000).toString()
         },
         method: 'post',
         field_parameter: 'file_image'
