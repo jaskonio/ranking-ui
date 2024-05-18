@@ -5,7 +5,10 @@ import { RankingListComponent } from './page/ranking-list/ranking-list.component
 import { PersonsComponent } from './page/persons/persons.component';
 import { AppAdminLayoutComponent } from './layout/admin/app.admin.layout.component';
 import { NotFoundComponent } from './page/not-found/not-found.component';
-import { authGuard } from './guards/auth.guard';
+import { guestTokenGuard } from './guards/guest.token.guard';
+import { adminAuthGuard, loginAuthGuard } from './guards/auth.guard';
+import { LoginComponent } from './page/admin/login/login.component';
+
 
 export const routes: Routes = [
   {
@@ -13,15 +16,18 @@ export const routes: Routes = [
     children: [
       { path: '', component: RankingListComponent },
       { path: 'ranking/:idRanking', component: RankingComponent },
-    ]
+    ],
+    canActivate: [guestTokenGuard]
   },
   {
     path: 'admin', component: AppAdminLayoutComponent,
     children: [
-      { path: 'persons', component: PersonsComponent }
+      { path: 'persons', component: PersonsComponent },
+      { path: '**', component: NotFoundComponent }
     ],
-    canActivate: [authGuard]
+    canActivate: [adminAuthGuard]
   },
+  { path: 'login', component: LoginComponent, canActivate: [loginAuthGuard]},
   {
     path: '**',
     component: NotFoundComponent

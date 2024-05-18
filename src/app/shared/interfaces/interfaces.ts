@@ -22,3 +22,9 @@ export interface ICrudService {
   delete_item(item: any): Observable<boolean>;
   delete_items(items: any[]): Observable<boolean[]>;
 }
+
+export interface JWT_Token {
+  access_token: string;
+  expires_in: number;
+  token_type: string;
+}
