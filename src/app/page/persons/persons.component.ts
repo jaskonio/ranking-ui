@@ -48,10 +48,10 @@ export class PersonsComponent {
       label: "Foto",
       control_name: "photo_url",
       control_type:"image",
-      validators: [Validators.required],
+      validators: [],
       input_image_options: {
         url: () => {
-          return this.imageBaseUrl +'?image_name=' + Math.floor(new Date().getTime() / 1000).toString()
+          return this.imageBaseUrl +'/?image_name=' + Math.floor(new Date().getTime() / 1000).toString()
         },
         method: 'post',
         field_parameter: 'file_image'
