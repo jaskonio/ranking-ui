@@ -12,7 +12,7 @@ RUN npm run build --prod
 RUN rm package.json package-lock.json
 
 
-FROM nginx:1.26.0-alpine AS production-stage
+FROM nginx:1.26.0-alpine-slim AS production-stage
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
