@@ -13,74 +13,74 @@ export class AuthService {
   baseUrl: string = environment.apiUrlBase
 
   private apiUrl = this.baseUrl + 'token';
-  private token: string | null = null;
 
   constructor(
     private http: HttpClient,
     private cookieService: CookieService) { }
 
+  loginGuest(): Observable<string> {
+    return this.loginAndSabeToken(`${this.apiUrl}/guest`, null)
+  }
+
   login(username: string, password: string): Observable<string> {
-    return this.http.post<JWT_Token>(this.apiUrl + "/", { user_name: username, password: password })
+    let body = { user_name: username, password: password }
+    return this.loginAndSabeToken(this.apiUrl, body)
+  }
+
+  logout() {
+    this.cookieService.set('id_token', '');
+    this.cookieService.set("expires_at", '');
+    this.cookieService.set("roles", '');
+  }
+
+  isLoggedIn() {
+    if (!this.isAuthenticated()) {
+      return false
+    }
+
+    let nowDate = Date.now()
+    return nowDate < this.getExpiration() * 1000;
+  }
+
+  getToken() {
+    return this.cookieService.get('id_token')
+  }
+
+  private loginAndSabeToken(url: string, body: any): Observable<string> {
+    return this.http.post<JWT_Token>(url, body)
       .pipe(
+        map(response => {
+          if (response.success) {
+            return response
+          }
+
+          throw Error("Failed login")
+        }),
         tap(response => this.setSession(response)),
         map(response => response.access_token),
-        tap(access_token => this.token = access_token),
         shareReplay(1)
       );
-  }
-
-  getGuestToken(): Observable<string> {
-    return this.http.get<JWT_Token>(`${this.apiUrl}/guest`)
-      .pipe(
-        tap(response => this.setSession(response)),
-        map(response=> response.access_token),
-        tap(access_token => this.token = access_token),
-        shareReplay(1)
-      )
-  }
-
-  getToken(): string | null {
-    return this.token
-  }
-
-  isAuthenticated(): boolean {
-    return this.token !== null;
-  }
-
-  isLoggedOut() {
-    return !this.isLoggedIn();
   }
 
   private setSession(jwt: JWT_Token) {
     this.cookieService.set('id_token', jwt.access_token);
     this.cookieService.set("expires_at", jwt.expires_in.toString());
-  }
-
-  public isLoggedIn() {
-    let nowDate = Date.now()
-    return nowDate < this.getExpiration() * 1000;
+    this.cookieService.set("roles", jwt.roles.toString());
   }
 
   private getExpiration(): number {
     const expiration = this.cookieService.get("expires_at");
+
     return Number(expiration);
   }
 
-  public scheduleTokenRenewal() {
-    if (this.token != null && this.token != "") {
-      const now = Date.now();
-      const timeout = ((this.getExpiration() * 1000) - now) - 60000; // 1min
+  private isAuthenticated(): boolean {
+    let token = this.getToken()
 
-      if (timeout > 0 ) {
-        setTimeout(() => this.renewGuestToken(), timeout);
-      }
-      else {
-        this.renewGuestToken();
-      }
+    if (token != "" || token == null) {
+      return false
     }
-  }
 
-  private renewGuestToken(): void {
-    this.getGuestToken().subscribe( result => this.scheduleTokenRenewal());
+    return true
   }
 }

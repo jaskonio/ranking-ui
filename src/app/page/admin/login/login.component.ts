@@ -3,12 +3,14 @@ import { NgFormComponent } from '../../../shared/components/form/ng-form.compone
 import { Validators } from '@angular/forms';
 import { CustomFormField } from '../../../shared/components/form/interfaces';
 import { AuthService } from '../../../core/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
+import { NotificationService } from '../../../shared/services/notification.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [NgFormComponent],
+  imports: [NgFormComponent, RouterOutlet],
+  providers: [NotificationService],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
@@ -38,23 +40,29 @@ export class LoginComponent {
     submitButtonEnabled: false,
   }
 
-  constructor(private router:Router, private authService:AuthService) {
+  constructor(private router:Router, private authService:AuthService,
+    private notificationService: NotificationService
+  ) {
 
   }
 
   onSubmitForm(event: any) {
-    console.log("To login")
-    console.log(event)
+    console.log("onSubmitForm")
 
     if (event == null){
       return;
     }
 
     this.authService.login(event['user_name'], event['password']).subscribe(
-      result => {
-        console.log(result);
-        this.router.navigateByUrl('/admin/persons');
-      }
-    )
+      {
+        next: (value) => {
+          console.log(value);
+          this.router.navigateByUrl('/admin/persons').then(() => console.log('Redirecto admin/persons page'))
+        },
+        error: err => {
+          console.error(err);
+          this.notificationService.notification = { severity: 'error', summary: 'ERROR', detail: 'Usuario o contraseña invalido', life: 3000 }
+        }
+    })
   }
 }

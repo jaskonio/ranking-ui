@@ -8,19 +8,12 @@ export const guestTokenGuard: CanActivateFn = (route, state) => {
   const cookieService = inject(CookieService)
   const authService = inject(AuthService)
 
-  let token = cookieService.get('id_token') == "" ? authService.getToken() : cookieService.get('id_token')
-
-  if (token == "" || token == null) {
-    return authService.getGuestToken().pipe(
-      map(r => true)
-    )
+  if (authService.isLoggedIn()) {
+    return true
   }
 
-  if (authService.isLoggedOut()) {
-    return authService.getGuestToken().pipe(
+
+  return authService.loginGuest().pipe(
       map(r => true)
     )
-  }
-
-  return true
 };

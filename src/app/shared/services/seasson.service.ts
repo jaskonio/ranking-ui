@@ -9,7 +9,7 @@ import { environment } from '../../../environments/environment';
 })
 export class SeasonService {
   baseUrl: string = environment.apiUrlBase
-  enpoint: string = 'season/'
+  enpoint: string = 'season'
   url: string = this.baseUrl + this.enpoint
 
   constructor(private http: HttpClient) {

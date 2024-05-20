@@ -12,12 +12,21 @@ import { LoginComponent } from './page/admin/login/login.component';
 
 export const routes: Routes = [
   {
-    path: '', component: AppLayoutComponent,
+    path: '',
+    component: AppLayoutComponent,
     children: [
       { path: '', component: RankingListComponent },
+      {
+        path: 'login',
+        component: LoginComponent,
+        canActivate: [loginAuthGuard]
+      },
       { path: 'ranking/:idRanking', component: RankingComponent },
     ],
-    canActivate: [guestTokenGuard]
+    canActivate: [guestTokenGuard],
+    data: {
+      role: 'view'
+    }
   },
   {
     path: 'admin', component: AppAdminLayoutComponent,
@@ -25,9 +34,12 @@ export const routes: Routes = [
       { path: 'persons', component: PersonsComponent },
       { path: '**', component: NotFoundComponent }
     ],
-    canActivate: [adminAuthGuard]
+    canActivate: [adminAuthGuard],
+    data: {
+      role: 'admin'
+    }
   },
-  { path: 'login', component: LoginComponent, canActivate: [loginAuthGuard]},
+
   {
     path: '**',
     component: NotFoundComponent

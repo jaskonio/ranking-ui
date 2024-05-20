@@ -1,3 +1,3 @@
 export const environment = {
-  apiUrlBase: "http://localhost:8000/"
+  apiUrlBase: "https://jonatanla.com/ranking-app/api/"
 };

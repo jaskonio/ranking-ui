@@ -5,10 +5,10 @@ import { AuthService } from '../auth.service';
 
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const cookieService = inject(CookieService)
   const authService = inject(AuthService)
 
-  let token = cookieService.get('id_token') == "" ? authService.getToken() : cookieService.get('id_token')
+
+  let token = authService.getToken()
 
   if (token == "" || token == null) {
     return next(req);

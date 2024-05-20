@@ -14,15 +14,5 @@ export class AppComponent {
   title = 'ranking-ui';
 
   constructor(private viewAuthService: AuthService) {
-
-    if (this.viewAuthService.isLoggedOut()) {
-      this.viewAuthService.getGuestToken().subscribe(result => {
-        if(result) {
-          console.log("OK!")
-          this.viewAuthService.scheduleTokenRenewal()
-        }
-      })
-    }
-
   }
 }

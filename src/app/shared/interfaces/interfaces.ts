@@ -27,4 +27,6 @@ export interface JWT_Token {
   access_token: string;
   expires_in: number;
   token_type: string;
+  roles: string[];
+  success: boolean;
 }
