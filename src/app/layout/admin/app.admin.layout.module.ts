@@ -15,7 +15,7 @@ import { RouterModule } from '@angular/router';
 import { AppTopBarComponent } from '../topbar/app.topbar.component';
 import { AppFooterComponent } from '../footer/app.footer.component';
 // import { AppConfigModule } from '../config/config.module';
-import { AppSidebarComponent } from "../sidebar/app.sidebar.component";
+import { AppSidebarComponent } from "./sidebar/app.sidebar.component";
 import { CommonModule } from '@angular/common';
 import { AppAdminLayoutComponent } from './app.admin.layout.component';
 import { AppLayoutModule } from '../app.layout.module';
