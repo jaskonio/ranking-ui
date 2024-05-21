@@ -77,7 +77,7 @@ export class AuthService {
   private isAuthenticated(): boolean {
     let token = this.getToken()
 
-    if (token != "" || token == null) {
+    if (token == "" || token == null) {
       return false
     }
 

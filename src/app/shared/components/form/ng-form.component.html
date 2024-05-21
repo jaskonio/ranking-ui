@@ -12,6 +12,15 @@
               </small>
             </div>
           }
+          @else if (form_conf.control_type == "password") {
+            <div class="field">
+              <label htmlFor="{{form_conf['control_name']}}">{{form_conf['label']}}</label>
+              <input pInputText id="{{form_conf['control_name']}}" formControlName="{{form_conf['control_name']}}" type="password" placeholder="{{form_conf['placeholder']}}"/>
+              <small class="p-error block" *ngIf="customForm.get(form_conf['control_name'])?.invalid && customForm.get(form_conf['control_name'])?.dirty">
+              Por favor rellene el campo con un valor valido
+              </small>
+            </div>
+          }
           @else if (form_conf.control_type == "dropdown") {
             <p-dropdown
             formControlName="{{form_conf['control_name']}}"

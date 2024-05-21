@@ -3,14 +3,16 @@ import { NgFormComponent } from '../../../shared/components/form/ng-form.compone
 import { Validators } from '@angular/forms';
 import { CustomFormField } from '../../../shared/components/form/interfaces';
 import { AuthService } from '../../../core/auth.service';
-import { Router, RouterOutlet } from '@angular/router';
-import { NotificationService } from '../../../shared/services/notification.service';
+import { Router } from '@angular/router';
+import { MessageService } from 'primeng/api';
+import { MessagesModule } from 'primeng/messages';
+
 
 @Component({
   selector: 'app-login',
+  providers: [MessageService],
   standalone: true,
-  imports: [NgFormComponent, RouterOutlet],
-  providers: [NotificationService],
+  imports: [NgFormComponent, MessagesModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
@@ -28,7 +30,7 @@ export class LoginComponent {
       label: "Password",
       placeholder: "Password",
       control_name: "password",
-      control_type: "text",
+      control_type: "password",
       default_value: null,
       validators: [Validators.required, Validators.maxLength(20)]
     }
@@ -40,10 +42,10 @@ export class LoginComponent {
     submitButtonEnabled: false,
   }
 
-  constructor(private router:Router, private authService:AuthService,
-    private notificationService: NotificationService
+  constructor(private router:Router,
+    private authService:AuthService,
+    private notificationService: MessageService
   ) {
-
   }
 
   onSubmitForm(event: any) {
@@ -57,11 +59,11 @@ export class LoginComponent {
       {
         next: (value) => {
           console.log(value);
-          this.router.navigateByUrl('/admin/persons').then(() => console.log('Redirecto admin/persons page'))
+          this.router.navigate(['/', 'admin']).then(() => console.log('Redirecto admin/persons page'))
         },
         error: err => {
           console.error(err);
-          this.notificationService.notification = { severity: 'error', summary: 'ERROR', detail: 'Usuario o contraseña invalido', life: 3000 }
+          this.notificationService.add({ severity: 'error', summary: 'ERROR', detail: 'Usuario o contraseña invalido', life: 3000 })
         }
     })
   }
