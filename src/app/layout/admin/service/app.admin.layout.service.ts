@@ -1,11 +1,12 @@
 import { Injectable, effect, signal } from '@angular/core';
 import { Subject } from 'rxjs';
-import { AppConfig, LayoutState } from '../../shared/interfaces/interfaces';
+import { AppConfig, LayoutState } from '../../../shared/interfaces/interfaces';
+
 
 @Injectable({
     providedIn: 'root',
 })
-export class LayoutService {
+export class AdminLayoutService {
     _config: AppConfig = {
         ripple: false,
         inputStyle: 'outlined',

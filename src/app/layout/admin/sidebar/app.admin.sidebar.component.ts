@@ -1,12 +1,12 @@
 import { Component, ElementRef } from '@angular/core';
 import { LayoutService } from "../../service/app.layout.service";
-import { CommonModule } from '@angular/common';
+
 
 @Component({
-    selector: 'app-sidebar',
-    templateUrl: './app.sidebar.component.html',
+    selector: 'app-admin-sidebar',
+    templateUrl: './app.admin.sidebar.component.html',
 })
-export class AppSidebarComponent {
+export class AppAdminSidebarComponent {
     constructor(public layoutService: LayoutService, public el: ElementRef) { }
 }
 
