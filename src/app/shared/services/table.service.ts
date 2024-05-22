@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ConlumnsDefinition } from '../components/table/interfaces';
+import { ConlumnsDefinition } from '../interfaces/interfaces';
 
 @Injectable({
   providedIn: 'root'

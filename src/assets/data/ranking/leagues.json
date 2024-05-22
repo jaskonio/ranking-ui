@@ -1,0 +1,65 @@
+[
+  {
+    "id": 123,
+    "name": "Liga EliTeam",
+    "nameTemporada": "Temporada 23-24",
+    "order": 1,
+    "resultId": 321
+  },
+  {
+    "id": 123,
+    "name": "Liga pakeEliTeam",
+    "nameTemporada": "Temporada 23-24",
+    "order": 2,
+    "resultId": 321
+  },
+  {
+    "id": 123,
+    "name": "Liga outTeam",
+    "nameTemporada": "Temporada 23-24",
+    "order": 3,
+    "resultId": 321
+  },
+  {
+    "id": 123,
+    "name": "Liga EliTeam",
+    "nameTemporada": "Temporada 22-23",
+    "order": 1,
+    "resultId": 321
+  },
+  {
+    "id": 123,
+    "name": "Liga pakeEliTeam",
+    "nameTemporada": "Temporada 22-23",
+    "order": 2,
+    "resultId": 321
+  },
+  {
+    "id": 123,
+    "name": "Liga outTeam",
+    "nameTemporada": "Temporada 22-23",
+    "order": 3,
+    "resultId": 321
+  },
+  {
+    "id": 123,
+    "name": "Liga EliTeam",
+    "nameTemporada": "Temporada 21-22",
+    "order": 1,
+    "resultId": 321
+  },
+  {
+    "id": 123,
+    "name": "Liga pakeEliTeam",
+    "nameTemporada": "Temporada 21-22",
+    "order": 2,
+    "resultId": 321
+  },
+  {
+    "id": 123,
+    "name": "Liga outTeam",
+    "nameTemporada": "Temporada 21-22",
+    "order": 3,
+    "resultId": 321
+  }
+]
