@@ -11,6 +11,10 @@ export const adminAuthGuard: CanActivateFn = (route, state) => {
     router.navigateByUrl('/login');
   }
 
+  if (!authService.containRole(route.data['role'])) {
+    router.navigateByUrl('/login');
+  }
+
   return of(true)
 };
 
@@ -19,7 +23,9 @@ export const loginAuthGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
   const authService = inject(AuthService)
 
-  if (authService.isLoggedIn()) {
+  if (authService.containRole(route.data['role'])) {
+    router.navigateByUrl('/admin');
+  } else {
     router.navigateByUrl('/admin');
   }
 

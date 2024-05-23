@@ -46,6 +46,11 @@ export class AuthService {
     return this.cookieService.get('id_token')
   }
 
+  containRole(role: string) {
+    let rolesByUser = this.cookieService.get("roles")
+    return rolesByUser.includes(role)
+  }
+
   private loginAndSabeToken(url: string, body: any): Observable<string> {
     return this.http.post<JWT_Token>(url, body)
       .pipe(
