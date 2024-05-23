@@ -26,6 +26,7 @@ export const routes: Routes = [
   {
     path: 'admin', component: AppAdminLayoutComponent,
     children: [
+      { path: '', redirectTo: '/admin/persons', pathMatch: 'full' },
       { path: 'persons', component: PersonsComponent },
       { path: '**', component: NotFoundComponent }
     ],
