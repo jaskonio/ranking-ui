@@ -25,8 +25,6 @@ export const loginAuthGuard: CanActivateFn = (route, state) => {
 
   if (authService.containRole(route.data['role'])) {
     router.navigateByUrl('/admin');
-  } else {
-    router.navigateByUrl('/admin');
   }
 
   return of(true)
