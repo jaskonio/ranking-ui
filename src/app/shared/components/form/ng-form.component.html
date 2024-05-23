@@ -27,6 +27,12 @@
             [options]="form_conf['dropdown_options']"
             placeholder="{{form_conf['label']}}"/>
           }
+          @else if (form_conf.control_type == "checkbox") {
+            <div class="field-radiobutton mt-5 mb-5">
+              <label for="{{form_conf['control_name']}}">{{form_conf['label']}}</label>
+              <p-checkbox inputId="{{form_conf['control_name']}}" formControlName="{{form_conf['control_name']}}"  [binary]="true" ></p-checkbox>
+            </div>
+          }
           @else if (form_conf.control_type == "image") {
             <div class="flex justify-content-center" *ngIf="getImageUrl(form_conf['control_name']) != ''">
               <p-image
@@ -53,8 +59,7 @@
             </div>
           }
         }
-
-          <div p-buttonGroup class="flex gap-2 justify-content-center">
+          <div p-buttonGroup class="flex gap-2 justify-content-center mt-5">
             <button pButton pRipple icon="pi pi-times" label="cancelar" severity="danger" class="col-6" type="button" (click)="cancelButton()"></button>
             <button pButton pRipple icon="pi pi-check" label="enviar" severity="success" class="col-6" [disabled]="customForm.invalid"></button>
           </div>

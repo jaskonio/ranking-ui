@@ -13,6 +13,8 @@ import { ButtonModule } from 'primeng/button';
 import { CustomFormField } from './interfaces';
 import { ImageModule } from 'primeng/image';
 import { DropdownModule } from 'primeng/dropdown';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { CheckboxModule } from 'primeng/checkbox';
 
 
 @Component({
@@ -33,6 +35,8 @@ import { DropdownModule } from 'primeng/dropdown';
     ButtonModule,
     ImageModule,
     DropdownModule,
+    RadioButtonModule,
+    CheckboxModule
   ],
   templateUrl: './ng-form.component.html'
 })
@@ -75,8 +79,8 @@ export class NgFormComponent {
     this.form_configuration.forEach(field => {
 
       let defaultValue = ''
-      if (this.data != null ){
-        defaultValue = this.data[field.control_name]
+      if (this.data != null || this.data){
+        defaultValue = this.data[field.control_name] == undefined? null : this.data[field.control_name]
       }else{
         defaultValue = field['default_value']
       }

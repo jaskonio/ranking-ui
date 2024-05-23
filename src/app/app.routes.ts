@@ -8,6 +8,7 @@ import { NotFoundComponent } from './page/not-found/not-found.component';
 import { guestTokenGuard } from './guards/guest.token.guard';
 import { adminAuthGuard, loginAuthGuard } from './guards/auth.guard';
 import { LoginComponent } from './page/admin/login/login.component';
+import { RacesInfoComponent } from './page/races-info/races-info.component';
 
 
 export const routes: Routes = [
@@ -28,6 +29,7 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: '/admin/persons', pathMatch: 'full' },
       { path: 'persons', component: PersonsComponent },
+      { path: 'races-info', component: RacesInfoComponent},
       { path: '**', component: NotFoundComponent }
     ],
     canActivate: [adminAuthGuard],

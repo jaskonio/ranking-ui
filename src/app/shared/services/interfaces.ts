@@ -72,15 +72,18 @@ export interface PersonResponse {
   photo_url: string;
 }
 
-export interface PersonRequest {
-  first_name: string;
-  last_name: string;
-  gender?: string;
-  photo_url?: string;
-}
 export interface NotificationEvent {
   severity: string;
   summary: string;
   detail: string;
   life: number;
+}
+
+export interface RaceResponse {
+  id: string;
+  name: string;
+  url: string;
+  platform: string;
+  processed: boolean;
+  race_data_id: boolean
 }
