@@ -30,7 +30,7 @@
           @else if (form_conf.control_type == "checkbox") {
             <div class="field-radiobutton mt-5 mb-5">
               <label for="{{form_conf['control_name']}}">{{form_conf['label']}}</label>
-              <p-checkbox inputId="{{form_conf['control_name']}}" formControlName="{{form_conf['control_name']}}"  [binary]="true" ></p-checkbox>
+              <p-checkbox inputId="{{form_conf['control_name']}}" formControlName="{{form_conf['control_name']}}" [binary]="true"></p-checkbox>
             </div>
           }
           @else if (form_conf.control_type == "image") {

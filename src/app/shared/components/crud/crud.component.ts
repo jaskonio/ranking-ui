@@ -24,6 +24,8 @@ import { CommonModule } from '@angular/common';
 import { NgFormComponent } from '../form/ng-form.component';
 import { catchError, Observable } from 'rxjs';
 import { NotificationService } from '../../services/notification.service';
+import { ActionsCrud } from '../../services/interfaces';
+import { CheckboxModule } from 'primeng/checkbox';
 
 
 @Component({
@@ -51,7 +53,8 @@ import { NotificationService } from '../../services/notification.service';
     InputNumberModule,
     DialogModule,
     ChipModule,
-    NgFormComponent
+    NgFormComponent,
+    CheckboxModule,
   ]
 })
 export class CrudComponent implements OnInit {
@@ -67,6 +70,7 @@ export class CrudComponent implements OnInit {
 
   @Input() service!:ICrudService;
   @Input() formConfiguration?: any = undefined;
+  @Input() configuracionActionsCrud: ActionsCrud[]| null = null
 
   sortFieldValue:string | undefined;
   sortOrderValue: number = this.DEFAULT_VALUE_SORT_ORDER;
@@ -306,6 +310,19 @@ export class CrudComponent implements OnInit {
           error: err => this.notificationService.notification =  { severity: 'error', summary: 'eroor', detail: 'error al processar', life: 3000 },
           complete: () => {
             this.selectedRow = [];
+            this.loadData();
+          }
+      })
+    }
+
+    customCallback(callback: Observable<boolean>) {
+      callback.subscribe(
+        {
+          next: (value) => {
+            console.log(value)
+          },
+          error: err => this.notificationService.notification =  { severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 },
+          complete: () => {
             this.loadData();
           }
       })

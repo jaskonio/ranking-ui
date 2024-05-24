@@ -46,7 +46,14 @@ export class RaceService implements ICrudService{
       "order": 3,
       "sortable": true,
       "supportFilter": true
-    }
+    },
+    {
+      "key": "processed",
+      "value": "Processado",
+      "order": 4,
+      "sortable": true,
+      "type": "bool"
+    },
   ]
 
   get_data(): Observable<RaceResponse[]> {
@@ -111,5 +118,16 @@ export class RaceService implements ICrudService{
         return combineLatest(obs$)
       })
     )
+  }
+
+  process_race(item:any) {
+    return this.http.get(this.url + 'run_process/' + item.id)
+    .pipe(
+      map((response: any) => {return true}),
+      catchError((err, caught) => {
+        console.log('API Error: ' + JSON.stringify(err));
+        throw new Error(err)
+      })
+    );
   }
 }

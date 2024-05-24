@@ -1,3 +1,4 @@
+import { Observable } from "rxjs";
 
 export interface SeasonInfoView {
   id: number;
@@ -86,4 +87,10 @@ export interface RaceResponse {
   platform: string;
   processed: boolean;
   race_data_id: boolean
+}
+
+export interface ActionsCrud {
+  actions: string;
+  callback(item: any): Observable<boolean>;
+  icon: string;
 }
