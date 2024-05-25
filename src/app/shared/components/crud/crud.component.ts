@@ -24,7 +24,7 @@ import { CommonModule } from '@angular/common';
 import { NgFormComponent } from '../form/ng-form.component';
 import { catchError, Observable } from 'rxjs';
 import { NotificationService } from '../../services/notification.service';
-import { ActionsCrud } from '../../services/interfaces';
+import { ActionsCrud } from '../../interfaces/interfaces';
 import { CheckboxModule } from 'primeng/checkbox';
 
 

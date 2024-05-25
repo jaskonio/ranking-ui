@@ -4,7 +4,7 @@ import { Validators } from '@angular/forms';
 import { CrudComponent } from '../../shared/components/crud/crud.component';
 import { MessageService } from 'primeng/api';
 import { RaceService } from '../../shared/services/race.service';
-import { ActionsCrud } from '../../shared/services/interfaces';
+import { ActionsCrud } from '../../shared/interfaces/interfaces';
 
 @Component({
   selector: 'app-races-info',
@@ -64,7 +64,7 @@ export class RacesInfoComponent {
     this.crudActions = [{
       icon: "pi-spinner-dotted",
       actions: "process",
-      callback: (item) => {
+      callback: (item: any) => {
         console.log(item)
         item['processed'] = true
         return this.raceService.process_race(item)

@@ -73,6 +73,12 @@ export interface PersonResponse {
   photo_url: string;
 }
 
+export interface RunnerParticipant extends PersonResponse{
+  person_id: string;
+  dorsal: number;
+  disqualified_order_race: number;
+}
+
 export interface NotificationEvent {
   severity: string;
   summary: string;
@@ -89,8 +95,12 @@ export interface RaceResponse {
   race_data_id: boolean
 }
 
-export interface ActionsCrud {
-  actions: string;
-  callback(item: any): Observable<boolean>;
-  icon: string;
+export interface League {
+  id: number;
+  name: string;
+  order: number;
+  races: any;
+  runner_participants: RunnerParticipant[];
+  ranking_id: string;
+  history_ranking_ids: string[];
 }

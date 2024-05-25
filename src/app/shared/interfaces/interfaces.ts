@@ -14,6 +14,36 @@ export interface ConlumnsDefinition {
   supportFilter?: boolean;
 }
 
+export interface ActionsCrud {
+  actions: string;
+  callback(item: any): Observable<boolean>;
+  icon: string;
+}
+
+
+export enum TableActions {
+  EDIT, DELETE,
+}
+
+export interface TableActionType {
+  typeAction: TableActions;
+  icon: string;
+}
+
+export interface TableConfiguracion {
+  title: string;
+  message?: string;
+  responsiveLayout?: string;
+  rows?: number;
+  paginator?: boolean;
+  rowsPerPageOptions?: number[];
+  showCurrentPageReport?: boolean;
+  currentPageReportTemplate?: string;
+  selectionMode?: "multiple" | "single"| null;
+  rowHover?: boolean;
+  buttonActions?: TableActionType[];
+}
+
 export interface ICrudService {
   get_data(): Observable<any[]>;
   get_definition_columns(): Observable<ConlumnsDefinition[]>;

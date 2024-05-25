@@ -1,96 +1,118 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, Input } from '@angular/core';
-import { TableModule } from 'primeng/table';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Table, TableModule } from 'primeng/table';
 import { AvatarModule } from 'primeng/avatar';
 import { ChipModule } from 'primeng/chip';
-import { ConlumnsDefinition } from '../../interfaces/interfaces';
+import { ConlumnsDefinition, TableConfiguracion } from '../../interfaces/interfaces';
+import { ButtonModule } from 'primeng/button';
+import { RippleModule } from 'primeng/ripple';
+import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
   selector: 'app-ng-table',
   standalone: true,
-  imports: [CommonModule, TableModule, AvatarModule, ChipModule],
+  imports: [
+    CommonModule,
+    TableModule,
+    AvatarModule,
+    ChipModule,
+    ButtonModule,
+    RippleModule,
+    InputTextModule
+  ],
   templateUrl: './ng-table.component.html'
 })
 export class NgTableComponent {
-  DEFAULT_VALUE_SORT_ORDER: number = 1;
+  DEFAULT_VALUE_SORT_ORDER = 'asc'
 
-  defVisiblesConlumn: ConlumnsDefinition[] = [];
-  dataSource: any = []
-  sortFieldValue:string | undefined;
-  sortOrderValue: number = this.DEFAULT_VALUE_SORT_ORDER;
+  @Input() dataSource: any;
 
-  _data: any;
-  get data(): any{
-    return this._data
+  private _columns!: ConlumnsDefinition[];
+  @Input()
+  public get columns(): ConlumnsDefinition[] {
+    return this._columns
   }
-  @Input('data') set data(value:any){
-    this._data = value;
-    this.reloadConfig();
+  public set columns(item) {
+    this._columns = item;
+    this.processColumns(this._columns)
   }
 
-  _conlumnsDefinition:ConlumnsDefinition[] = [];
-  get conlumnsDefinition(): ConlumnsDefinition[]{
-    return this._conlumnsDefinition;
+  @Input() configuration!:TableConfiguracion;
+
+  @Output() clickRowEvent = new EventEmitter<any>();
+
+  private _selectedRow: any[] = [];
+  public get selectedRow() {
+    return this._selectedRow;
+  }
+  public set selectedRow(rows) {
+    this._selectedRow = rows;
   }
 
-  @Input('conlumnsDefinition') set conlumnsDefinition(value:ConlumnsDefinition[]){
-    this._conlumnsDefinition = value;
-    console.log(this._conlumnsDefinition)
-    this.loadConlumnsDefinition();
-  }
+  public enabledColumns: any[] = [];
+  public dataKey: string|undefined = undefined;
+  public sortFieldSelected: string | undefined = undefined;
+  public sortOrderSelected: number = 0;
+  public filterFieldSupport: string[] = []
 
-  constructor(private cdref: ChangeDetectorRef) {
-    console.log("constructor")
-  }
+  constructor() { }
 
   ngOnInit() {
-    console.log("ngOnInit")
-
-    this.loadData();
   }
 
-  ngAfterViewInit() {
-    console.log("ngAfterViewInit");
-  }
+  processColumns(newColumns: any[]) {
+    console.log("setNewColumnsDefinition")
 
-  reloadConfig() {
-    console.log("reloadConfig");
+    this.enabledColumns = []
 
-    this.loadData();
-  }
+    newColumns.sort((a,b) => a.order - b.order);
 
-  loadData() {
-    console.log("loadData");
-    this.dataSource = [];
-    this.dataSource = this.data;
-  }
+    newColumns.map(item => {
+      if (item.foreign_key == true) {
+        this.dataKey = item.key
+      }
 
-  loadConlumnsDefinition() {
-    console.log("loadConlumnsDefinition");
+      if (item.visible != false){
+        this.enabledColumns.push(item)
+      }
 
-    this.defVisiblesConlumn = []
+      if(item.activeSortable) {
+        this.sortFieldSelected = item.key;
 
-    this.conlumnsDefinition.sort((a,b) => a.order - b.order);
+        let sortableOrder = this.DEFAULT_VALUE_SORT_ORDER;
 
-    if (this.conlumnsDefinition!=null ){
-      this.conlumnsDefinition.map(item => {
-        if (item.visible != false){
-          this.defVisiblesConlumn.push(item)
+        if (item.sortableOrder != undefined) {
+          sortableOrder = item.sortableOrder;
         }
 
-        if(item.activeSortable) {
-          this.sortFieldValue = item.key;
+        this.sortOrderSelected = sortableOrder == 'asc' ? 1 : -1;
+      }
 
-          let sortableOrder = this.DEFAULT_VALUE_SORT_ORDER;
+      if (item.supportFilter) {
+        this.filterFieldSupport.push(item.key);
+      }
+    });
+  }
 
-          if (item.sortableOrder != undefined) {
-            sortableOrder = item.sortableOrder == 'asc' ? 1 : -1;
-          }
+  onGlobalFilter(table: Table, event: Event) {
+      table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+  }
 
-          this.sortOrderValue = sortableOrder
-        }
+  onRowClick(rowData: any) {
+    console.log("onRowClick");
 
-      });
+    this.clickRowEvent.emit(rowData);
+  }
+
+  getMessage() {
+    if (this.dataSource == undefined) {
+      return
     }
+
+    if (this.dataSource.length == 0 && this.configuration.message != "") {
+      return this.configuration.message
+    }
+
+    return "No data"
   }
 }

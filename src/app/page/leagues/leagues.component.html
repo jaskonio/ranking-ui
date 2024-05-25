@@ -1,5 +1,5 @@
 <div class="grid">
-	<div class="col-12 md:col-6">
+	<div class="col-12 md:col-12">
 
 		<div class="card">
       <form [formGroup]="addLeagueForm" (ngSubmit)="onSubmitAddNewLeague()" novalidate>
@@ -16,7 +16,6 @@
           </div>
       </form>
     </div>
-
 
     <div class="card">
       <h5>Editar Liga</h5>
@@ -41,6 +40,12 @@
           placeholder="Selecciona nuevos participantes" />
         </div>
 
+        <app-ng-table
+          [dataSource]="getRunnerParticipants()"
+          [columns]="getRunnerParticipantsColumns()"
+          [configuration]="getRunnerParticipantsConfiguration()"
+          (clickRowEvent)="onClickRunnerParticipant($event)"/>
+
         <div class="field col-12 md:col-4">
           <p-multiSelect
           [options]="allRaces"
@@ -49,7 +54,6 @@
           placeholder="Selecciona nuevas Carreras" />
         </div>
     </div>
-
 
   </div>
 </div>

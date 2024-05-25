@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { LeagueRawViewResponse } from './interfaces';
+import { League, LeagueRawViewResponse } from './interfaces';
 import { environment } from '../../../environments/environment';
-import { catchError, map } from 'rxjs';
+import { catchError, map, Observable } from 'rxjs';
 
 
 @Injectable({
@@ -32,7 +32,7 @@ export class LeagueService {
     );
   }
 
-  getAll() {
+  getAll(): Observable<League[]> {
     return this.http.get(this.url)
     .pipe(
       map((response: any) => {return response['data']}),

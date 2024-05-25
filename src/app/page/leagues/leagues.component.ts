@@ -8,8 +8,10 @@ import { NotificationService } from '../../shared/services/notification.service'
 import { DropdownModule } from 'primeng/dropdown';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { PersonService } from '../../shared/services/person.service';
-import { PersonResponse, RaceResponse } from '../../shared/services/interfaces';
+import { League, PersonResponse, RaceResponse } from '../../shared/services/interfaces';
 import { RaceService } from '../../shared/services/race.service';
+import { NgTableComponent } from '../../shared/components/table/ng-table.component';
+import { ConlumnsDefinition, TableConfiguracion } from '../../shared/interfaces/interfaces';
 
 @Component({
   selector: 'app-leagues',
@@ -22,19 +24,20 @@ import { RaceService } from '../../shared/services/race.service';
     ReactiveFormsModule,
     ButtonModule,
     DropdownModule,
-    MultiSelectModule
+    MultiSelectModule,
+    NgTableComponent
   ],
   templateUrl: './leagues.component.html',
   styleUrl: './leagues.component.scss'
 })
 export class LeaguesComponent {
-  allLeagues = []
+  allLeagues: League[] = []
   addLeagueForm = new FormGroup({});
 
   allPersons:PersonResponse[] = []
   allRaces:RaceResponse[]= []
 
-  _leagueSelected:any|undefined
+  _leagueSelected:League|undefined
 
   get leagueSelected() {
     return this._leagueSelected
@@ -147,5 +150,68 @@ export class LeaguesComponent {
         }
       }
     )
+  }
+
+  getRunnerParticipants() {
+    if(this.leagueSelected?.runner_participants == undefined) {
+      return []
+    }
+
+    return this.leagueSelected?.runner_participants
+  }
+
+  getRunnerParticipantsColumns() {
+    let columns: ConlumnsDefinition[] = [
+      {
+        "key": "id",
+        "value": "ID",
+        "order": 99,
+        "sortable": true,
+        "visible": false,
+        "foreign_key": true
+      },
+      {
+        "key": "photo_url",
+        "value": "Foto",
+        "order": 1
+      },
+      {
+        "key": "first_name",
+        "value": "Nombre",
+        "order": 2,
+        "sortable": true,
+        "supportImageKey": "photo_url",
+        "activeSortable": true,
+        "supportFilter": true
+      },
+      {
+        "key": "last_name",
+        "value": "Apellido",
+        "order": 3,
+        "sortable": true,
+        "supportFilter": true
+      },
+      {
+        "key": "gender",
+        "value": "Genero",
+        "order": 4,
+        "sortable": true
+      }
+    ]
+
+    return columns
+  }
+
+  getRunnerParticipantsConfiguration() {
+    let configuration:TableConfiguracion = {
+      title: "Participantes"
+    }
+
+    return configuration
+  }
+
+  onClickRunnerParticipant(event: any) {
+    console.log("onClickRunnerParticipant")
+    console.log(event)
   }
 }
