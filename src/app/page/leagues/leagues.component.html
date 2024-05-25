@@ -20,40 +20,59 @@
     <div class="card">
       <h5>Editar Liga</h5>
 
-        <div class="field col-12 md:col-4">
-            <span class="p-float-label">
-                <p-dropdown
-                    inputId="dropdown"
-                    [options]="allLeagues"
-                    [(ngModel)]="leagueSelected"
-                    optionLabel="name"
-                    placeholder="Selecciona una Liga"
-                ></p-dropdown>
-            </span>
-        </div>
-
-        <div class="field col-12 md:col-4">
-          <p-multiSelect
-          [options]="allPersons"
-          [(ngModel)]="personsSelected"
-          optionLabel="first_name"
-          placeholder="Selecciona nuevos participantes" />
-        </div>
-
-        <app-ng-table
-          [dataSource]="getRunnerParticipants()"
-          [columns]="getRunnerParticipantsColumns()"
-          [configuration]="getRunnerParticipantsConfiguration()"
-          (clickRowEvent)="onClickRunnerParticipant($event)"/>
-
-        <div class="field col-12 md:col-4">
-          <p-multiSelect
-          [options]="allRaces"
-          [(ngModel)]="racesSelected"
+      <div class="field col-12 md:col-12">
+        <p-dropdown
+          [options]="allLeagues"
+          [(ngModel)]="leagueSelected"
           optionLabel="name"
-          placeholder="Selecciona nuevas Carreras" />
-        </div>
-    </div>
+          placeholder="Selecciona una Liga"/>
+      </div>
 
+      <div class="card" *ngIf="leagueSelected">
+        <div class="field col-12 md:col-12">
+          <div class="mb-5">
+            <form [formGroup]="formGroupPersons">
+              <p-multiSelect
+                formControlName="participantsSelectedControl"
+                [options]="getRunnerParticipants()"
+                optionLabel="first_name"
+                placeholder="Selecciona nuevos participantes"/>
+            </form>
+          </div>
+
+          <div>
+            <app-ng-table
+            [dataSource]="getRunnerParticipantsSelected()"
+            [columns]="getRunnerParticipantsColumns()"
+            [configuration]="getRunnerParticipantsConfiguration()"
+            (clickRowEvent)="onClickRunnerParticipant($event)"/>
+          </div>
+        </div>
+
+        <div class="field col-12 md:col-12">
+          <p-multiSelect
+            [options]="allRaces"
+            [(ngModel)]="racesSelected"
+            optionLabel="name"
+            placeholder="Selecciona nuevas Carreras" />
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
+
+<ng-template #productRowTemplate let-product>
+  <tr>
+    <td [pEditableColumn]="product.first_name" pEditableColumnField="first_name">
+      <p-cellEditor>
+        <ng-template pTemplate="input">
+          <input pInputText type="text" [(ngModel)]="product.first_name" />
+        </ng-template>
+        <ng-template pTemplate="output">
+          {{ product.first_name }}
+        </ng-template>
+      </p-cellEditor>
+    </td>
+  </tr>
+</ng-template>

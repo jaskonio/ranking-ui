@@ -42,31 +42,30 @@ styleClass="p-datatable-striped"
   </ng-template>
   <ng-template pTemplate="body" let-rowData let-columns="columns">
       <tr>
-          <td>
-              <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
-          </td>
+        <td>
+            <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+        </td>
 
-          <td *ngFor="let col of enabledColumns">
-              @if (col.key == 'photo_url' ) {
-                <td style="width:14%; min-width:10rem;">
-                  <img src="{{rowData['photo_url']}}" alt="{{ rowData[col.key] }}" width="40" height="40" class="shadow-4" />
-                </td>
+        @for (col of enabledColumns; track $index) {
+          @if (col.key == 'photo_url' ) {
+            <td>
+              <img src="{{rowData['photo_url']}}" alt="{{ rowData[col.key] }}" width="40" height="40" class="shadow-4" />
+            </td>
+          }
+          @else {
+            <td>
+              {{ rowData[col.key] }}
+            </td>
+          }
+        }
+        <td>
+          <div class="flex">
+              @for (action of configuration.buttonActions; track $index) {
+                <button pButton pRipple icon="pi {{action.icon}}" class="p-button-rounded p-button-success mr-2" (click)="onRowClick(rowData)"></button>
               }
-              @else {
-                <td style="width:14%; min-width:10rem;">
-                  {{ rowData[col.key] }}
-                </td>
-              }
-          </td>
-
-          <td>
-            <div class="flex">
-                @for (action of configuration.buttonActions; track $index) {
-                  <button pButton pRipple icon="pi {{action.icon}}" class="p-button-rounded p-button-success mr-2" (click)="onRowClick(rowData)"></button>
-                }
-            </div>
-          </td>
-      </tr>
+          </div>
+        </td>
+    </tr>
   </ng-template>
 
   <ng-template pTemplate="emptymessage" let-columns>

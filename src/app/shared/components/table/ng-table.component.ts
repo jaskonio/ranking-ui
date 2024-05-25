@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, TemplateRef } from '@angular/core';
 import { Table, TableModule } from 'primeng/table';
 import { AvatarModule } from 'primeng/avatar';
 import { ChipModule } from 'primeng/chip';
@@ -7,6 +7,7 @@ import { ConlumnsDefinition, TableConfiguracion } from '../../interfaces/interfa
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { InputTextModule } from 'primeng/inputtext';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-ng-table',
@@ -18,7 +19,8 @@ import { InputTextModule } from 'primeng/inputtext';
     ChipModule,
     ButtonModule,
     RippleModule,
-    InputTextModule
+    InputTextModule,
+    FormsModule
   ],
   templateUrl: './ng-table.component.html'
 })

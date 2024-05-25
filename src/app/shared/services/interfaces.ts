@@ -74,9 +74,9 @@ export interface PersonResponse {
 }
 
 export interface RunnerParticipant extends PersonResponse{
-  person_id: string;
-  dorsal: number;
-  disqualified_order_race: number;
+  person_id?: string;
+  dorsal?: number;
+  disqualified_order_race?: number;
 }
 
 export interface NotificationEvent {
@@ -95,11 +95,17 @@ export interface RaceResponse {
   race_data_id: boolean
 }
 
+export interface RaceLeague {
+  name: string;
+  order: number;
+  race_info_id: string;
+}
+
 export interface League {
   id: number;
   name: string;
   order: number;
-  races: any;
+  races: RaceLeague[];
   runner_participants: RunnerParticipant[];
   ranking_id: string;
   history_ranking_ids: string[];
