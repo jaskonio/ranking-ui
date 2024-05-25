@@ -9,6 +9,7 @@ import { guestTokenGuard } from './guards/guest.token.guard';
 import { adminAuthGuard, loginAuthGuard } from './guards/auth.guard';
 import { LoginComponent } from './page/admin/login/login.component';
 import { RacesInfoComponent } from './page/races-info/races-info.component';
+import { LeaguesComponent } from './page/leagues/leagues.component';
 
 
 export const routes: Routes = [
@@ -30,6 +31,7 @@ export const routes: Routes = [
       { path: '', redirectTo: '/admin/persons', pathMatch: 'full' },
       { path: 'persons', component: PersonsComponent },
       { path: 'races-info', component: RacesInfoComponent},
+      { path: 'leagues', component: LeaguesComponent},
       { path: '**', component: NotFoundComponent }
     ],
     canActivate: [adminAuthGuard],

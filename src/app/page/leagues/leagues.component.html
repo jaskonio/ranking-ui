@@ -1,0 +1,55 @@
+<div class="grid">
+	<div class="col-12 md:col-6">
+
+		<div class="card">
+      <form [formGroup]="addLeagueForm" (ngSubmit)="onSubmitAddNewLeague()" novalidate>
+          <h5>Añadir nueva Liga</h5>
+          <div class="formgroup-inline">
+            <div class="field">
+              <input pInputText formControlName="name" type="text" placeholder="Nombre de la Liga"/>
+            </div>
+
+            <button pButton pRipple icon="pi pi-check" label="Añadir" severity="success" class="col-6" [disabled]="addLeagueForm.invalid"></button>
+            <small class="p-error block" *ngIf="addLeagueForm.get('name')?.invalid && addLeagueForm.get('name')?.dirty">
+              Por favor rellene el campo con un valor valido
+            </small>
+          </div>
+      </form>
+    </div>
+
+
+    <div class="card">
+      <h5>Editar Liga</h5>
+
+        <div class="field col-12 md:col-4">
+            <span class="p-float-label">
+                <p-dropdown
+                    inputId="dropdown"
+                    [options]="allLeagues"
+                    [(ngModel)]="leagueSelected"
+                    optionLabel="name"
+                    placeholder="Selecciona una Liga"
+                ></p-dropdown>
+            </span>
+        </div>
+
+        <div class="field col-12 md:col-4">
+          <p-multiSelect
+          [options]="allPersons"
+          [(ngModel)]="personsSelected"
+          optionLabel="first_name"
+          placeholder="Selecciona nuevos participantes" />
+        </div>
+
+        <div class="field col-12 md:col-4">
+          <p-multiSelect
+          [options]="allRaces"
+          [(ngModel)]="racesSelected"
+          optionLabel="name"
+          placeholder="Selecciona nuevas Carreras" />
+        </div>
+    </div>
+
+
+  </div>
+</div>
