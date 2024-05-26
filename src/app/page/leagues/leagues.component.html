@@ -5,14 +5,15 @@
       <form [formGroup]="addLeagueForm" (ngSubmit)="onSubmitAddNewLeague()" novalidate>
           <h5>Añadir nueva Liga</h5>
           <div class="formgroup-inline">
-            <div class="field">
-              <input pInputText formControlName="name" type="text" placeholder="Nombre de la Liga"/>
+            <div class="field col-3">
+              <input pInputText formControlName="name" type="text" placeholder="Nombre de la Liga" class="col-12"/>
+              <small class="p-error block" *ngIf="addLeagueForm.get('name')?.invalid && addLeagueForm.get('name')?.dirty">
+                Por favor rellene el campo con un valor valido
+              </small>
             </div>
-
-            <button pButton pRipple icon="pi pi-check" label="Añadir" severity="success" class="col-6" [disabled]="addLeagueForm.invalid"></button>
-            <small class="p-error block" *ngIf="addLeagueForm.get('name')?.invalid && addLeagueForm.get('name')?.dirty">
-              Por favor rellene el campo con un valor valido
-            </small>
+            <div class="field col-3">
+              <button pButton pRipple icon="pi pi-check" label="Añadir" severity="success" class="col-3" [disabled]="addLeagueForm.invalid"></button>
+            </div>
           </div>
       </form>
     </div>
