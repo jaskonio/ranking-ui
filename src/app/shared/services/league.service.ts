@@ -32,6 +32,17 @@ export class LeagueService {
     );
   }
 
+  update(league:any) {
+    return this.http.put(this.url + league['id'], league)
+    .pipe(
+      map((response: any) => {return response['data']}),
+      catchError((err, caught) => {
+        console.log('API Error: ' + JSON.stringify(err));
+        throw new Error(err)
+      })
+    );
+  }
+
   getAll(): Observable<League[]> {
     return this.http.get(this.url)
     .pipe(

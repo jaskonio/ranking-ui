@@ -43,55 +43,39 @@
           </div>
 
           <div>
-
-            <ng-template #rowTemplate let-rowData let-column="column">
-                <td [pEditableColumn]="rowData.first_name" pEditableColumnField="first_name">
-                  <p-cellEditor>
-                      <ng-template pTemplate="input">
-                          <input
-                              pInputText
-                              type="text"
-                              [(ngModel)]="rowData.first_name" />
-                      </ng-template>
-                      <ng-template pTemplate="output">
-                          {{ rowData.first_name }}
-                      </ng-template>
-                  </p-cellEditor>
-              </td>
-            </ng-template>
             <app-ng-table
               [dataSource]="runnerParticipantsSelected"
               [columns]="getRunnerParticipantsColumns()"
               [configuration]="getRunnerParticipantsConfiguration()"
-              (clickRowEvent)="onClickRunnerParticipant($event)"
               (onChange)="onChangeRunnerParticipantTable($event)"/>
           </div>
         </div>
 
         <div class="field col-12 md:col-12">
-          <p-multiSelect
-            [options]="allRaces"
-            [(ngModel)]="racesSelected"
-            optionLabel="name"
-            placeholder="Selecciona nuevas Carreras" />
+          <div class="mb-5">
+            <form [formGroup]="raceFormGroup">
+              <p-multiSelect
+                formControlName="raceLeagueSelectedControl"
+                [options]="getRaceLeagueOptions()"
+                optionLabel="name"
+                placeholder="Selecciona nuevas Carreras"
+                (onChange)="onChangeRaceLeagueCombo($event)"/>
+            </form>
+          </div>
+
+          <div>
+            <app-ng-table
+              [dataSource]="raceLeagueSelected"
+              [columns]="getRaceLeagueColumns()"
+              [configuration]="getRaceLeagueTableConfiguration()"
+              (onChange)="onChangeRaceLeagueTable($event)"/>
+          </div>
+        </div>
+        <div class="field col-3">
+          <button pButton pRipple icon="pi pi-check" label="Guardar" severity="success" class="col-6" (click)="saveLeague($event)"></button>
         </div>
       </div>
 
     </div>
   </div>
 </div>
-
-<ng-template #productRowTemplate let-product>
-  <tr>
-    <td [pEditableColumn]="product.first_name" pEditableColumnField="first_name">
-      <p-cellEditor>
-        <ng-template pTemplate="input">
-          <input pInputText type="text" [(ngModel)]="product.first_name" />
-        </ng-template>
-        <ng-template pTemplate="output">
-          {{ product.first_name }}
-        </ng-template>
-      </p-cellEditor>
-    </td>
-  </tr>
-</ng-template>

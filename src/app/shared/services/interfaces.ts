@@ -98,6 +98,7 @@ export interface RaceResponse {
 export interface RaceLeague {
   name: string;
   order: number;
+  runner_ids?: string[];
   race_info_id: string;
 }
 
