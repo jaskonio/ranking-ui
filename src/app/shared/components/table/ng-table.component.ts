@@ -8,6 +8,7 @@ import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 @Component({
   selector: 'app-ng-table',
@@ -20,14 +21,25 @@ import { FormsModule } from '@angular/forms';
     ButtonModule,
     RippleModule,
     InputTextModule,
-    FormsModule
+    FormsModule,
+    InputNumberModule
   ],
   templateUrl: './ng-table.component.html'
 })
 export class NgTableComponent {
   DEFAULT_VALUE_SORT_ORDER = 'asc'
 
-  @Input() dataSource: any;
+  private _dataSource:any;
+
+  @Input()
+  get dataSource() {
+    return this._dataSource;
+  }
+
+  set dataSource(data) {
+    this._dataSource = data;
+    this.onChange.emit(data);
+  }
 
   private _columns!: ConlumnsDefinition[];
   @Input()
@@ -42,6 +54,7 @@ export class NgTableComponent {
   @Input() configuration!:TableConfiguracion;
 
   @Output() clickRowEvent = new EventEmitter<any>();
+  @Output() onChange = new EventEmitter<any>();
 
   private _selectedRow: any[] = [];
   public get selectedRow() {
@@ -56,6 +69,7 @@ export class NgTableComponent {
   public sortFieldSelected: string | undefined = undefined;
   public sortOrderSelected: number = 0;
   public filterFieldSupport: string[] = []
+  public globalFilterDiabled: boolean = false
 
   constructor() { }
 
@@ -63,7 +77,7 @@ export class NgTableComponent {
   }
 
   processColumns(newColumns: any[]) {
-    console.log("setNewColumnsDefinition")
+    console.log("processColumns")
 
     this.enabledColumns = []
 
@@ -100,7 +114,7 @@ export class NgTableComponent {
       table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
   }
 
-  onRowClick(rowData: any) {
+  onClickButtonAction(rowData: any) {
     console.log("onRowClick");
 
     this.clickRowEvent.emit(rowData);
@@ -116,5 +130,42 @@ export class NgTableComponent {
     }
 
     return "No data"
+  }
+
+  clonedDataSource:any = {}
+
+  onRowEditInit(rowData: any, index:number) {
+    console.log("onRowEditInit")
+    let copyRowData = {...this.dataSource[index]}
+    this.clonedDataSource[rowData.id] = {...copyRowData};
+    console.log(this.dataSource)
+
+    this.globalFilterDiabled = true
+  }
+
+  onRowEditSave(rowData: any, index:number) {
+    console.log("onRowEditSave")
+    console.log(this.dataSource)
+    console.log(rowData)
+
+    delete this.clonedDataSource[rowData.id];
+    this.onChange.emit(this.dataSource)
+    this.globalFilterDiabled = false
+  }
+
+  onRowEditCancel(rowData: any, index: number) {
+    console.log("onRowEditCancel")
+    console.log(this.dataSource)
+    console.log(rowData)
+
+    this.dataSource[index] = {...this.clonedDataSource[rowData.id]}
+    rowData = {...this.clonedDataSource[rowData.id]}
+    console.log("end")
+
+    this.globalFilterDiabled = false
+  }
+
+  getValue( row: any, col:string, index:number) {
+    return this.dataSource[index][col]
   }
 }

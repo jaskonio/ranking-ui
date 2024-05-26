@@ -68,6 +68,7 @@ export class LeaguesComponent {
     }
 
     this.formGroupPersons.get('participantsSelectedControl')?.setValue(personSelected)
+    this.updateRunnerParticipantsSelected()
   }
 
   _racesSelected:any|undefined
@@ -80,6 +81,52 @@ export class LeaguesComponent {
     this._racesSelected = item
   }
 
+  private runnerParticipantsColumnsDefinition: ConlumnsDefinition[] = [
+    {
+      "key": "id",
+      "value": "ID",
+      "order": 99,
+      "visible": false,
+      "foreign_key": true
+    },
+    {
+      "key": "photo_url",
+      "value": "Foto",
+      "order": 1
+    },
+    {
+      "key": "first_name",
+      "value": "Nombre",
+      "order": 2,
+      "supportImageKey": "photo_url",
+      "supportFilter": true
+    },
+    {
+      "key": "last_name",
+      "value": "Apellido",
+      "order": 3,
+      "supportFilter": true
+    },
+    {
+      "key": "gender",
+      "value": "Genero",
+      "order": 4
+    },
+    {
+      "key": "dorsal",
+      "value": "Dorsal",
+      "order": 5,
+      "editable": true,
+      "type": "number"
+    },
+    {
+      "key": "disqualified_order_race",
+      "value": "Nº Carrera descalificado/a",
+      "order": 6,
+      "editable": true,
+      "type": "number"
+    }
+  ]
   constructor(
     private notificationService:NotificationService,
     private leagueService:LeagueService,
@@ -118,14 +165,14 @@ export class LeaguesComponent {
     this.leagueService.getAll().subscribe(
       {
         next: (value) => {
-          console.log("reloadAllLeagues")
+          console.log("next reloadAllLeagues")
           console.log(value)
           this.allLeagues = value
         },
         error: err => this.notificationService.notification =  { severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 },
         complete: () => {
           this.allLeagues
-          console.log('end getAll')
+          console.log('end reloadAllLeagues')
         }
       }
     )
@@ -159,14 +206,14 @@ export class LeaguesComponent {
     this.raceService.get_data().subscribe(
       {
         next: (value) => {
-          console.log("reloadAllRaces")
+          console.log("next reloadAllRaces")
           console.log(value)
           this.allRaces = value
         },
         error: err => this.notificationService.notification =  { severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 },
         complete: () => {
           this.allLeagues
-          console.log('end getAll')
+          console.log('end reloadAllRaces')
         }
       }
     )
@@ -176,72 +223,37 @@ export class LeaguesComponent {
     return this.allRunnerParticipant
   }
 
-  getRunnerParticipantsSelected() {
-    let control = this.formGroupPersons.get('participantsSelectedControl')
-    if (control == undefined) {
-      return []
-    }
-
-    return control.value
+  getRunnerParticipantsColumns() {
+    return this.runnerParticipantsColumnsDefinition
   }
 
-  getRunnerParticipantsColumns() {
-    let columns: ConlumnsDefinition[] = [
-      {
-        "key": "id",
-        "value": "ID",
-        "order": 99,
-        "sortable": true,
-        "visible": false,
-        "foreign_key": true
-      },
-      {
-        "key": "photo_url",
-        "value": "Foto",
-        "order": 1
-      },
-      {
-        "key": "first_name",
-        "value": "Nombre",
-        "order": 2,
-        "sortable": true,
-        "supportImageKey": "photo_url",
-        "activeSortable": true,
-        "supportFilter": true
-      },
-      {
-        "key": "last_name",
-        "value": "Apellido",
-        "order": 3,
-        "sortable": true,
-        "supportFilter": true
-      },
-      {
-        "key": "gender",
-        "value": "Genero",
-        "order": 4,
-        "sortable": true
-      },
-      {
-        "key": "dorsal",
-        "value": "Dorsal",
-        "order": 5,
-        "sortable": true
-      },
-      {
-        "key": "disqualified_order_race",
-        "value": "Nº Carrera descalificado/a",
-        "order": 6,
-        "sortable": true
-      }
-    ]
+  runnerParticipantsSelected: RunnerParticipant[] = []
 
-    return columns
+  onChangeRunnerParticipantCombo(event:any) {
+    this.updateRunnerParticipantsSelected()
+  }
+
+  updateRunnerParticipantsSelected() {
+    let control = this.formGroupPersons.get('participantsSelectedControl')
+    if (control == undefined) {
+      return;
+    }
+
+    this.runnerParticipantsSelected = control.value == null? [] : control.value
+  }
+
+  onChangeRunnerParticipantTable(event:any) {
+    console.log(event)
   }
 
   getRunnerParticipantsConfiguration() {
     let configuration:TableConfiguracion = {
-      title: "Participantes"
+      title: "Participantes",
+      paginator: true,
+      editableRow: true,
+      rowsPerPageOptions: [5, 10, 20, 100],
+      rows: 10,
+      showCurrentPageReport: true,
     }
 
     return configuration

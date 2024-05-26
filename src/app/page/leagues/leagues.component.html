@@ -36,16 +36,34 @@
                 formControlName="participantsSelectedControl"
                 [options]="getRunnerParticipants()"
                 optionLabel="first_name"
-                placeholder="Selecciona nuevos participantes"/>
+                placeholder="Selecciona nuevos participantes"
+                (onChange)="onChangeRunnerParticipantCombo($event)"/>
             </form>
           </div>
 
           <div>
+
+            <ng-template #rowTemplate let-rowData let-column="column">
+                <td [pEditableColumn]="rowData.first_name" pEditableColumnField="first_name">
+                  <p-cellEditor>
+                      <ng-template pTemplate="input">
+                          <input
+                              pInputText
+                              type="text"
+                              [(ngModel)]="rowData.first_name" />
+                      </ng-template>
+                      <ng-template pTemplate="output">
+                          {{ rowData.first_name }}
+                      </ng-template>
+                  </p-cellEditor>
+              </td>
+            </ng-template>
             <app-ng-table
-            [dataSource]="getRunnerParticipantsSelected()"
-            [columns]="getRunnerParticipantsColumns()"
-            [configuration]="getRunnerParticipantsConfiguration()"
-            (clickRowEvent)="onClickRunnerParticipant($event)"/>
+              [dataSource]="runnerParticipantsSelected"
+              [columns]="getRunnerParticipantsColumns()"
+              [configuration]="getRunnerParticipantsConfiguration()"
+              (clickRowEvent)="onClickRunnerParticipant($event)"
+              (onChange)="onChangeRunnerParticipantTable($event)"/>
           </div>
         </div>
 

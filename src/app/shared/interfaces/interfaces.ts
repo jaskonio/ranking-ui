@@ -12,6 +12,7 @@ export interface ConlumnsDefinition {
   type?: string; // 'string', 'number', 'image', 'action'
   supportImageKey?: string; // name of the key thats contain img value
   supportFilter?: boolean;
+  editable?: boolean; //default false
 }
 
 export interface ActionsCrud {
@@ -42,6 +43,8 @@ export interface TableConfiguracion {
   selectionMode?: "multiple" | "single"| null;
   rowHover?: boolean;
   buttonActions?: TableActionType[];
+  editableRow?: boolean; // default false
+  columnCheckboxEnable?: boolean; // default false
 }
 
 export interface ICrudService {
