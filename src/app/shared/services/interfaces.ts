@@ -103,7 +103,7 @@ export interface RaceLeague {
 }
 
 export interface League {
-  id: number;
+  id: string;
   name: string;
   order: number;
   races: RaceLeague[];

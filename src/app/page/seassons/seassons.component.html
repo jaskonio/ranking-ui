@@ -1,0 +1,65 @@
+<div class="grid">
+	<div class="col-12 md:col-12">
+
+    <div class="card">
+      <form [formGroup]="seassonForm" (ngSubmit)="onSeassonFormSubmit()" novalidate>
+          <h5>Añadir nueva temporada</h5>
+          <div class="formgroup-inline">
+            <div class="field col-3">
+              <input pInputText formControlName="name" type="text" placeholder="Nombre de la temporada" class="col-12"/>
+              <small class="p-error block" *ngIf="seassonForm.get('name')?.invalid && seassonForm.get('name')?.dirty">
+                Por favor rellene el campo con un valor valido
+              </small>
+            </div>
+            <div class="field col-3">
+              <button pButton pRipple icon="pi pi-check" label="Añadir" severity="success" class="col-3" [disabled]="seassonForm.invalid"></button>
+            </div>
+          </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h5>Editar Seasson</h5>
+
+      <div class="field col-12 md:col-12">
+        <p-dropdown
+          [options]="allSeassons"
+          [(ngModel)]="seassonSelected"
+          optionLabel="name"
+          placeholder="Selecciona una temporada"/>
+      </div>
+
+      <div class="card" *ngIf="seassonSelected">
+
+        <div class="field col-12 md:col-12">
+
+          <div class="mb-5">
+            <form [formGroup]="leaguesForm">
+              <p-multiSelect
+                formControlName="leagueControl"
+                [options]="getLeaguesOptions()"
+                optionLabel="name"
+                placeholder="Selecciona nuevas temporadas"
+                (onChange)="onLeagueControlOptions($event)"/>
+            </form>
+          </div>
+
+          <div>
+            <app-ng-table
+              [dataSource]="leaguesSelected"
+              [columns]="getLeagueTableColumnsDefinition()"
+              [configuration]="getLeagueConfiguration()"
+              (onChange)="onLeagueTableChanged($event)"/>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="field col-3">
+        <button pButton pRipple icon="pi pi-check" label="Guardar" severity="success" class="col-6" (click)="onSaveSeasson($event)"></button>
+      </div>
+
+    </div>
+  </div>
+</div>

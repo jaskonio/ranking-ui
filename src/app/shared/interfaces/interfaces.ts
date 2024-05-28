@@ -81,3 +81,4 @@ export interface LayoutState {
   staticMenuMobileActive: boolean;
   menuHoverActive: boolean;
 }
+
