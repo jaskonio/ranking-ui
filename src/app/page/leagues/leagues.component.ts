@@ -158,7 +158,7 @@ export class LeaguesComponent {
 
   ngOnInit() {
     this.addLeagueForm = new FormGroup({});
-    let name_control = new FormControl('', [Validators.required, Validators.maxLength(20)])
+    let name_control = new FormControl('', [Validators.required, Validators.maxLength(50)])
     this.addLeagueForm.setControl('name', name_control)
 
     this.reloadAllLeagues()
@@ -273,7 +273,7 @@ export class LeaguesComponent {
         })
       })
     }
-
+    this.formGroupPersons.get('participantsSelectedControl')?.setValue([])
     this.formGroupPersons.get('participantsSelectedControl')?.setValue(personSelected)
     this.updateRunnerParticipantsSelected()
   }
@@ -292,28 +292,35 @@ export class LeaguesComponent {
 
   updateRunnerParticipantsSelected() {
     let control = this.formGroupPersons.get('participantsSelectedControl')
-    if (control == undefined) {
+
+    if (control == undefined || control.value == null) {
       return;
     }
 
-    if (control.value == null) {
-      return;
-    }
+    let itemsSelected:RunnerParticipant[] = control.value
 
-    let values:RunnerParticipant[] = []
+    itemsSelected = itemsSelected.map(item => {
+      if (this.leagueSelected == undefined || this.leagueSelected.runner_participants == undefined || this.leagueSelected.runner_participants.length == 0) {
+        return item
+      }
 
-    control.value.map( p => {
-      this.leagueSelected?.runner_participants.map(lrp => {
-        if (p.id == lrp.person_id) {
-          p.dorsal == lrp.dorsal;
-          p.disqualified_order_race == lrp.disqualified_order_race;
+      let new_item = this.leagueSelected.runner_participants.filter(lrp => {
+        if (item.id == lrp.person_id) {
+          return true
         }
 
-        values.push(p)
+        return false
       })
+
+      if (new_item.length == 0) {
+        return item
+      }
+
+      return new_item[0]
     })
 
-    this.runnerParticipantsSelected = values;
+
+    this.runnerParticipantsSelected = itemsSelected;
   }
 
   getRunnerParticipantsConfiguration() {
