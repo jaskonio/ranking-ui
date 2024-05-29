@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { League, LeagueRawViewResponse } from './interfaces';
 import { environment } from '../../../environments/environment';
-import { catchError, map, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable } from 'rxjs';
 
 
 @Injectable({
@@ -13,7 +13,7 @@ export class LeagueService {
   enpoint: string = 'leagues/'
   url: string = this.baseUrl + this.enpoint
 
-  private allLeagues = new Subject<League[]>();
+  private allLeagues = new BehaviorSubject<League[]>([]);
   public allLeagues$ = this.allLeagues.asObservable();
 
   constructor(private http: HttpClient) {

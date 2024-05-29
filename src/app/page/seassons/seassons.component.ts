@@ -8,7 +8,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { LeagueService } from '../../shared/services/league.service';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { NgTableComponent } from '../../shared/components/table/ng-table.component';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-seassons',
@@ -30,15 +30,14 @@ export class SeassonsComponent {
   });
 
   public allSeassons: SeasonInfoView[] = [];
-  private subscriptionallSeassons: Subscription | undefined;
 
-  public seassonSelected:SeasonInfoView | undefined;
-  private subscriptionSeassonSelected: Subscription | undefined;
-
+  public seassonSelected:SeasonInfoView | null = null;
 
   public allLeagues: League[] = [];
-  private subscriptionallLeagues:  Subscription | undefined;
+
   public leaguesSelected: League[] = [];
+
+  private destroy$ = new Subject<void>();
 
   constructor(private seassonService:SeasonService,
     private messageService:MessageService,
@@ -46,16 +45,16 @@ export class SeassonsComponent {
   }
 
   ngOnInit() {   
-    this.subscriptionallSeassons = this.seassonService.allSeasson$.subscribe(items => {
+    this.seassonService.allSeasson$.pipe(takeUntil(this.destroy$)).subscribe(items => {
       this.allSeassons = items;
     })
 
-    this.subscriptionSeassonSelected = this.seassonService.seassonSelected$.subscribe(item => {
+    this.seassonService.seassonSelected$.pipe(takeUntil(this.destroy$)).subscribe(item => {
       this.seassonSelected = item;
       this.updateLeagueSelected();
     })
 
-    this.subscriptionallLeagues = this.leagueService.allLeagues$.subscribe(items => {
+    this.leagueService.allLeagues$.pipe(takeUntil(this.destroy$)).subscribe(items => {
       this.allLeagues = items;
     })
   }
@@ -86,15 +85,11 @@ export class SeassonsComponent {
   }
 
   updateLeagueSelected() {
-    this.leaguesSelected = []
-    
-    this.seassonSelected?.league_ids.map(league_id => {
-      this.allLeagues.map( league => {
-        if (league.id == league_id) {
-          this.leaguesSelected.push(league);
-        }
+    if (this.seassonSelected) {
+      this.leaguesSelected = this.allLeagues.filter(league => {
+        this.seassonSelected?.league_ids.includes(league.id)
       })
-    });
+    }
   }
 
   onSelectSeasson(event:any) {
@@ -102,6 +97,10 @@ export class SeassonsComponent {
   }
 
   onLeagueTableChanged(event:any) {
+  }
 
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

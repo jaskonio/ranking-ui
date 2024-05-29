@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { SeassonInfoResponse, SeasonInfoView } from './interfaces';
 import { environment } from '../../../environments/environment';
-import { Observable, Subject, catchError, map } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, map } from 'rxjs';
 import { LeagueService } from './league.service';
 
 
@@ -14,10 +14,10 @@ export class SeasonService {
   enpoint: string = 'season'
   url: string = this.baseUrl + this.enpoint
 
-  private allSeasson = new Subject<SeasonInfoView[]>();
+  private allSeasson = new BehaviorSubject<SeasonInfoView[]>([]);
   public allSeasson$ = this.allSeasson.asObservable();
 
-  private seassonSelected = new Subject<SeasonInfoView>();
+  private seassonSelected = new BehaviorSubject<SeasonInfoView|null>(null);
   public seassonSelected$ = this.seassonSelected.asObservable()
 
   constructor(private http: HttpClient,
