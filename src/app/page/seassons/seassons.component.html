@@ -2,7 +2,7 @@
 	<div class="col-12 md:col-12">
 
     <div class="card">
-      <form [formGroup]="seassonForm" (ngSubmit)="onSeassonFormSubmit()" novalidate>
+      <form [formGroup]="seassonForm" (ngSubmit)="onSeasonFormSubmit()" novalidate>
           <h5>Añadir nueva temporada</h5>
           <div class="formgroup-inline">
             <div class="field col-3">
@@ -26,10 +26,10 @@
           [options]="allSeassons"
           optionLabel="name"
           placeholder="Selecciona una temporada"
-          (onChange)="onSelectSeasson($event)"/>
+          (onChange)="onSelectSeason($event)"/>
       </div>
 
-      <div class="card" *ngIf="seassonSelected">
+      <div class="card" *ngIf="seassonService.seassonSelected$ | async as seasonSelected">
 
         <div class="field col-12 md:col-12">
 
@@ -53,7 +53,7 @@
       </div>
 
       <div class="field col-3">
-        <button pButton pRipple icon="pi pi-check" label="Guardar" severity="success" class="col-6" (click)="onSaveSeasson($event)"></button>
+        <button pButton pRipple icon="pi pi-check" label="Guardar" severity="success" class="col-6" (click)="onSaveSeason($event)"></button>
       </div>
 
     </div>

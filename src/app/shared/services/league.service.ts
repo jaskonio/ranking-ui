@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { League, LeagueRawViewResponse } from './interfaces';
+import { League } from './interfaces';
 import { environment } from '../../../environments/environment';
-import { BehaviorSubject, catchError, map, Observable } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, throwError, zip } from 'rxjs';
 
 
 @Injectable({
@@ -13,25 +13,31 @@ export class LeagueService {
   enpoint: string = 'leagues/'
   url: string = this.baseUrl + this.enpoint
 
-  private allLeagues = new BehaviorSubject<League[]>([]);
+  private allLeagues = new BehaviorSubject<League[]|null>(null);
   public allLeagues$ = this.allLeagues.asObservable();
 
   constructor(private http: HttpClient) {
     this.reloadData();
   }
 
-  getByRawById(league_id: string) {
-    return this.http.get<LeagueRawViewResponse>(this.url + league_id)
+  getByRawById(league_id: string): League | null{
+    let leagues = this.allLeagues.getValue()
+
+    for (let index = 0; index < leagues.length; index++) {
+      const element = leagues[index];
+      if (element.id == league_id) {
+        return element
+      }
+    }
+
+    return null
   }
 
   save_item(league:any) {
     return this.http.post(this.url, league)
     .pipe(
       map((response: any) => {return response['data']}),
-      catchError((err, caught) => {
-        console.log('API Error: ' + JSON.stringify(err));
-        throw new Error(err)
-      })
+      catchError(this.handleError)
     );
   }
 
@@ -39,10 +45,7 @@ export class LeagueService {
     return this.http.put(this.url + league['id'], league)
     .pipe(
       map((response: any) => {return response['data']}),
-      catchError((err, caught) => {
-        console.log('API Error: ' + JSON.stringify(err));
-        throw new Error(err)
-      })
+      catchError(this.handleError)
     );
   }
 
@@ -50,10 +53,7 @@ export class LeagueService {
     return this.http.get(this.url)
     .pipe(
       map((response: any) => {return response['data']}),
-      catchError((err, caught) => {
-        console.log('API Error: ' + JSON.stringify(err));
-        throw new Error(err)
-      })
+      catchError(this.handleError)
     );
   }
 
@@ -61,5 +61,10 @@ export class LeagueService {
     this.getAll().subscribe(data => {
       this.allLeagues.next(data);
     })
+  }
+
+  private handleError(error: any) {
+    console.error('API Error: ', error);
+    return throwError(() => new Error(error));
   }
 }

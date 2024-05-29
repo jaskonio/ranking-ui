@@ -39,44 +39,35 @@ export class SeassonsComponent {
 
   private destroy$ = new Subject<void>();
 
-  constructor(private seassonService:SeasonService,
+  constructor(public seassonService:SeasonService,
     private messageService:MessageService,
-    private leagueService:LeagueService) {
+    public leagueService:LeagueService) {
   }
 
-  ngOnInit() {   
-    this.seassonService.allSeasson$.pipe(takeUntil(this.destroy$)).subscribe(items => {
-      this.allSeassons = items;
-    })
+  ngOnInit() {
+    this.seassonService.allSeasson$.pipe(takeUntil(this.destroy$)).subscribe(seasons => {
+      this.allSeassons = seasons ?? [];
+    });
 
-    this.seassonService.seassonSelected$.pipe(takeUntil(this.destroy$)).subscribe(item => {
-      this.seassonSelected = item;
-      this.updateLeagueSelected();
-    })
-
-    this.leagueService.allLeagues$.pipe(takeUntil(this.destroy$)).subscribe(items => {
-      this.allLeagues = items;
-    })
+    this.leagueService.allLeagues$.pipe(takeUntil(this.destroy$)).subscribe(leagues => {
+      this.allLeagues = leagues ?? [];
+    });
   }
 
-  onSeassonFormSubmit() {
-    console.log("onSubmitAddNewLeague")
-    console.log(this.seassonForm.value)
-
+  onSeasonFormSubmit() {
     this.seassonService.save(this.seassonForm.value).subscribe(
       {
         next: (value) => {
-          console.log(value)
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Temporada guardada correctamente', life: 3000 });
         },
-        error: err => this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 }),
-        complete: () => {
-          console.log('end ad league')
+        error: (err) => {
+          this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 })
         }
       }
     )
   }
 
-  onSaveSeasson(event:any) {
+  onSaveSeason(event:any) {
     console.log("onSaveSeasson")
   }
 
@@ -92,7 +83,7 @@ export class SeassonsComponent {
     }
   }
 
-  onSelectSeasson(event:any) {
+  onSelectSeason(event:any) {
     this.seassonService.selectedSeasson(event)
   }
 
