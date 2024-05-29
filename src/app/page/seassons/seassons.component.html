@@ -45,8 +45,6 @@
           <div>
             <app-ng-table
               [dataSource]="leaguesSelected"
-              [columns]="getLeagueTableColumnsDefinition()"
-              [configuration]="getLeagueConfiguration()"
               (onChange)="onLeagueTableChanged($event)"/>
           </div>
 

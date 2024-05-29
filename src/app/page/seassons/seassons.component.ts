@@ -52,16 +52,7 @@ export class SeassonsComponent {
 
     this.subscriptionSeassonSelected = this.seassonService.seassonSelected$.subscribe(item => {
       this.seassonSelected = item;
-
-      this.leaguesSelected = []
-      this.seassonSelected.league_ids.map(league_id => {
-        this.allLeagues.map( league => {
-          if (league.id == league_id) {
-            this.leaguesSelected.push(league);
-          }
-        })
-      });
-
+      this.updateLeagueSelected();
     })
 
     this.subscriptionallLeagues = this.leagueService.allLeagues$.subscribe(items => {
@@ -94,38 +85,23 @@ export class SeassonsComponent {
     this.updateLeagueSelected()
   }
 
-  updateLeagueSelected(){
-    let control = this.leaguesForm.get('leagueControl');
-
-    if (control == undefined || control.value == null) {
-      return;
-    }
-
-    let itemsSelected:League[] = control.value
-
-    let newitemsSelected:League[] = []
-    itemsSelected.map(item => {
-      if (this.seassonSelected == undefined || this.seassonSelected.league_ids == undefined || this.seassonSelected.league_ids.length == 0) {
-        return
-      }
-
-      let leagueIdsSelected:League = item
-
-      this.seassonSelected.league_ids.map(league_id => {
-        if (league_id == item.id) {
-          leagueIdsSelected = item
+  updateLeagueSelected() {
+    this.leaguesSelected = []
+    
+    this.seassonSelected?.league_ids.map(league_id => {
+      this.allLeagues.map( league => {
+        if (league.id == league_id) {
+          this.leaguesSelected.push(league);
         }
-
-          return false
-        })
-
-        newitemsSelected.push(leagueIdsSelected)
+      })
     });
-
-    this.leaguesSelected = itemsSelected;
   }
 
   onSelectSeasson(event:any) {
     this.seassonService.selectedSeasson(event)
+  }
+
+  onLeagueTableChanged(event:any) {
+
   }
 }

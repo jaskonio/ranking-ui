@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { SeassonInfoResponse, SeasonInfoView } from './interfaces';
 import { environment } from '../../../environments/environment';
 import { Observable, Subject, catchError, map } from 'rxjs';
+import { LeagueService } from './league.service';
 
 
 @Injectable({
@@ -19,7 +20,10 @@ export class SeasonService {
   private seassonSelected = new Subject<SeasonInfoView>();
   public seassonSelected$ = this.seassonSelected.asObservable()
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+    private leagueService:LeagueService
+  ) {
+    this.reloadData();
   }
 
   getAllSeasonInfo() {

@@ -17,7 +17,7 @@ export class LeagueService {
   public allLeagues$ = this.allLeagues.asObservable();
 
   constructor(private http: HttpClient) {
-
+    this.reloadData();
   }
 
   getByRawById(league_id: string) {
