@@ -6,8 +6,8 @@
           <h5>Añadir nueva temporada</h5>
           <div class="formgroup-inline">
             <div class="field col-3">
-              <input pInputText formControlName="name" type="text" placeholder="Nombre de la temporada" class="col-12"/>
-              <small class="p-error block" *ngIf="seassonForm.get('name')?.invalid && seassonForm.get('name')?.dirty">
+              <input pInputText formControlName="nameControl" type="text" placeholder="Nombre de la temporada" class="col-12"/>
+              <small class="p-error block" *ngIf="seassonForm.get('nameControl')?.invalid && seassonForm.get('nameControl')?.dirty">
                 Por favor rellene el campo con un valor valido
               </small>
             </div>
@@ -24,9 +24,9 @@
       <div class="field col-12 md:col-12">
         <p-dropdown
           [options]="allSeassons"
-          [(ngModel)]="seassonSelected"
           optionLabel="name"
-          placeholder="Selecciona una temporada"/>
+          placeholder="Selecciona una temporada"
+          (onChange)="onSelectSeasson($event)"/>
       </div>
 
       <div class="card" *ngIf="seassonSelected">
@@ -34,14 +34,12 @@
         <div class="field col-12 md:col-12">
 
           <div class="mb-5">
-            <form [formGroup]="leaguesForm">
               <p-multiSelect
-                formControlName="leagueControl"
-                [options]="getLeaguesOptions()"
+                [(ngModel)]="leaguesSelected" 
+                [options]="allLeagues"
                 optionLabel="name"
                 placeholder="Selecciona nuevas temporadas"
-                (onChange)="onLeagueControlOptions($event)"/>
-            </form>
+                (onChange)="onSelectedLeagueChange($event)"/>
           </div>
 
           <div>

@@ -8,6 +8,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { LeagueService } from '../../shared/services/league.service';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { NgTableComponent } from '../../shared/components/table/ng-table.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-seassons',
@@ -24,40 +25,48 @@ import { NgTableComponent } from '../../shared/components/table/ng-table.compone
   styleUrl: './seassons.component.scss'
 })
 export class SeassonsComponent {
-  public seassonForm = new FormGroup({});
-
-  public allSeassons: SeasonInfoView[] | undefined;
-
-  private _seassonSelected:SeasonInfoView | undefined;
-  get seassonSelected() {
-    return this._seassonSelected;
-  }
-  set seassonSelected(item) {
-    this._seassonSelected = item
-  }
-
-  allLeagues: League[]
-
-  leaguesForm = new FormGroup({
-    leagueControl: new FormControl<League[]>([], [])
+  public seassonForm = new FormGroup({
+    nameControl: new FormControl<string>('name', [Validators.required, Validators.maxLength(50)])
   });
 
-  leaguesSelected:League[] = []
+  public allSeassons: SeasonInfoView[] = [];
+  private subscriptionallSeassons: Subscription | undefined;
+
+  public seassonSelected:SeasonInfoView | undefined;
+  private subscriptionSeassonSelected: Subscription | undefined;
+
+
+  public allLeagues: League[] = [];
+  private subscriptionallLeagues:  Subscription | undefined;
+  public leaguesSelected: League[] = [];
 
   constructor(private seassonService:SeasonService,
     private messageService:MessageService,
     private leagueService:LeagueService) {
-      this.allLeagues = []
   }
 
-  ngOnInit() {
-    this.addSeassonForm();
-    this.getAllLeagues();
-  }
+  ngOnInit() {   
+    this.subscriptionallSeassons = this.seassonService.allSeasson$.subscribe(items => {
+      this.allSeassons = items;
+    })
 
-  addSeassonForm() {
-    let name_control = new FormControl('', [Validators.required, Validators.maxLength(50)])
-    this.seassonForm.setControl('name', name_control)
+    this.subscriptionSeassonSelected = this.seassonService.seassonSelected$.subscribe(item => {
+      this.seassonSelected = item;
+
+      this.leaguesSelected = []
+      this.seassonSelected.league_ids.map(league_id => {
+        this.allLeagues.map( league => {
+          if (league.id == league_id) {
+            this.leaguesSelected.push(league);
+          }
+        })
+      });
+
+    })
+
+    this.subscriptionallLeagues = this.leagueService.allLeagues$.subscribe(items => {
+      this.allLeagues = items;
+    })
   }
 
   onSeassonFormSubmit() {
@@ -81,28 +90,7 @@ export class SeassonsComponent {
     console.log("onSaveSeasson")
   }
 
-  getAllLeagues() {
-    this.leagueService.getAll().subscribe(
-      {
-        next: (value) => {
-          console.log("next reloadAllLeagues")
-          console.log(value)
-          this.allLeagues = value
-        },
-        error: err => this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 }),
-        complete: () => {
-          this.allLeagues
-          console.log('end reloadAllLeagues')
-        }
-      }
-    )
-  }
-
-  getLeaguesOptions() {
-    return this.allLeagues;
-  }
-
-  onLeagueControlOptions(event:any) {
+  onSelectedLeagueChange(event:any) {
     this.updateLeagueSelected()
   }
 
@@ -135,5 +123,9 @@ export class SeassonsComponent {
     });
 
     this.leaguesSelected = itemsSelected;
+  }
+
+  onSelectSeasson(event:any) {
+    this.seassonService.selectedSeasson(event)
   }
 }

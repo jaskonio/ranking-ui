@@ -1,5 +1,3 @@
-import { Observable } from "rxjs";
-
 export interface SeasonInfoView {
   id: number;
   name: string;
