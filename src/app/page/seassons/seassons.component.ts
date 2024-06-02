@@ -11,6 +11,7 @@ import { NgTableComponent } from '../../shared/components/table/ng-table.compone
 import { Subject, takeUntil } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { ConlumnsDefinition, TableConfiguracion } from '../../shared/interfaces/interfaces';
 
 @Component({
   selector: 'app-seassons',
@@ -42,6 +43,34 @@ export class SeassonsComponent {
   public leaguesSelected: League[] = [];
 
   private destroy$ = new Subject<void>();
+
+  private leagueColumnDefinition: ConlumnsDefinition[] = [
+    {
+      "key": "name",
+      "value": "Nombre",
+      "order": 1,
+      "supportFilter": true,
+      "foreign_key": true
+    },
+    {
+      "key": "order",
+      "value": "Orden",
+      "order": 2,
+      "supportFilter": true,
+      "editable": true,
+      "type": "number"
+    }
+  ]
+
+  private leagueTableConfiguration:TableConfiguracion = {
+    title: "Participantes",
+    paginator: true,
+    editableRow: true,
+    rowsPerPageOptions: [5, 10, 20, 100],
+    rows: 10,
+    showCurrentPageReport: true,
+  }
+
 
   constructor(public seassonService:SeasonService,
     private messageService:MessageService,
@@ -97,10 +126,20 @@ export class SeassonsComponent {
   }
 
   onLeagueTableChanged(event:any) {
+    console.log("onLeagueTableChanged");
+    console.log(event);
   }
 
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  getLeagueColumnDefinition() {
+    return this.leagueColumnDefinition;
+  }
+
+  getLeagueTableConfiguration() {
+    return this.leagueTableConfiguration;
   }
 }
