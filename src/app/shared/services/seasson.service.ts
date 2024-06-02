@@ -11,7 +11,7 @@ import { LeagueService } from './league.service';
 })
 export class SeasonService {
   baseUrl: string = environment.apiUrlBase
-  enpoint: string = 'season'
+  enpoint: string = 'season/'
   url: string = this.baseUrl + this.enpoint
 
   private allSeasson = new BehaviorSubject<SeasonInfoView[]>([]);

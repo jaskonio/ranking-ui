@@ -10,6 +10,7 @@ import { adminAuthGuard, loginAuthGuard } from './guards/auth.guard';
 import { LoginComponent } from './page/admin/login/login.component';
 import { RacesInfoComponent } from './page/races-info/races-info.component';
 import { LeaguesComponent } from './page/leagues/leagues.component';
+import { SeassonsComponent } from './page/seassons/seassons.component';
 
 
 export const routes: Routes = [
@@ -31,6 +32,7 @@ export const routes: Routes = [
       { path: '', redirectTo: '/admin/persons', pathMatch: 'full' },
       { path: 'persons', component: PersonsComponent },
       { path: 'races-info', component: RacesInfoComponent},
+      { path: 'seassons', component: SeassonsComponent},
       { path: 'leagues', component: LeaguesComponent},
       { path: '**', component: NotFoundComponent }
     ],

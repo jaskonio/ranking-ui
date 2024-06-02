@@ -8,7 +8,9 @@ import { DropdownModule } from 'primeng/dropdown';
 import { LeagueService } from '../../shared/services/league.service';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { NgTableComponent } from '../../shared/components/table/ng-table.component';
-import { Subject, Subscription, takeUntil } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
   selector: 'app-seassons',
@@ -19,14 +21,16 @@ import { Subject, Subscription, takeUntil } from 'rxjs';
     ReactiveFormsModule,
     DropdownModule,
     MultiSelectModule,
-    NgTableComponent
+    NgTableComponent,
+    ButtonModule,
+    InputTextModule
   ],
   templateUrl: './seassons.component.html',
   styleUrl: './seassons.component.scss'
 })
 export class SeassonsComponent {
   public seassonForm = new FormGroup({
-    nameControl: new FormControl<string>('name', [Validators.required, Validators.maxLength(50)])
+    name: new FormControl<string>('', [Validators.required, Validators.maxLength(50)])
   });
 
   public allSeassons: SeasonInfoView[] = [];
@@ -46,6 +50,7 @@ export class SeassonsComponent {
 
   ngOnInit() {
     this.seassonService.allSeasson$.pipe(takeUntil(this.destroy$)).subscribe(seasons => {
+      console.log("allSeasson$")
       this.allSeassons = seasons ?? [];
     });
 
@@ -55,9 +60,13 @@ export class SeassonsComponent {
   }
 
   onSeasonFormSubmit() {
+    console.log("onSeasonFormSubmit")
+    console.log(this.seassonForm.value)
+
     this.seassonService.save(this.seassonForm.value).subscribe(
       {
         next: (value) => {
+          this.seassonService.reloadData();
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Temporada guardada correctamente', life: 3000 });
         },
         error: (err) => {

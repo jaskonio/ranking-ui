@@ -6,8 +6,8 @@
           <h5>Añadir nueva temporada</h5>
           <div class="formgroup-inline">
             <div class="field col-3">
-              <input pInputText formControlName="nameControl" type="text" placeholder="Nombre de la temporada" class="col-12"/>
-              <small class="p-error block" *ngIf="seassonForm.get('nameControl')?.invalid && seassonForm.get('nameControl')?.dirty">
+              <input pInputText formControlName="name" type="text" placeholder="Nombre de la temporada" class="col-12"/>
+              <small class="p-error block" *ngIf="seassonForm.get('name')?.invalid && seassonForm.get('name')?.dirty">
                 Por favor rellene el campo con un valor valido
               </small>
             </div>
@@ -35,7 +35,7 @@
 
           <div class="mb-5">
               <p-multiSelect
-                [(ngModel)]="leaguesSelected" 
+                [(ngModel)]="leaguesSelected"
                 [options]="allLeagues"
                 optionLabel="name"
                 placeholder="Selecciona nuevas temporadas"
