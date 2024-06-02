@@ -23,6 +23,10 @@ export class LeagueService {
   getByRawById(league_id: string): League | null{
     let leagues = this.allLeagues.getValue()
 
+    if (leagues == null) {
+      return null;
+    }
+
     for (let index = 0; index < leagues.length; index++) {
       const element = leagues[index];
       if (element.id == league_id) {

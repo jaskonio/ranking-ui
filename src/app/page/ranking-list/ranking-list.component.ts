@@ -17,7 +17,7 @@ export class RankingListComponent {
     private seasonService: SeasonService
   ){
     this.seasonService.getAllSeasonInfo().subscribe( data => {
-      this.seasons = data.data;
+      this.seasons = data;
     });
   }
 

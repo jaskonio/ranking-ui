@@ -32,10 +32,11 @@ export class RankingComponent {
   ){}
 
   loadData() {
-    this.leagueService.getByRawById(this.idRanking).subscribe( result => {
-      console.log("leagueService.getData")
-      this.data = result.data.history_ranking[0].data;
-    })
+    let league_result = this.leagueService.getByRawById(this.idRanking)
+
+    // if (league_result != null) {
+    //   this.data = league_result.;
+    // }
 
     this.tableService.getConfig().subscribe( data => {
       this.columns = data;
