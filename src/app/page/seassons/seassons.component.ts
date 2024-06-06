@@ -3,12 +3,12 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { SeasonService } from '../../shared/services/seasson.service';
 import { MessageService } from 'primeng/api';
 import { CommonModule } from '@angular/common';
-import { League, SeasonInfoView } from '../../shared/services/interfaces';
+import { League, SeasonInfoView, SeasonItem } from '../../shared/services/interfaces';
 import { DropdownModule } from 'primeng/dropdown';
 import { LeagueService } from '../../shared/services/league.service';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { NgTableComponent } from '../../shared/components/table/ng-table.component';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, combineLatest, combineLatestWith, takeUntil } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { ConlumnsDefinition, TableConfiguracion } from '../../shared/interfaces/interfaces';
@@ -34,9 +34,9 @@ export class SeassonsComponent {
     name: new FormControl<string>('', [Validators.required, Validators.maxLength(50)])
   });
 
-  public allSeassons: SeasonInfoView[] = [];
+  public allSeasonItems: SeasonItem[] = [];
 
-  public seassonSelected:SeasonInfoView | null = null;
+  public seassonItemSelected:SeasonItem | null = null;
 
   public allLeagues: League[] = [];
 
@@ -71,21 +71,78 @@ export class SeassonsComponent {
     showCurrentPageReport: true,
   }
 
-
   constructor(public seassonService:SeasonService,
     private messageService:MessageService,
     public leagueService:LeagueService) {
   }
 
   ngOnInit() {
-    this.seassonService.allSeasson$.pipe(takeUntil(this.destroy$)).subscribe(seasons => {
-      console.log("allSeasson$")
-      this.allSeassons = seasons ?? [];
-    });
+    combineLatest([
+      this.leagueService.allLeagues$,
+      this.seassonService.allSeasson$
+    ]).pipe(takeUntil(this.destroy$)).subscribe(([leagues, seasons]) => {
+      console.log("allSeasson$");
+      this.allLeagues = leagues ?? []
+      this.allSeasonItems = []
+      
+      if (seasons == null) {
+        return;
+      }
 
-    this.leagueService.allLeagues$.pipe(takeUntil(this.destroy$)).subscribe(leagues => {
-      this.allLeagues = leagues ?? [];
+      seasons.forEach(season => {
+        let item: SeasonItem = {
+          id: season.id,
+          name: season.name,
+          order: season.order,
+          leagues: []
+        }
+
+        this.allLeagues.forEach(league => {
+          if (season.league_ids.includes(league.id)) {
+            item.leagues.push(league)
+          }
+        })
+
+        this.allSeasonItems.push(item)
+      })
     });
+  }
+
+
+
+  onSelectedLeagueChange(event:any) {
+    this.updateLeagueSelected()
+  }
+
+  updateLeagueSelected() {
+
+  }
+
+  onSelectSeason(event:any) {
+    // this.seassonService.selectedSeasson(event)
+    this.seassonItemSelected = event
+    
+    if (this.seassonItemSelected != null) {
+      this.leaguesSelected = this.seassonItemSelected.leagues
+    }
+  }
+
+  onLeagueTableChanged(event:any) {
+    console.log("onLeagueTableChanged");
+    console.log(event);
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  getLeagueColumnDefinition() {
+    return this.leagueColumnDefinition;
+  }
+
+  getLeagueTableConfiguration() {
+    return this.leagueTableConfiguration;
   }
 
   onSeasonFormSubmit() {
@@ -107,39 +164,18 @@ export class SeassonsComponent {
 
   onSaveSeason(event:any) {
     console.log("onSaveSeasson")
-  }
-
-  onSelectedLeagueChange(event:any) {
-    this.updateLeagueSelected()
-  }
-
-  updateLeagueSelected() {
-    if (this.seassonSelected) {
-      this.leaguesSelected = this.allLeagues.filter(league => {
-        this.seassonSelected?.league_ids.includes(league.id)
-      })
-    }
-  }
-
-  onSelectSeason(event:any) {
-    this.seassonService.selectedSeasson(event)
-  }
-
-  onLeagueTableChanged(event:any) {
-    console.log("onLeagueTableChanged");
-    console.log(event);
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  getLeagueColumnDefinition() {
-    return this.leagueColumnDefinition;
-  }
-
-  getLeagueTableConfiguration() {
-    return this.leagueTableConfiguration;
+    console.log(this.seassonItemSelected)
+  
+    this.seassonService.update(this.seassonForm.value).subscribe(
+      {
+        next: (value) => {
+          this.seassonService.reloadData();
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Temporada actualziada correctamente', life: 3000 });
+        },
+        error: (err) => {
+          this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 })
+        }
+      }
+    )
   }
 }

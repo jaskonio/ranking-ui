@@ -109,3 +109,17 @@ export interface League {
   ranking_id: string;
   history_ranking_ids: string[];
 }
+
+export interface Season {
+  id: number;
+  name: string;
+  order: number
+  league_ids: string[];
+}
+
+export interface SeasonItem {
+  id: number;
+  name: string;
+  order: number
+  leagues: League[];
+}

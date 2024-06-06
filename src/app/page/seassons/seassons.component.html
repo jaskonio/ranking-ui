@@ -23,13 +23,13 @@
 
       <div class="field col-12 md:col-12">
         <p-dropdown
-          [options]="allSeassons"
+          [options]="allSeasonItems"
           optionLabel="name"
           placeholder="Selecciona una temporada"
           (onChange)="onSelectSeason($event)"/>
       </div>
 
-      <div class="card" *ngIf="seassonService.seassonSelected$ | async as seasonSelected">
+      <div class="card" *ngIf="seassonItemSelected">
 
         <div class="field col-12 md:col-12">
 
@@ -38,8 +38,7 @@
                 [(ngModel)]="leaguesSelected"
                 [options]="allLeagues"
                 optionLabel="name"
-                placeholder="Selecciona nuevas temporadas"
-                (onChange)="onSelectedLeagueChange($event)"/>
+                placeholder="Selecciona nuevas temporadas"/>
           </div>
 
           <div>

@@ -14,7 +14,7 @@ export class SeasonService {
   enpoint: string = 'season/'
   url: string = this.baseUrl + this.enpoint
 
-  private allSeasson = new BehaviorSubject<SeasonInfoView[]>([]);
+  private allSeasson = new BehaviorSubject<SeasonInfoView[]|null>(null);
   public allSeasson$ = this.allSeasson.asObservable();
 
   private seassonSelected = new BehaviorSubject<SeasonInfoView|null>(null);
@@ -39,6 +39,14 @@ export class SeasonService {
         map((response: any) => {return response['data']}),
         catchError(this.handleError),
       );
+  }
+
+  update(item:any) {
+    return this.http.put(this.url + item['id'], item)
+    .pipe(
+      map((response: any) => {return response['data']}),
+      catchError(this.handleError)
+    );
   }
 
   selectedSeasson(item:SeasonInfoView) {
