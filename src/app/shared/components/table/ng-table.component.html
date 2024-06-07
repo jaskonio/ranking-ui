@@ -35,7 +35,7 @@ editMode="row"
           </th>
         }
 
-        <th *ngFor="let col of enabledColumns" pSortableColumn="{{col.key}}" pSortableColumnDisabled="{{!col.sortable}}">
+        <th *ngFor="let col of enabledColumns" pSortableColumn="{{col.key}}" pSortableColumnDisabled="{{!col.sortable}}" class="col-3">
           {{col.value}}
           @if (col.sortable == true) {
             <p-sortIcon field="{{col.key}}"></p-sortIcon>
@@ -47,48 +47,9 @@ editMode="row"
       </tr>
   </ng-template>
 
-  <ng-template #defaultRowTemplate let-rowData let-col="column">
-    @if (col.editable) {
-      <td [pEditableColumn]="col.key" pEditableColumnField="{{col.key}}">
-        <p-cellEditor>
-            <ng-template pTemplate="input">
-              @if (col.type == "number") {
-                <input
-                    pInputText
-                    type="number"
-                    [(ngModel)]="rowData[col.key]" />
-              }
-              @else {
-                <input
-                pInputText
-                type="text"
-                [(ngModel)]="rowData[col.key]" />
-              }
-
-            </ng-template>
-            <ng-template pTemplate="output">
-                {{ rowData[col.key] }}
-            </ng-template>
-        </p-cellEditor>
-      </td>
-    }
-    @else {
-      @if (col.key == 'photo_url' ) {
-        <td>
-          <img src="{{rowData['photo_url']}}" alt="{{ rowData[col.key] }}" width="40" height="40" class="shadow-4" />
-        </td>
-      }
-      @else {
-        <td>
-          {{ rowData[col.key] }}
-        </td>
-      }
-    }
-  </ng-template>
-
   <ng-template pTemplate="body" let-rowData let-columns="columns" let-editing="editing" let-index="rowIndex">
 
-      <tr [pEditableRow]="dataSource[index]">
+      <tr [pEditableRow]="rowData">
 
         @if (configuration.columnCheckboxEnable) {
           <td>
@@ -102,7 +63,10 @@ editMode="row"
               <p-cellEditor>
                   <ng-template pTemplate="input">
                     @if (col.type == "number") {
-                      <input pInputText type="number" [(ngModel)]="dataSource[index][col.key]" />
+                      <input
+                        pInputText
+                        type="number"
+                        [(ngModel)]="dataSource[index][col.key]" />
                     }
                     @else {
                       <input
@@ -110,7 +74,6 @@ editMode="row"
                       type="text"
                       [(ngModel)]="dataSource[index][col.key]" />
                     }
-
                   </ng-template>
                   <ng-template pTemplate="output">
                       {{ getValue(dataSource[index], col.key, index) }}
