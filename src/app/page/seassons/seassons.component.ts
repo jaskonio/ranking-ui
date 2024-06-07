@@ -3,12 +3,12 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { SeasonService } from '../../shared/services/seasson.service';
 import { MessageService } from 'primeng/api';
 import { CommonModule } from '@angular/common';
-import { League, SeasonInfoView, SeasonItem } from '../../shared/services/interfaces';
+import { League, Season, SeasonItem } from '../../shared/services/interfaces';
 import { DropdownModule } from 'primeng/dropdown';
 import { LeagueService } from '../../shared/services/league.service';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { NgTableComponent } from '../../shared/components/table/ng-table.component';
-import { Subject, combineLatest, combineLatestWith, takeUntil } from 'rxjs';
+import { Subject, combineLatest, takeUntil } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { ConlumnsDefinition, TableConfiguracion } from '../../shared/interfaces/interfaces';
@@ -84,7 +84,7 @@ export class SeassonsComponent {
       console.log("allSeasson$");
       this.allLeagues = leagues ?? []
       this.allSeasonItems = []
-      
+
       if (seasons == null) {
         return;
       }
@@ -108,8 +108,6 @@ export class SeassonsComponent {
     });
   }
 
-
-
   onSelectedLeagueChange(event:any) {
     this.updateLeagueSelected()
   }
@@ -120,8 +118,8 @@ export class SeassonsComponent {
 
   onSelectSeason(event:any) {
     // this.seassonService.selectedSeasson(event)
-    this.seassonItemSelected = event
-    
+    this.seassonItemSelected = event.value
+
     if (this.seassonItemSelected != null) {
       this.leaguesSelected = this.seassonItemSelected.leagues
     }
@@ -165,8 +163,22 @@ export class SeassonsComponent {
   onSaveSeason(event:any) {
     console.log("onSaveSeasson")
     console.log(this.seassonItemSelected)
-  
-    this.seassonService.update(this.seassonForm.value).subscribe(
+    console.log(this.leaguesSelected)
+
+    if (!this.seassonItemSelected) {
+      return;
+    }
+
+    let seasonUpdated:Season = {
+      id: this.seassonItemSelected.id,
+      name: this.seassonItemSelected.name,
+      order: this.seassonItemSelected.order,
+      league_ids: this.leaguesSelected.map(league => {
+        return league.id
+      })
+    }
+
+    this.seassonService.update(seasonUpdated).subscribe(
       {
         next: (value) => {
           this.seassonService.reloadData();

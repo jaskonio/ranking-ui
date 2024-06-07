@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -13,11 +13,12 @@ import { RaceService } from '../../shared/services/race.service';
 import { NgTableComponent } from '../../shared/components/table/ng-table.component';
 import { ConlumnsDefinition, TableConfiguracion } from '../../shared/interfaces/interfaces';
 import { TableModule } from 'primeng/table';
+import { Subject, takeUntil } from 'rxjs';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-leagues',
   standalone: true,
-  providers: [NotificationService],
   imports: [
     CommonModule,
 		FormsModule,
@@ -29,11 +30,12 @@ import { TableModule } from 'primeng/table';
     NgTableComponent,
     TableModule
   ],
+  providers: [MessageService],
   templateUrl: './leagues.component.html',
   styleUrl: './leagues.component.scss'
 })
-export class LeaguesComponent {
-  allLeagues: League[] | undefined
+export class LeaguesComponent implements OnDestroy{
+  allLeagues: League[] = []
   addLeagueForm = new FormGroup({});
 
   allPersons:PersonResponse[] = []
@@ -65,6 +67,8 @@ export class LeaguesComponent {
     this.updateRunnerParticipantsOptions();
     this.updateRaceLeagueOptions();
   }
+
+  private destroy$ = new Subject<void>();
 
   private runnerParticipantsColumnsDefinition: ConlumnsDefinition[] = [
     {
@@ -150,7 +154,7 @@ export class LeaguesComponent {
   }
 
   constructor(
-    private notificationService:NotificationService,
+    private notificationService:MessageService,
     private leagueService:LeagueService,
     private personService:PersonService,
     private raceService:RaceService){
@@ -161,9 +165,17 @@ export class LeaguesComponent {
     let name_control = new FormControl('', [Validators.required, Validators.maxLength(50)])
     this.addLeagueForm.setControl('name', name_control)
 
-    this.reloadAllLeagues()
+    this.leagueService.allLeagues$.pipe(takeUntil(this.destroy$)).subscribe(data => {
+      this.allLeagues = data ?? []
+    });
+
     this.reloadAllPersons()
     this.reloadAllRaces()
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   onSubmitAddNewLeague() {
@@ -173,28 +185,13 @@ export class LeaguesComponent {
     this.leagueService.save_item(this.addLeagueForm.value).subscribe(
       {
         next: (value) => {
-          console.log(value)
+          console.log(value);
+          this.notificationService.add({ severity: 'success', summary: 'Successful', detail: 'Liga añadida correctamente', life: 3000 })
         },
-        error: err => this.notificationService.notification =  { severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 },
+        error: err => this.notificationService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 }),
         complete: () => {
-          console.log('end ad league')
-        }
-      }
-    )
-  }
-
-  reloadAllLeagues() {
-    this.leagueService.getAll().subscribe(
-      {
-        next: (value) => {
-          console.log("next reloadAllLeagues")
-          console.log(value)
-          this.allLeagues = value
-        },
-        error: err => this.notificationService.notification =  { severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 },
-        complete: () => {
-          this.allLeagues
-          console.log('end reloadAllLeagues')
+          console.log('end ad league');
+          this.leagueService.reloadData();
         }
       }
     )
@@ -208,7 +205,7 @@ export class LeaguesComponent {
           console.log(value);
           this.allPersons = value;
         },
-        error: err => this.notificationService.notification =  { severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 },
+        error: err => this.notificationService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 }),
         complete: () => {
           this.allLeagues
           console.log('end getAll')
@@ -234,7 +231,7 @@ export class LeaguesComponent {
             return raceLeague
           })
         },
-        error: err => this.notificationService.notification =  { severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 },
+        error: err => this.notificationService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 }),
         complete: () => {
           this.allLeagues
           console.log('end reloadAllRaces')
@@ -436,9 +433,9 @@ export class LeaguesComponent {
         next:(value) => {
           console.log("update leagueService");
           console.log(value);
-          this.notificationService.notification =  { severity: 'success', summary: 'Successful', detail: 'Se ha actualizado correctamente.', life: 3000 }
+          this.notificationService.add({ severity: 'success', summary: 'Successful', detail: 'Se ha actualizado correctamente.', life: 3000 });
         },
-        error: err => this.notificationService.notification =  { severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 },
+        error: err => this.notificationService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 }),
         complete: () => {
           console.log('complete leagueService')
         }
