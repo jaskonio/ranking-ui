@@ -8,7 +8,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { LeagueService } from '../../shared/services/league.service';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { NgTableComponent } from '../../shared/components/table/ng-table.component';
-import { Subject, combineLatest, takeUntil } from 'rxjs';
+import { Observable, Subject, catchError, combineLatest, forkJoin, of, takeUntil } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { ConlumnsDefinition, TableConfiguracion } from '../../shared/interfaces/interfaces';
@@ -63,7 +63,35 @@ export class SeassonsComponent {
   ]
 
   private leagueTableConfiguration:TableConfiguracion = {
-    title: "Participantes",
+    title: "Ligas",
+    paginator: true,
+    editableRow: true,
+    rowsPerPageOptions: [5, 10, 20, 100],
+    rows: 10,
+    showCurrentPageReport: true,
+  }
+
+  private seasonColumnDefinition: ConlumnsDefinition[] = [
+    {
+      "key": "name",
+      "value": "Nombre",
+      "order": 1,
+      "supportFilter": true,
+      "editable": true,
+      "foreign_key": true
+    },
+    {
+      "key": "order",
+      "value": "Orden",
+      "order": 2,
+      "supportFilter": true,
+      "editable": true,
+      "type": "number"
+    }
+  ]
+
+  private seasonTableConfiguration:TableConfiguracion = {
+    title: "Temporadas",
     paginator: true,
     editableRow: true,
     rowsPerPageOptions: [5, 10, 20, 100],
@@ -108,31 +136,62 @@ export class SeassonsComponent {
     });
   }
 
-  onSelectedLeagueChange(event:any) {
-    this.updateLeagueSelected()
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
-  updateLeagueSelected() {
+  getSeasonColumnDefinition() {
+    return this.seasonColumnDefinition;
+  }
 
+  getSeasonTableConfiguration() {
+    return this.seasonTableConfiguration;
+  }
+
+  onSaveAllSeasons() {
+    const updateSeasonObservables = this.allSeasonItems.map( season => {
+      let seasonUpdated:Season = {
+        id: season.id,
+        name: season.name,
+        order: season.order,
+        league_ids: season.leagues.map(league => {
+          return league.id
+        })
+      }
+
+      return (this.updateSeason(seasonUpdated))
+    })
+
+    forkJoin(updateSeasonObservables).subscribe({
+      complete: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Se han guardado las temporadas',
+          life: 3000
+        });
+
+        this.seassonService.reloadData();
+      },
+      error: (ee) => {
+        console.error(ee)
+        this.messageService.add({
+          severity: 'error',
+          summary: 'ERROR',
+          detail: 'Error al guardar las temporadas',
+          life: 3000
+        });
+      }
+    })
   }
 
   onSelectSeason(event:any) {
-    // this.seassonService.selectedSeasson(event)
     this.seassonItemSelected = event.value
 
     if (this.seassonItemSelected != null) {
       this.leaguesSelected = this.seassonItemSelected.leagues
     }
-  }
-
-  onLeagueTableChanged(event:any) {
-    console.log("onLeagueTableChanged");
-    console.log(event);
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   getLeagueColumnDefinition() {
@@ -178,16 +237,22 @@ export class SeassonsComponent {
       })
     }
 
-    this.seassonService.update(seasonUpdated).subscribe(
+    this.updateSeason(seasonUpdated).subscribe(
       {
         next: (value) => {
           this.seassonService.reloadData();
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Temporada actualziada correctamente', life: 3000 });
-        },
-        error: (err) => {
-          this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 })
         }
       }
+    )
+  }
+
+  private updateSeason(seasson:Season) {
+    return this.seassonService.update(seasson).pipe(
+      catchError((error:any, caught: Observable<any[]>) => {
+        this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al actualizar la temporada: ' + seasson.name, life: 3000 });
+        return of(null);
+      })
     )
   }
 }
