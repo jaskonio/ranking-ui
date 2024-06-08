@@ -20,11 +20,7 @@ export const routes: Routes = [
     children: [
       { path: '', component: RankingListComponent },
       { path: 'ranking/:idRanking', component: RankingComponent },
-    ],
-    canActivate: [guestTokenGuard],
-    data: {
-      role: 'view'
-    }
+    ]
   },
   {
     path: 'admin', component: AppAdminLayoutComponent,
@@ -45,9 +41,6 @@ export const routes: Routes = [
     path: 'login',
     component: LoginComponent,
     canActivate: [loginAuthGuard],
-    data: {
-      role: 'admin'
-    }
   },
   {
     path: '**',

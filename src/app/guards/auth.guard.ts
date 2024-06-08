@@ -23,7 +23,7 @@ export const loginAuthGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
   const authService = inject(AuthService)
 
-  if (authService.containRole(route.data['role'])) {
+  if (authService.isLoggedIn()) {
     router.navigateByUrl('/admin');
   }
 
