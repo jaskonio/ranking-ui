@@ -53,6 +53,14 @@ export class LeagueService {
     );
   }
 
+  remove(league:any) {
+    return this.http.delete(this.url + league['id'], league)
+    .pipe(
+      map((response: any) => {return response['data']}),
+      catchError(this.handleError)
+    );
+  }
+
   getAll(): Observable<League[]> {
     return this.http.get(this.url)
     .pipe(
@@ -65,6 +73,14 @@ export class LeagueService {
     this.getAll().subscribe(data => {
       this.allLeagues.next(data);
     })
+  }
+
+  process(league:League): Observable<League> {
+    return this.http.get(this.url + 'run_process/' + league.id)
+    .pipe(
+      map((response: any) => {return response['data']}),
+      catchError(this.handleError)
+    );
   }
 
   private handleError(error: any) {

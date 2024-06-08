@@ -11,10 +11,11 @@ import { PersonService } from '../../shared/services/person.service';
 import { League, PersonResponse, RaceLeague, RaceResponse, RunnerParticipant } from '../../shared/services/interfaces';
 import { RaceService } from '../../shared/services/race.service';
 import { NgTableComponent } from '../../shared/components/table/ng-table.component';
-import { ConlumnsDefinition, TableConfiguracion } from '../../shared/interfaces/interfaces';
+import { ConlumnsDefinition, TableActions, TableConfiguracion } from '../../shared/interfaces/interfaces';
 import { TableModule } from 'primeng/table';
 import { Subject, takeUntil } from 'rxjs';
 import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-leagues',
@@ -28,7 +29,8 @@ import { MessageService } from 'primeng/api';
     DropdownModule,
     MultiSelectModule,
     NgTableComponent,
-    TableModule
+    TableModule,
+    ToastModule
   ],
   providers: [MessageService],
   templateUrl: './leagues.component.html',
@@ -153,6 +155,43 @@ export class LeaguesComponent implements OnDestroy{
     showCurrentPageReport: true,
   }
 
+  private leagueColumnDefinition: ConlumnsDefinition[] = [
+    {
+      "key": "id",
+      "value": "id",
+      "order": 0,
+      "visible": false,
+      "foreign_key": true
+    },
+    {
+      "key": "name",
+      "value": "Nombre",
+      "order": 1,
+      "supportFilter": true,
+    }
+  ]
+
+  private leagueTableConfiguration:TableConfiguracion = {
+    title: "Ligas",
+    paginator: true,
+    editableRow: true,
+    rowsPerPageOptions: [5, 10, 50],
+    rows: 10,
+    showCurrentPageReport: true,
+    buttonActions: [
+      {
+        icon: 'pi-spinner-dotted',
+        typeAction: TableActions.CUSTOM_ACTIONS,
+        callback: item=> { return this.processLeague(item, this)}
+      },
+      {
+        icon: 'pi-trash',
+        typeAction: TableActions.CUSTOM_ACTIONS,
+        callback: item=> { return this.deleteLeague(item, this)}
+      },
+    ]
+  }
+
   constructor(
     private notificationService:MessageService,
     private leagueService:LeagueService,
@@ -195,6 +234,18 @@ export class LeaguesComponent implements OnDestroy{
         }
       }
     )
+  }
+
+  getLeagueColumnDefinition() {
+    return this.leagueColumnDefinition;
+  }
+
+  getLeagueTableConfiguration() {
+    return this.leagueTableConfiguration;
+  }
+
+  onSaveAllLeagues() {
+    console.log("onSaveAllLeagues")
   }
 
   reloadAllPersons() {
@@ -441,5 +492,36 @@ export class LeaguesComponent implements OnDestroy{
         }
       }
     )
+  }
+
+  processLeague(league:League, this$: any) {
+    console.log("processLeague")
+    console.log(league)
+
+    this.leagueService.process(league).subscribe({
+      next(value) {
+        console.log(value);
+        this$.leagueService.reloadData();
+      },
+      error(err) {
+        console.error(err)
+      }
+    })
+  }
+
+  deleteLeague(league:League, this$: LeaguesComponent) {
+    console.log("deleteLeague")
+    console.log(league)
+
+    this.leagueService.remove(league).subscribe({
+      next(value) {
+        console.log(value);
+        this$.leagueService.reloadData();
+        this$.notificationService.add({ severity: 'success', summary: 'Successful', detail: 'Se ha actualizado correctamente.', life: 3000 });
+      },
+      error(err) {
+        console.error(err)
+      },
+    })
   }
 }

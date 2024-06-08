@@ -97,7 +97,7 @@ editMode="row"
         <td>
           <div class="flex">
               @for (action of configuration.buttonActions; track $index) {
-                <button pButton pRipple icon="pi {{action.icon}}" class="p-button-rounded p-button-success mr-2" (click)="onClickButtonAction(rowData)"></button>
+                <button pButton pRipple icon="pi {{action.icon}}" class="p-button-rounded p-button-success mr-2" (click)="onClickButtonAction(action.callback, rowData)"></button>
               }
 
               @if ( configuration.editableRow) {

@@ -23,12 +23,13 @@ export interface ActionsCrud {
 
 
 export enum TableActions {
-  EDIT, DELETE,
+  EDIT, DELETE, CUSTOM_ACTIONS
 }
 
 export interface TableActionType {
   typeAction: TableActions;
   icon: string;
+  callback(item: any): any;
 }
 
 export interface TableConfiguracion {

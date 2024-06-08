@@ -114,10 +114,11 @@ export class NgTableComponent {
       table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
   }
 
-  onClickButtonAction(rowData: any) {
+  onClickButtonAction(callback: Function, rowData:any) {
     console.log("onRowClick");
 
-    this.clickRowEvent.emit(rowData);
+    callback(rowData)
+    // this.clickRowEvent.emit(rowData);
   }
 
   getMessage() {

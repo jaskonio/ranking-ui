@@ -19,6 +19,21 @@
     </div>
 
     <div class="card">
+      <div class="field col-12 md:col-12">
+        <div>
+          <app-ng-table
+            [dataSource]="allLeagues"
+            [columns]="getLeagueColumnDefinition()"
+            [configuration]="getLeagueTableConfiguration()"/>
+            <div class="field col-3 sm:col-12">
+              <button pButton pRipple icon="pi pi-check" label="Guardar" severity="success" class="col-1" (click)="onSaveAllLeagues()"></button>
+            </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="card">
       <h5>Editar Liga</h5>
 
       <div class="field col-12 md:col-12">
