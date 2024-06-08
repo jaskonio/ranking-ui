@@ -169,4 +169,8 @@ export class NgTableComponent {
   getValue( row: any, col:string, index:number) {
     return this.dataSource[index][col]
   }
+
+  getActionStyles(customStyles: string) {
+    return 'p-button-rounded p-button-text mr-2 ' + customStyles
+  }
 }

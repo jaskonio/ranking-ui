@@ -27,6 +27,7 @@ export enum TableActions {
 }
 
 export interface TableActionType {
+  styles: string,
   typeAction: TableActions;
   icon: string;
   callback(item: any): any;

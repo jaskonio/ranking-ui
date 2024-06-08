@@ -13,7 +13,7 @@ import { RaceService } from '../../shared/services/race.service';
 import { NgTableComponent } from '../../shared/components/table/ng-table.component';
 import { ConlumnsDefinition, TableActions, TableConfiguracion } from '../../shared/interfaces/interfaces';
 import { TableModule } from 'primeng/table';
-import { Subject, takeUntil } from 'rxjs';
+import { catchError, forkJoin, Observable, of, Subject, takeUntil } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 
@@ -168,6 +168,7 @@ export class LeaguesComponent implements OnDestroy{
       "value": "Nombre",
       "order": 1,
       "supportFilter": true,
+      "editable": true,
     }
   ]
 
@@ -181,11 +182,13 @@ export class LeaguesComponent implements OnDestroy{
     buttonActions: [
       {
         icon: 'pi-spinner-dotted',
+        styles: '',
         typeAction: TableActions.CUSTOM_ACTIONS,
         callback: item=> { return this.processLeague(item, this)}
       },
       {
         icon: 'pi-trash',
+        styles: 'p-button-danger',
         typeAction: TableActions.CUSTOM_ACTIONS,
         callback: item=> { return this.deleteLeague(item, this)}
       },
@@ -246,6 +249,21 @@ export class LeaguesComponent implements OnDestroy{
 
   onSaveAllLeagues() {
     console.log("onSaveAllLeagues")
+    console.log(this.allLeagues)
+
+    const allLeagueUpdatedObservables = this.allLeagues.map( league => {
+      return this.updateLeague(league)
+    })
+
+    forkJoin(allLeagueUpdatedObservables).subscribe({
+      complete: () => {
+        console.log("complete");
+        this.leagueService.reloadData()
+      },
+      error: (err) => {
+        console.error(err)
+      },
+    })
   }
 
   reloadAllPersons() {
@@ -523,5 +541,14 @@ export class LeaguesComponent implements OnDestroy{
         console.error(err)
       },
     })
+  }
+
+  updateLeague(league:League) {
+    return this.leagueService.update(league).pipe(
+      catchError((error:any, caught: Observable<any[]>) => {
+        this.notificationService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al actualizar la temporada: ' + league.name, life: 3000 });
+        return of(null);
+      })
+    )
   }
 }
