@@ -73,12 +73,18 @@ export class SeassonsComponent {
 
   private seasonColumnDefinition: ConlumnsDefinition[] = [
     {
+      "key": "id",
+      "value": "id",
+      "order": 0,
+      "visible": false,
+      "foreign_key": true
+    },
+    {
       "key": "name",
       "value": "Nombre",
       "order": 1,
       "supportFilter": true,
       "editable": true,
-      "foreign_key": true
     },
     {
       "key": "order",
