@@ -24,7 +24,7 @@ export class PersonsComponent {
       control_name: "first_name",
       control_type:"text",
       default_value: null,
-      validators: [Validators.required, Validators.maxLength(20)]
+      validators: [Validators.required, Validators.maxLength(30)]
     },
     {
       label: "Apellido",
@@ -32,7 +32,7 @@ export class PersonsComponent {
       control_name: "last_name",
       control_type: "text",
       default_value: null,
-      validators: [Validators.required, Validators.maxLength(20)]
+      validators: [Validators.required, Validators.maxLength(30)]
     },
     {
       label: "Genero",
@@ -43,19 +43,19 @@ export class PersonsComponent {
       default_value: 'M',
       validators: [Validators.required, , Validators.maxLength(1)]
     },
-    // {
-    //   label: "Foto",
-    //   control_name: "photo_url",
-    //   control_type:"image",
-    //   validators: [],
-    //   input_image_options: {
-    //     url: () => {
-    //       return this.imageBaseUrl +'/?image_name=' + Math.floor(new Date().getTime() / 1000).toString()
-    //     },
-    //     method: 'post',
-    //     field_parameter: 'file_image'
-    //   }
-    // }
+    {
+      label: "Foto",
+      control_name: "photo_url",
+      control_type:"image",
+      validators: [],
+      input_image_options: {
+        url: (uniqueId:string) => {
+          return this.imageBaseUrl +'/?image_name=' + uniqueId
+        },
+        method: 'post',
+        field_parameter: 'file_image'
+      }
+    }
   ]
 
   form_configuration = {

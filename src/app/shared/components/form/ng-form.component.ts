@@ -15,6 +15,8 @@ import { ImageModule } from 'primeng/image';
 import { DropdownModule } from 'primeng/dropdown';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { CheckboxModule } from 'primeng/checkbox';
+import { AuthService } from '../../../core/auth.service';
+import { HttpHeaders } from '@angular/common/http';
 
 
 @Component({
@@ -53,7 +55,9 @@ export class NgFormComponent {
 
   uniqueId:string = '';
 
-  constructor(private cdref: ChangeDetectorRef) {
+  constructor(private cdref: ChangeDetectorRef,
+    private authService: AuthService
+  ) {
     console.log("constructor")
     this.uniqueId = Math.floor(new Date().getTime() / 1000).toString()
   }
@@ -111,5 +115,12 @@ export class NgFormComponent {
 
   cancelButton(){
     this.newContentEvent.emit(null)
+  }
+
+  buildHeaders() {
+    let headers = new HttpHeaders();
+    headers = headers.set('Authorization', `Bearer ${this.authService.getToken()}`);
+
+    return headers
   }
 }

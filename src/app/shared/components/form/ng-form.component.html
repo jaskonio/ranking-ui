@@ -34,7 +34,7 @@
             </div>
           }
           @else if (form_conf.control_type == "image") {
-            <div class="flex justify-content-center" *ngIf="getImageUrl(form_conf['control_name']) != ''">
+            <div class="flex justify-content-center mt-5 mb-5" *ngIf="getImageUrl(form_conf['control_name']) != ''">
               <p-image
                   [src]="this.customForm.get(form_conf['control_name'])?.value"
                   alt="Image"
@@ -43,19 +43,20 @@
 
             <div class="field">
               <p-fileUpload
-              mode="basic"
-              chooseIcon="pi pi-upload"
-              name="{{form_conf.input_image_options?.field_parameter}}"
-              (onUpload)="onUploadImage($event, form_conf.control_name)"
-              [multiple]="false"
-              accept="image/*"
-              [maxFileSize]="1000000"
-              url="{{form_conf.input_image_options?.url(uniqueId)}}"
-              method="post"
-              label="Import"
-              chooseLabel="Subir Imagen"
-              class="mr-2 inline-block">
-          </p-fileUpload>
+                mode="basic"
+                chooseIcon="pi pi-upload"
+                name="{{form_conf.input_image_options?.field_parameter}}"
+                (onUpload)="onUploadImage($event, form_conf.control_name)"
+                [multiple]="false"
+                accept="image/*"
+                [maxFileSize]="1000000"
+                url="{{form_conf.input_image_options?.url(uniqueId)}}"
+                method="post"
+                label="Import"
+                chooseLabel="Subir Imagen"
+                class="mr-2 inline-block"
+                [headers]="buildHeaders()">
+              </p-fileUpload>
             </div>
           }
         }
