@@ -4,6 +4,8 @@ import { AuthService } from '../core/auth.service';
 import { of } from 'rxjs';
 
 export const adminAuthGuard: CanActivateFn = (route, state) => {
+  console.log("adminAuthGuard")
+
   const router = inject(Router);
   const authService = inject(AuthService)
 
