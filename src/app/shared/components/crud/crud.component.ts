@@ -85,7 +85,7 @@ export class CrudComponent implements OnInit {
 
   dialog_title_to_edit_or_update_or_delete: string = ''
 
-  item_to_edit_or_update_or_delete: any = {};
+  item_to_edit_or_update_or_delete: any = null;
 
   selectedRow: any[] = [];
 
@@ -117,7 +117,7 @@ export class CrudComponent implements OnInit {
   }
 
     openNew() {
-        this.item_to_edit_or_update_or_delete = {};
+        this.item_to_edit_or_update_or_delete = null;
         this.dialog_to_view_or_edit = true;
         this.dialog_action = 'add'
         this.dialog_title_to_edit_or_update_or_delete = "Nuevo Corredor"

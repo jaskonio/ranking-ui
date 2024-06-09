@@ -23,15 +23,15 @@ export class RacesInfoComponent {
       control_name: "name",
       control_type:"text",
       default_value: null,
-      validators: [Validators.required, Validators.maxLength(30)]
+      validators: [Validators.required, Validators.maxLength(60)]
     },
     {
       label: "URL",
-      placeholder: "https://sportmaniacs.com/es/races/21ordf-carrera-popular-galapagos-3f/5c35e379-5c34-4f59-ba34-229dac1f0b2e/results",
+      placeholder: "https://sportmaniacs.com/es/races/21ordf-carrera-popular-galapagos-3f/5c35e379-5c34-4f59-ba34-229dac1f0b2e",
       control_name: "url",
       control_type: "text",
       default_value: null,
-      validators: [Validators.required, Validators.maxLength(150)]
+      validators: [Validators.required, Validators.maxLength(250)]
     },
     {
       label: "Plataforma",
@@ -48,7 +48,7 @@ export class RacesInfoComponent {
       control_name: "processed",
       control_type: "checkbox",
       default_value: false,
-      validators: [Validators.required]
+      visible: false
     },
   ]
 
@@ -58,17 +58,16 @@ export class RacesInfoComponent {
     submitButtonEnabled: true,
   }
 
-  crudActions: ActionsCrud[] = []
+  crudActions: ActionsCrud[] = [{
+    icon: "pi-spinner-dotted",
+    actions: "process",
+    callback: (item: any) => {
+      console.log(item)
+      item['processed'] = true
+      return this.raceService.process_race(item)
+    },
+  }]
 
   constructor(public raceService:RaceService) {
-    this.crudActions = [{
-      icon: "pi-spinner-dotted",
-      actions: "process",
-      callback: (item: any) => {
-        console.log(item)
-        item['processed'] = true
-        return this.raceService.process_race(item)
-      },
-    }]
   }
 }

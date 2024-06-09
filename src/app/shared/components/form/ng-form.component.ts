@@ -80,6 +80,7 @@ export class NgFormComponent {
   }
 
   createFormGroup() {
+    console.log("createFormGroup")
     this.form_configuration.forEach(field => {
 
       let defaultValue = ''
