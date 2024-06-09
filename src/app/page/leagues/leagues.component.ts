@@ -124,7 +124,7 @@ export class LeaguesComponent implements OnDestroy{
     paginator: true,
     editableRow: true,
     rowsPerPageOptions: [5, 10, 20, 100],
-    rows: 10,
+    rows: 5,
     showCurrentPageReport: true,
   }
 
@@ -177,7 +177,7 @@ export class LeaguesComponent implements OnDestroy{
     paginator: true,
     editableRow: true,
     rowsPerPageOptions: [5, 10, 50],
-    rows: 10,
+    rows: 5,
     showCurrentPageReport: true,
     buttonActions: [
       {
@@ -209,6 +209,12 @@ export class LeaguesComponent implements OnDestroy{
 
     this.leagueService.allLeagues$.pipe(takeUntil(this.destroy$)).subscribe(data => {
       this.allLeagues = data ?? []
+
+      this.allLeagues.forEach( league => {
+        if (league.id == this.leagueSelected?.id) {
+          this.leagueSelected = league
+        }
+      })
     });
 
     this.reloadAllPersons()
@@ -502,11 +508,13 @@ export class LeaguesComponent implements OnDestroy{
         next:(value) => {
           console.log("update leagueService");
           console.log(value);
+
+          this.leagueService.reloadData();
           this.notificationService.add({ severity: 'success', summary: 'Successful', detail: 'Se ha actualizado correctamente.', life: 3000 });
         },
         error: err => this.notificationService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 }),
         complete: () => {
-          console.log('complete leagueService')
+          console.log('complete leagueService');
         }
       }
     )
