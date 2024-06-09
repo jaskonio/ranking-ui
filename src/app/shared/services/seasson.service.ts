@@ -1,9 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { SeassonInfoResponse, SeasonInfoView } from './interfaces';
+import { SeasonInfoView } from './interfaces';
 import { environment } from '../../../environments/environment';
 import { BehaviorSubject, Observable, catchError, map, throwError } from 'rxjs';
-import { LeagueService } from './league.service';
 
 
 @Injectable({
@@ -45,6 +44,14 @@ export class SeasonService {
     return this.http.put(this.url + item['id'], item)
     .pipe(
       map((response: any) => {return response['data']}),
+      catchError(this.handleError)
+    );
+  }
+
+  remove(item:any) {
+    return this.http.delete(this.url + item['id'])
+    .pipe(
+      map((response: any) => {return response}),
       catchError(this.handleError)
     );
   }

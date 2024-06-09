@@ -1,4 +1,4 @@
-import { catchError, map, Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 
 export interface ConlumnsDefinition {
   key: string;
@@ -23,7 +23,7 @@ export interface ActionsCrud {
 
 
 export enum TableActions {
-  EDIT, DELETE, CUSTOM_ACTIONS
+  SAVE, EDIT, DELETE, CUSTOM_ACTIONS
 }
 
 export interface TableActionType {

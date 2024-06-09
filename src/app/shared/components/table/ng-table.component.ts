@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, TemplateRef } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Table, TableModule } from 'primeng/table';
 import { AvatarModule } from 'primeng/avatar';
 import { ChipModule } from 'primeng/chip';
-import { ConlumnsDefinition, TableConfiguracion } from '../../interfaces/interfaces';
+import { ConlumnsDefinition, TableActions, TableConfiguracion } from '../../interfaces/interfaces';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { InputTextModule } from 'primeng/inputtext';
@@ -53,7 +53,7 @@ export class NgTableComponent {
 
   @Input() configuration!:TableConfiguracion;
 
-  @Output() clickRowEvent = new EventEmitter<any>();
+  @Output() onClickRowEvent = new EventEmitter<TableActions>();
   @Output() onChange = new EventEmitter<any>();
 
   private _selectedRow: any[] = [];
@@ -141,6 +141,7 @@ export class NgTableComponent {
     this.clonedDataSource[rowData.id] = {...copyRowData};
     console.log(this.dataSource)
 
+    this.onClickRowEvent.emit(TableActions.EDIT)
     this.globalFilterDiabled = true
   }
 
@@ -150,7 +151,10 @@ export class NgTableComponent {
     console.log(rowData)
 
     delete this.clonedDataSource[rowData.id];
-    this.onChange.emit(this.dataSource)
+
+    this.onChange.emit(this.dataSource);
+    this.onClickRowEvent.emit(TableActions.SAVE);
+
     this.globalFilterDiabled = false
   }
 

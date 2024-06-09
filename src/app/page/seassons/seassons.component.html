@@ -24,9 +24,10 @@
           <app-ng-table
             [dataSource]="allSeasonItems"
             [columns]="getSeasonColumnDefinition()"
-            [configuration]="getSeasonTableConfiguration()"/>
+            [configuration]="getSeasonTableConfiguration()"
+            (onClickRowEvent)="onClickRowEvent($event)"/>
             <div class="field col-3 sm:col-12">
-              <button pButton pRipple icon="pi pi-check" label="Guardar" severity="success" class="col-1" (click)="onSaveAllSeasons()"></button>
+              <button pButton pRipple icon="pi pi-check" label="Guardar" severity="success" class="col-1" (click)="onSaveAllSeasons()" [disabled]="seasonTableEditEnable"></button>
             </div>
         </div>
       </div>
@@ -38,6 +39,7 @@
 
       <div class="field col-12 md:col-12">
         <p-dropdown
+          [(ngModel)]="seassonItemSelected"
           [options]="allSeasonItems"
           optionLabel="name"
           placeholder="Selecciona una temporada"
@@ -60,15 +62,14 @@
             <app-ng-table
               [dataSource]="leaguesSelected"
               [columns]="getLeagueColumnDefinition()"
-              [configuration]="getLeagueTableConfiguration()"/>
+              [configuration]="getLeagueTableConfiguration()"
+              (onClickRowEvent)="onClickRowEventLeagueTable($event)"/>
           </div>
 
         </div>
-
-      </div>
-
-      <div class="field col-3 sm:col-12">
-        <button pButton pRipple icon="pi pi-check" label="Guardar" severity="success" class="col-6" (click)="onSaveSeason($event)"></button>
+        <div class="field col-3 sm:col-12">
+          <button pButton pRipple icon="pi pi-check" label="Guardar" severity="success" class="col-1" (click)="onSaveSeason($event)" [disabled]="leagueTableEditEnable"></button>
+        </div>
       </div>
 
     </div>

@@ -11,7 +11,7 @@ import { NgTableComponent } from '../../shared/components/table/ng-table.compone
 import { Observable, Subject, catchError, combineLatest, forkJoin, of, takeUntil } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { ConlumnsDefinition, TableConfiguracion } from '../../shared/interfaces/interfaces';
+import { ConlumnsDefinition, TableActions, TableConfiguracion } from '../../shared/interfaces/interfaces';
 
 @Component({
   selector: 'app-seassons',
@@ -42,6 +42,10 @@ export class SeassonsComponent {
 
   public leaguesSelected: League[] = [];
 
+  public seasonTableEditEnable: boolean = true;
+
+  public leagueTableEditEnable: boolean = false;
+
   private destroy$ = new Subject<void>();
 
   private leagueColumnDefinition: ConlumnsDefinition[] = [
@@ -67,7 +71,7 @@ export class SeassonsComponent {
     paginator: true,
     editableRow: true,
     rowsPerPageOptions: [5, 10, 20, 100],
-    rows: 10,
+    rows: 5,
     showCurrentPageReport: true,
   }
 
@@ -101,8 +105,16 @@ export class SeassonsComponent {
     paginator: true,
     editableRow: true,
     rowsPerPageOptions: [5, 10, 20, 100],
-    rows: 10,
+    rows: 5,
     showCurrentPageReport: true,
+    buttonActions: [
+      {
+        icon: 'pi-trash',
+        styles: 'p-button-danger',
+        typeAction: TableActions.CUSTOM_ACTIONS,
+        callback: item=> { return this.deleteSeason(item, this)}
+      },
+    ]
   }
 
   constructor(public seassonService:SeasonService,
@@ -138,7 +150,15 @@ export class SeassonsComponent {
         })
 
         this.allSeasonItems.push(item)
-      })
+      });
+
+      if (this.seassonItemSelected) {
+        this.allSeasonItems.forEach(season => {
+          if (season.id == this.seassonItemSelected?.id) {
+            this.seassonItemSelected = season
+          }
+        })
+      }
     });
   }
 
@@ -212,14 +232,27 @@ export class SeassonsComponent {
     console.log("onSeasonFormSubmit")
     console.log(this.seassonForm.value)
 
-    this.seassonService.save(this.seassonForm.value).subscribe(
+    let lastSeason = this.allSeasonItems.sort( (a,b) =>  a.order - b.order).at(-1);
+
+    let order = 0;
+    if (lastSeason) {
+      order = lastSeason.order + 1
+    }
+
+    let season = {
+      'name':  this.seassonForm.value.name,
+      'order': order
+    }
+
+    this.seassonService.save(season).subscribe(
       {
         next: (value) => {
           this.seassonService.reloadData();
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Temporada guardada correctamente', life: 3000 });
+          this.seassonForm.get('name')?.reset();
         },
         error: (err) => {
-          this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 })
+          this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 });
         }
       }
     )
@@ -260,5 +293,43 @@ export class SeassonsComponent {
         return of(null);
       })
     )
+  }
+
+  deleteSeason(season:SeasonItem, this$: SeassonsComponent) {
+    console.log("deleteSeason")
+    console.log(season)
+
+    this.seassonService.remove(season).subscribe({
+      next(value) {
+        console.log(value);
+        this$.seassonService.reloadData();
+        this$.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Se ha actualizado correctamente.', life: 3000 });
+      },
+      error(err) {
+        console.error(err)
+      },
+    })
+  }
+
+  onClickRowEvent(event:TableActions) {
+    console.log('onActiveEditMode')
+
+    if(event == TableActions.SAVE) {
+      this.seasonTableEditEnable = false;
+    }
+    else if(event == TableActions.EDIT) {
+      this.seasonTableEditEnable = true;
+    }
+  }
+
+  onClickRowEventLeagueTable(event:TableActions) {
+    console.log('onClickRowEventLeagueTable')
+
+    if(event == TableActions.SAVE) {
+      this.leagueTableEditEnable = false;
+    }
+    else if(event == TableActions.EDIT) {
+      this.leagueTableEditEnable = true;
+    }
   }
 }
