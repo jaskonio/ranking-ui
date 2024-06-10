@@ -35,7 +35,7 @@ editMode="row"
           </th>
         }
 
-        <th *ngFor="let col of enabledColumns" pSortableColumn="{{col.key}}" pSortableColumnDisabled="{{!col.sortable}}" class="col-3">
+        <th *ngFor="let col of enabledColumns" pSortableColumn="{{col.key}}" pSortableColumnDisabled="{{!col.sortable}}">
           {{col.value}}
           @if (col.sortable == true) {
             <p-sortIcon field="{{col.key}}"></p-sortIcon>
