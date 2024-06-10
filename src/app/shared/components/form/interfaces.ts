@@ -13,4 +13,5 @@ export interface CustomFormField {
   validators?: any[];
   input_image_options?: CustomInputImageOptions;
   dropdown_options?: any[];
+  visible?: boolean;
 }

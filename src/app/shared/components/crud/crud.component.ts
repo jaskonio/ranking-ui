@@ -24,6 +24,8 @@ import { CommonModule } from '@angular/common';
 import { NgFormComponent } from '../form/ng-form.component';
 import { catchError, Observable } from 'rxjs';
 import { NotificationService } from '../../services/notification.service';
+import { ActionsCrud } from '../../interfaces/interfaces';
+import { CheckboxModule } from 'primeng/checkbox';
 
 
 @Component({
@@ -51,7 +53,8 @@ import { NotificationService } from '../../services/notification.service';
     InputNumberModule,
     DialogModule,
     ChipModule,
-    NgFormComponent
+    NgFormComponent,
+    CheckboxModule,
   ]
 })
 export class CrudComponent implements OnInit {
@@ -67,6 +70,7 @@ export class CrudComponent implements OnInit {
 
   @Input() service!:ICrudService;
   @Input() formConfiguration?: any = undefined;
+  @Input() configuracionActionsCrud: ActionsCrud[]| null = null
 
   sortFieldValue:string | undefined;
   sortOrderValue: number = this.DEFAULT_VALUE_SORT_ORDER;
@@ -81,7 +85,7 @@ export class CrudComponent implements OnInit {
 
   dialog_title_to_edit_or_update_or_delete: string = ''
 
-  item_to_edit_or_update_or_delete: any = {};
+  item_to_edit_or_update_or_delete: any = null;
 
   selectedRow: any[] = [];
 
@@ -113,7 +117,7 @@ export class CrudComponent implements OnInit {
   }
 
     openNew() {
-        this.item_to_edit_or_update_or_delete = {};
+        this.item_to_edit_or_update_or_delete = null;
         this.dialog_to_view_or_edit = true;
         this.dialog_action = 'add'
         this.dialog_title_to_edit_or_update_or_delete = "Nuevo Corredor"
@@ -306,6 +310,19 @@ export class CrudComponent implements OnInit {
           error: err => this.notificationService.notification =  { severity: 'error', summary: 'eroor', detail: 'error al processar', life: 3000 },
           complete: () => {
             this.selectedRow = [];
+            this.loadData();
+          }
+      })
+    }
+
+    customCallback(callback: Observable<boolean>) {
+      callback.subscribe(
+        {
+          next: (value) => {
+            console.log(value)
+          },
+          error: err => this.notificationService.notification =  { severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 },
+          complete: () => {
             this.loadData();
           }
       })

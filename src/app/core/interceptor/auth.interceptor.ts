@@ -1,12 +1,15 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpErrorResponse, HttpEvent, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 import { AuthService } from '../auth.service';
+import { Router } from '@angular/router';
+import { catchError, Observable, throwError } from 'rxjs';
 
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const authService = inject(AuthService)
+  console.log('authInterceptor')
 
+  const authService = inject(AuthService)
 
   let token = authService.getToken()
 
@@ -19,4 +22,18 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   })
 
   return next(cloneReq)
+};
+
+export const loginAuthInterceptor: HttpInterceptorFn = (req, next) => {
+  console.log('loginAuthInterceptor')
+
+  const authService = inject(AuthService)
+  const route = inject(Router)
+
+  if (!authService.isLoggedIn()){
+    authService.logout()
+    route.navigateByUrl('/login')
+  }
+
+  return next(req)
 };

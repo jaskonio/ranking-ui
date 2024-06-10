@@ -19,7 +19,7 @@ export class AdminLayoutService {
     config = signal<AppConfig>(this._config);
 
     state: LayoutState = {
-        staticMenuDesktopInactive: true,
+        staticMenuDesktopInactive: false,
         overlayMenuActive: false,
         profileSidebarVisible: false,
         configSidebarVisible: false,

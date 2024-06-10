@@ -1,4 +1,4 @@
-import { catchError, map, Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 
 export interface ConlumnsDefinition {
   key: string;
@@ -12,6 +12,41 @@ export interface ConlumnsDefinition {
   type?: string; // 'string', 'number', 'image', 'action'
   supportImageKey?: string; // name of the key thats contain img value
   supportFilter?: boolean;
+  editable?: boolean; //default false
+}
+
+export interface ActionsCrud {
+  actions: string;
+  callback(item: any): Observable<boolean>;
+  icon: string;
+}
+
+
+export enum TableActions {
+  SAVE, EDIT, DELETE, CUSTOM_ACTIONS
+}
+
+export interface TableActionType {
+  styles: string,
+  typeAction: TableActions;
+  icon: string;
+  callback(item: any): any;
+}
+
+export interface TableConfiguracion {
+  title: string;
+  message?: string;
+  responsiveLayout?: string;
+  rows?: number;
+  paginator?: boolean;
+  rowsPerPageOptions?: number[];
+  showCurrentPageReport?: boolean;
+  currentPageReportTemplate?: string;
+  selectionMode?: "multiple" | "single"| null;
+  rowHover?: boolean;
+  buttonActions?: TableActionType[];
+  editableRow?: boolean; // default false
+  columnCheckboxEnable?: boolean; // default false
 }
 
 export interface ICrudService {
@@ -48,3 +83,4 @@ export interface LayoutState {
   staticMenuMobileActive: boolean;
   menuHoverActive: boolean;
 }
+

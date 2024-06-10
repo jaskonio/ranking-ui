@@ -1,4 +1,4 @@
-<div class="layout-wrapper">
+<div class="layout-wrapper layout-theme-light layout-static p-ripple-disabled" [ngClass]="containerClass">
   <app-admin-topbar/>
 
   <div class="layout-sidebar">
@@ -9,7 +9,6 @@
       <div class="layout-main">
         <router-outlet></router-outlet>
       </div>
-
       <app-admin-footer/>
   </div>
   <div class="layout-mask"></div>

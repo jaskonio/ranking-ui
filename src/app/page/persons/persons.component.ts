@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { PersonService } from '../../shared/services/person.service';
-import { PersonResponse } from '../../shared/services/interfaces';
 import { Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { CustomFormField } from '../../shared/components/form/interfaces';
@@ -25,7 +24,7 @@ export class PersonsComponent {
       control_name: "first_name",
       control_type:"text",
       default_value: null,
-      validators: [Validators.required, Validators.maxLength(20)]
+      validators: [Validators.required, Validators.maxLength(30)]
     },
     {
       label: "Apellido",
@@ -33,7 +32,7 @@ export class PersonsComponent {
       control_name: "last_name",
       control_type: "text",
       default_value: null,
-      validators: [Validators.required, Validators.maxLength(20)]
+      validators: [Validators.required, Validators.maxLength(30)]
     },
     {
       label: "Genero",
@@ -50,8 +49,8 @@ export class PersonsComponent {
       control_type:"image",
       validators: [],
       input_image_options: {
-        url: () => {
-          return this.imageBaseUrl +'/?image_name=' + Math.floor(new Date().getTime() / 1000).toString()
+        url: (uniqueId:string) => {
+          return this.imageBaseUrl +'/?image_name=' + uniqueId
         },
         method: 'post',
         field_parameter: 'file_image'
@@ -64,8 +63,6 @@ export class PersonsComponent {
     fields_configuration: this.fields_configuration,
     submitButtonEnabled: false,
   }
-
-  personsList: PersonResponse[] = [];
 
   constructor(
     public personService: PersonService

@@ -1,4 +1,3 @@
-
 export interface SeasonInfoView {
   id: number;
   name: string;
@@ -72,15 +71,55 @@ export interface PersonResponse {
   photo_url: string;
 }
 
-export interface PersonRequest {
-  first_name: string;
-  last_name: string;
-  gender?: string;
-  photo_url?: string;
+export interface RunnerParticipant extends PersonResponse{
+  person_id?: string;
+  dorsal?: number;
+  disqualified_order_race?: number;
 }
+
 export interface NotificationEvent {
   severity: string;
   summary: string;
   detail: string;
   life: number;
+}
+
+export interface RaceResponse {
+  id: string;
+  name: string;
+  url: string;
+  platform: string;
+  processed: boolean;
+  race_data_id: boolean
+}
+
+export interface RaceLeague {
+  name: string;
+  order: number;
+  runner_ids?: string[];
+  race_info_id: string;
+}
+
+export interface League {
+  id: string;
+  name: string;
+  order: number;
+  races: RaceLeague[];
+  runner_participants: RunnerParticipant[];
+  ranking_id: string;
+  history_ranking_ids: string[];
+}
+
+export interface Season {
+  id: number;
+  name: string;
+  order: number
+  league_ids: string[];
+}
+
+export interface SeasonItem {
+  id: number;
+  name: string;
+  order: number
+  leagues: League[];
 }

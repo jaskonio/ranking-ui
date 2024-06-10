@@ -1,96 +1,180 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, Input } from '@angular/core';
-import { TableModule } from 'primeng/table';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Table, TableModule } from 'primeng/table';
 import { AvatarModule } from 'primeng/avatar';
 import { ChipModule } from 'primeng/chip';
-import { ConlumnsDefinition } from '../../interfaces/interfaces';
+import { ConlumnsDefinition, TableActions, TableConfiguracion } from '../../interfaces/interfaces';
+import { ButtonModule } from 'primeng/button';
+import { RippleModule } from 'primeng/ripple';
+import { InputTextModule } from 'primeng/inputtext';
+import { FormsModule } from '@angular/forms';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 @Component({
   selector: 'app-ng-table',
   standalone: true,
-  imports: [CommonModule, TableModule, AvatarModule, ChipModule],
+  imports: [
+    CommonModule,
+    TableModule,
+    AvatarModule,
+    ChipModule,
+    ButtonModule,
+    RippleModule,
+    InputTextModule,
+    FormsModule,
+    InputNumberModule
+  ],
   templateUrl: './ng-table.component.html'
 })
 export class NgTableComponent {
-  DEFAULT_VALUE_SORT_ORDER: number = 1;
+  DEFAULT_VALUE_SORT_ORDER = 'asc'
 
-  defVisiblesConlumn: ConlumnsDefinition[] = [];
-  dataSource: any = []
-  sortFieldValue:string | undefined;
-  sortOrderValue: number = this.DEFAULT_VALUE_SORT_ORDER;
+  private _dataSource:any;
 
-  _data: any;
-  get data(): any{
-    return this._data
-  }
-  @Input('data') set data(value:any){
-    this._data = value;
-    this.reloadConfig();
+  @Input()
+  get dataSource() {
+    return this._dataSource;
   }
 
-  _conlumnsDefinition:ConlumnsDefinition[] = [];
-  get conlumnsDefinition(): ConlumnsDefinition[]{
-    return this._conlumnsDefinition;
+  set dataSource(data) {
+    this._dataSource = data;
+    this.onChange.emit(data);
   }
 
-  @Input('conlumnsDefinition') set conlumnsDefinition(value:ConlumnsDefinition[]){
-    this._conlumnsDefinition = value;
-    console.log(this._conlumnsDefinition)
-    this.loadConlumnsDefinition();
+  private _columns!: ConlumnsDefinition[];
+  @Input()
+  public get columns(): ConlumnsDefinition[] {
+    return this._columns
+  }
+  public set columns(item) {
+    this._columns = item;
+    this.processColumns(this._columns)
   }
 
-  constructor(private cdref: ChangeDetectorRef) {
-    console.log("constructor")
+  @Input() configuration!:TableConfiguracion;
+
+  @Output() onClickRowEvent = new EventEmitter<TableActions>();
+  @Output() onChange = new EventEmitter<any>();
+
+  private _selectedRow: any[] = [];
+  public get selectedRow() {
+    return this._selectedRow;
   }
+  public set selectedRow(rows) {
+    this._selectedRow = rows;
+  }
+
+  public enabledColumns: any[] = [];
+  public dataKey: string|undefined = undefined;
+  public sortFieldSelected: string | undefined = undefined;
+  public sortOrderSelected: number = 0;
+  public filterFieldSupport: string[] = []
+  public globalFilterDiabled: boolean = false
+
+  constructor() { }
 
   ngOnInit() {
-    console.log("ngOnInit")
-
-    this.loadData();
   }
 
-  ngAfterViewInit() {
-    console.log("ngAfterViewInit");
-  }
+  processColumns(newColumns: any[]) {
+    console.log("processColumns")
 
-  reloadConfig() {
-    console.log("reloadConfig");
+    this.enabledColumns = []
 
-    this.loadData();
-  }
+    newColumns.sort((a,b) => a.order - b.order);
 
-  loadData() {
-    console.log("loadData");
-    this.dataSource = [];
-    this.dataSource = this.data;
-  }
+    newColumns.map(item => {
+      if (item.foreign_key == true) {
+        this.dataKey = item.key
+      }
 
-  loadConlumnsDefinition() {
-    console.log("loadConlumnsDefinition");
+      if (item.visible != false){
+        this.enabledColumns.push(item)
+      }
 
-    this.defVisiblesConlumn = []
+      if(item.activeSortable) {
+        this.sortFieldSelected = item.key;
 
-    this.conlumnsDefinition.sort((a,b) => a.order - b.order);
+        let sortableOrder = this.DEFAULT_VALUE_SORT_ORDER;
 
-    if (this.conlumnsDefinition!=null ){
-      this.conlumnsDefinition.map(item => {
-        if (item.visible != false){
-          this.defVisiblesConlumn.push(item)
+        if (item.sortableOrder != undefined) {
+          sortableOrder = item.sortableOrder;
         }
 
-        if(item.activeSortable) {
-          this.sortFieldValue = item.key;
+        this.sortOrderSelected = sortableOrder == 'asc' ? 1 : -1;
+      }
 
-          let sortableOrder = this.DEFAULT_VALUE_SORT_ORDER;
+      if (item.supportFilter) {
+        this.filterFieldSupport.push(item.key);
+      }
+    });
+  }
 
-          if (item.sortableOrder != undefined) {
-            sortableOrder = item.sortableOrder == 'asc' ? 1 : -1;
-          }
+  onGlobalFilter(table: Table, event: Event) {
+      table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+  }
 
-          this.sortOrderValue = sortableOrder
-        }
+  onClickButtonAction(callback: Function, rowData:any) {
+    console.log("onRowClick");
 
-      });
+    callback(rowData)
+    // this.clickRowEvent.emit(rowData);
+  }
+
+  getMessage() {
+    if (this.dataSource == undefined) {
+      return
     }
+
+    if (this.dataSource.length == 0 && this.configuration.message != "") {
+      return this.configuration.message
+    }
+
+    return "No data"
+  }
+
+  clonedDataSource:any = {}
+
+  onRowEditInit(rowData: any, index:number) {
+    console.log("onRowEditInit")
+    let copyRowData = {...this.dataSource[index]}
+    this.clonedDataSource[rowData.id] = {...copyRowData};
+    console.log(this.dataSource)
+
+    this.onClickRowEvent.emit(TableActions.EDIT)
+    this.globalFilterDiabled = true
+  }
+
+  onRowEditSave(rowData: any, index:number) {
+    console.log("onRowEditSave")
+    console.log(this.dataSource)
+    console.log(rowData)
+
+    delete this.clonedDataSource[rowData.id];
+
+    this.onChange.emit(this.dataSource);
+    this.onClickRowEvent.emit(TableActions.SAVE);
+
+    this.globalFilterDiabled = false
+  }
+
+  onRowEditCancel(rowData: any, index: number) {
+    console.log("onRowEditCancel")
+    console.log(this.dataSource)
+    console.log(rowData)
+
+    this.dataSource[index] = {...this.clonedDataSource[rowData.id]}
+    rowData = {...this.clonedDataSource[rowData.id]}
+    console.log("end")
+
+    this.globalFilterDiabled = false
+  }
+
+  getValue( row: any, col:string, index:number) {
+    return this.dataSource[index][col]
+  }
+
+  getActionStyles(customStyles: string) {
+    return 'p-button-rounded p-button-text mr-2 ' + customStyles
   }
 }

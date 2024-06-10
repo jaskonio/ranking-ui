@@ -8,6 +8,9 @@ import { NotFoundComponent } from './page/not-found/not-found.component';
 import { guestTokenGuard } from './guards/guest.token.guard';
 import { adminAuthGuard, loginAuthGuard } from './guards/auth.guard';
 import { LoginComponent } from './page/admin/login/login.component';
+import { RacesInfoComponent } from './page/races-info/races-info.component';
+import { LeaguesComponent } from './page/leagues/leagues.component';
+import { SeassonsComponent } from './page/seassons/seassons.component';
 
 
 export const routes: Routes = [
@@ -17,16 +20,16 @@ export const routes: Routes = [
     children: [
       { path: '', component: RankingListComponent },
       { path: 'ranking/:idRanking', component: RankingComponent },
-    ],
-    canActivate: [guestTokenGuard],
-    data: {
-      role: 'view'
-    }
+    ]
   },
   {
     path: 'admin', component: AppAdminLayoutComponent,
     children: [
+      { path: '', redirectTo: '/admin/persons', pathMatch: 'full' },
       { path: 'persons', component: PersonsComponent },
+      { path: 'races-info', component: RacesInfoComponent},
+      { path: 'seassons', component: SeassonsComponent},
+      { path: 'leagues', component: LeaguesComponent},
       { path: '**', component: NotFoundComponent }
     ],
     canActivate: [adminAuthGuard],
@@ -37,7 +40,7 @@ export const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
-    canActivate: [loginAuthGuard]
+    canActivate: [loginAuthGuard],
   },
   {
     path: '**',

@@ -1,17 +1,17 @@
 <ul class="layout-menu">
-    <div *ngFor="let item of model">
-        <!-- <li app-menuitem *ngIf="!item.separator" [item]="item" [index]="i" [root]="true"></li> -->
-        @if (!item.separator) {
-          <li>
-            <a [routerLink]="item.routerLink" routerLinkActive="active-route">
-              <button>
-                {{ item.label}}
-              </button>
-              </a>
-          </li>
-        }
-        @else {
-          <li class="menu-separator"></li>
-        }
-    </div>
+  <li>
+    <ul  *ngFor="let itemParent of model">
+      <li>
+          <a
+          [ngClass]="itemParent.class"
+          [routerLink]="itemParent.routerLink"
+          routerLinkActive="active-route"
+          tabindex="0"
+          pRipple>
+            <i [ngClass]="itemParent.icon" class="layout-menuitem-icon"></i>
+            <span class="layout-menuitem-text">{{itemParent.label}}</span>
+        </a>
+      </li>
+    </ul>
+  </li>
 </ul>

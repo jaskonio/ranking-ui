@@ -4,22 +4,28 @@
     "value": "ID",
     "order": 99,
     "sortable": false,
-    "foreign_key": true
+    "foreign_key": true,
+    "visible": false
+  },
+  {
+    "key": "position",
+    "value": "Pos",
+    "order": 0,
+    "sortable": true,
+    "activeSortable": true
+  },
+  {
+    "key": "photo_url",
+    "value": "Foto",
+    "order": 1
   },
   {
     "key": "first_name",
     "value": "Nombre",
     "order": 2,
     "sortable": false,
-    "supportImageKey": "photos",
+    "supportImageKey": "photo_url",
     "supportFilter": true
-  },
-  {
-    "key": "position",
-    "value": "Pos",
-    "order": 1,
-    "sortable": true,
-    "activeSortable": true
   },
   {
     "key": "last_name",

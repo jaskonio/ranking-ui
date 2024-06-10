@@ -12,8 +12,7 @@
                 </ng-template>
 
                 <ng-template pTemplate="right">
-                    <!-- <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Import" chooseLabel="Import" class="mr-2 inline-block"></p-fileUpload> -->
-                    <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help" (click)="dt.exportCSV()"></button>
+                    <!-- <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help" (click)="dt.exportCSV()"></button> -->
                 </ng-template>
             </p-toolbar>
 
@@ -69,8 +68,8 @@
                               <td style="width:14%; min-width:10rem;">
                                 <img src="{{rowData['photo_url']}}" alt="{{ rowData[col.key] }}" width="40" height="40" class="shadow-4" />
                               </td>
-
-                            }@else {
+                            }
+                            @else {
                               <td style="width:14%; min-width:10rem;">
                                 {{ rowData[col.key] }}
                               </td>
@@ -79,6 +78,10 @@
 
                         <td>
                           <div class="flex">
+                              @for (action of configuracionActionsCrud; track $index) {
+                                <button pButton pRipple icon="pi {{action.icon}}" class="p-button-rounded p-button-success mr-2" (click)="customCallback(action.callback(rowData))"></button>
+                              }
+
                               <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="editRow(rowData)"></button>
                               <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteRow(rowData)"></button>
                           </div>

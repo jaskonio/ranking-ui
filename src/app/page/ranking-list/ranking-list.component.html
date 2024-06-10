@@ -5,10 +5,10 @@
     <div class="card">
       <h5> {{season.name}}</h5>
       <div class="grid">
-        @for (league_id of season.league_ids; track league_id) {
+        @for (league of season.leagues; track league.id) {
           <div class="col-12 md:col-6 lg:col-4">
-            <div class="surface-card p-4 shadow-2 border-round custom-card" (click)="goToRanking(league_id)">
-              <div class="text-xl font-medium text-900 mb-3">{{ league_id }} </div>
+            <div class="surface-card p-4 shadow-2 border-round custom-card" (click)="goToRanking(league.id)">
+              <div class="text-xl font-medium text-900 mb-3">{{ league.name }} </div>
               <div style="height: 50px" class="border-2 border-dashed surface-border"></div>
             </div>
           </div>

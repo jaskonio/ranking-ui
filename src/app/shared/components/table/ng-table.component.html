@@ -1,33 +1,125 @@
 <p-table
-[columns]="defVisiblesConlumn"
+#dt
 [value]="dataSource"
+[columns]="enabledColumns"
+[dataKey]="dataKey"
+responsiveLayout="scroll"
+[rows]="configuration.rows"
+[globalFilterFields]="filterFieldSupport"
+[paginator]="configuration.paginator"
+[rowsPerPageOptions]="configuration.rowsPerPageOptions"
+[showCurrentPageReport]="configuration.showCurrentPageReport"
+[selectionMode]="configuration.selectionMode"
+[rowHover]="configuration.rowHover"
+[sortField]="sortFieldSelected"
+[sortOrder]="sortOrderSelected"
+
+[(selection)]="selectedRow"
 styleClass="p-datatable-striped"
-sortField="{{sortFieldValue}}"
-[sortOrder]="sortOrderValue"
-  >
-  <ng-template pTemplate="header" let-columns>
-    <tr>
-      <th *ngFor="let col of columns" pSortableColumn="{{col.key}}" pSortableColumnDisabled="{{!col.sortable}}">
-        {{col.value}}
-        @if (col.sortable == true) {
-          <p-sortIcon field="{{col.key}}"></p-sortIcon>
-        }
-      </th>
-    </tr>
+editMode="row"
+>
+  <ng-template pTemplate="caption">
+      <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+          <h5 class="m-0"> {{ configuration.title }}</h5>
+          <span class="block mt-2 md:mt-0 p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Buscador..."  class="w-full sm:w-auto" [disabled]="globalFilterDiabled"/>
+          </span>
+      </div>
   </ng-template>
-  <ng-template pTemplate="body" let-rowData let-columns="columns">
-    <tr>
-      <td *ngFor="let col of defVisiblesConlumn">
-        <div>
+  <ng-template pTemplate="header">
+      <tr>
+        @if (configuration.columnCheckboxEnable) {
+          <th style="width: 3rem">
+            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+          </th>
+        }
 
-          @if (col.supportImageKey != undefined ) {
-            <p-chip label="{{ rowData[col.key] }}" image="{{rowData['photo_url']}}" alt="{{rowData[col.key]}}" styleClass="p-chip-custom"></p-chip>
-          }@else {
-            <span class="ml-1 vertical-align-middle"> {{ rowData[col.key] }} </span>
+        <th *ngFor="let col of enabledColumns" pSortableColumn="{{col.key}}" pSortableColumnDisabled="{{!col.sortable}}">
+          {{col.value}}
+          @if (col.sortable == true) {
+            <p-sortIcon field="{{col.key}}"></p-sortIcon>
           }
-        </div>
+        </th>
+        <th>
+          <!-- Column to button actions -->
+        </th>
+      </tr>
+  </ng-template>
 
+  <ng-template pTemplate="body" let-rowData let-columns="columns" let-editing="editing" let-index="rowIndex">
+
+      <tr [pEditableRow]="rowData">
+
+        @if (configuration.columnCheckboxEnable) {
+          <td>
+            <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+          </td>
+        }
+
+        @for (col of enabledColumns; track $index) {
+          @if (col.editable) {
+            <td>
+              <p-cellEditor>
+                  <ng-template pTemplate="input">
+                    @if (col.type == "number") {
+                      <input
+                        pInputText
+                        type="number"
+                        [(ngModel)]="dataSource[index][col.key]" />
+                    }
+                    @else {
+                      <input
+                      pInputText
+                      type="text"
+                      [(ngModel)]="dataSource[index][col.key]" />
+                    }
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                      {{ getValue(dataSource[index], col.key, index) }}
+                  </ng-template>
+              </p-cellEditor>
+            </td>
+          }
+          @else {
+            @if (col.key == 'photo_url' ) {
+              <td>
+                <img src="{{rowData['photo_url']}}" alt="{{ rowData[col.key] }}" width="40" height="40" class="shadow-4" />
+              </td>
+            }
+            @else {
+              <td>
+                {{ rowData[col.key] }}
+              </td>
+            }
+          }
+        }
+        <td>
+          <div class="flex">
+              @for (action of configuration.buttonActions; track $index) {
+                <button *ngIf="!editing" pButton pRipple icon="pi {{action.icon}}" [ngClass]="getActionStyles(action.styles)" (click)="onClickButtonAction(action.callback, rowData)"></button>
+              }
+
+              @if ( configuration.editableRow) {
+                <button *ngIf="!editing" pButton pRipple pInitEditableRow icon="pi pi-pencil" (click)="onRowEditInit(rowData, index)" class="p-button-rounded p-button-text" ></button>
+                <button *ngIf="editing" pButton pRipple pSaveEditableRow  icon="pi pi-check" (click)="onRowEditSave(rowData, index)" class="p-button-rounded p-button-text p-button-success mr-2"></button>
+                <button *ngIf="editing" pButton pRipple pCancelEditableRow icon="pi pi-times" (click)="onRowEditCancel(rowData, index)" class="p-button-rounded p-button-text p-button-danger"></button>
+              }
+          </div>
+        </td>
+    </tr>
+
+  </ng-template>
+
+
+  <ng-template pTemplate="emptymessage" let-columns>
+    <tr>
+      <td [attr.colspan]="columns.length+1" style="text-align: center;">
+        {{getMessage()}}
       </td>
     </tr>
   </ng-template>
+
+
 </p-table>
+

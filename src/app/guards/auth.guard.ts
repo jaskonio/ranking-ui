@@ -4,10 +4,16 @@ import { AuthService } from '../core/auth.service';
 import { of } from 'rxjs';
 
 export const adminAuthGuard: CanActivateFn = (route, state) => {
+  console.log("adminAuthGuard")
+
   const router = inject(Router);
   const authService = inject(AuthService)
 
   if (!authService.isLoggedIn()) {
+    router.navigateByUrl('/login');
+  }
+
+  if (!authService.containRole(route.data['role'])) {
     router.navigateByUrl('/login');
   }
 
@@ -20,7 +26,7 @@ export const loginAuthGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService)
 
   if (authService.isLoggedIn()) {
-    router.navigateByUrl('/');
+    router.navigateByUrl('/admin');
   }
 
   return of(true)
