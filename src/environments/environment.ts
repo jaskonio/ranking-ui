@@ -1,4 +1,4 @@
 export const environment = {
-  apiUrlBase: "https://jonatanlantonio.com/ranking-app/api/",
+  apiUrlBase: "http://13.60.47.238/ranking-app/api/",
   production: true
 };
