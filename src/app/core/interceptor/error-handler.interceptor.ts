@@ -18,7 +18,7 @@ export const errorHandlerInterceptor: HttpInterceptorFn = (req, next) => {
         route.navigateByUrl('/');
       }
 
-      throw new Error(error.message)
+      throw error;
     })
   )
 };

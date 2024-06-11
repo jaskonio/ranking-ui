@@ -1,10 +1,27 @@
 <div class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+        <div class="card p-fluid">
+          <h5>Iniciar sesión</h5>
+  
+            <div class="field">
+                <input pInputText formControlName="user_name" type="text" placeholder="Nombre de usuario"/>
+                <small class="p-error block" *ngIf="loginForm.get('user_name')?.invalid && loginForm.get('user_name')?.dirty">
+                Por favor rellene el nombre de usuario
+                </small>
+            </div>
 
-    <app-ng-form [title_form]="formConfiguration.title_form"
-    [form_configuration]="formConfiguration.fields_configuration"
-    [submitButtonEnabled]="formConfiguration.submitButtonEnabled"
-    (newContentEvent)="onSubmitForm($event)">
-    </app-ng-form>
-
+            <div class="field">
+                <p-password formControlName="password" [feedback]="false" label="password" placeholder="*******"/>
+                <small class="p-error block" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.dirty">
+                Por favor rellene la contraseña
+                </small>
+            </div>
+            <div *ngIf="errorMessage" class="p-error block">{{ errorMessage }}</div> 
+            <div p-buttonGroup class="flex gap-2 justify-content-center mt-5">
+              <button pButton pRipple icon="pi pi-check" label="Iniciar sesión" severity="success" class="col-12" [disabled]="loginForm.invalid"></button>
+            </div>
+        </div>
+      </form>
 </div>
 
+<p-toast />

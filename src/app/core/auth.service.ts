@@ -59,7 +59,7 @@ export class AuthService {
             return response
           }
 
-          throw Error("Failed login")
+          throw Error("Invalid user or password")
         }),
         tap(response => this.setSession(response)),
         map(response => response.access_token),
