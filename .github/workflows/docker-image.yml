@@ -1,0 +1,53 @@
+name: Build and Publish Docker Image
+
+on:
+  push:
+    branches:
+    - main
+    - develop
+
+jobs:
+
+  build-docker-image:
+    permissions: write-all
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Chekout the code
+      uses: actions/checkout@v4
+
+    - name: Login Github Container Registry
+      uses: docker/login-action@v3.1.0
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build the Docker image
+      run: | 
+        docker build -t ghcr.io/$GITHUB_REPOSITORY:$GITHUB_REF_NAME .
+        docker push ghcr.io/$GITHUB_REPOSITORY:$GITHUB_REF_NAME
+
+  deploy-aws:
+    needs: build-docker-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set $GITHUB_REF_NAME
+        run: |
+          echo "GITHUB_REF_NAME=`echo $GITHUB_REF_NAME`" >> $GITHUB_ENV
+          echo "GITHUB_REPOSITORY=`echo $GITHUB_REPOSITORY`" >> $GITHUB_ENV
+      - name: Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.IP_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          allenvs: true
+          script: |
+            echo "docker pull ghcr.io/${{ env.GITHUB_REPOSITORY }}:${{ env.GITHUB_REF_NAME }}"
+            docker pull ghcr.io/${{ env.GITHUB_REPOSITORY }}:${{ env.GITHUB_REF_NAME }}
+            docker stop app-ranking-ui 2> /dev/null
+            docker rm app-ranking-ui 2> /dev/null
+            echo "Run APP"
+            echo "docker run -d -p 4200:80 --restart always --name app-ranking-ui ghcr.io/${{ env.GITHUB_REPOSITORY }}:${{ env.GITHUB_REF_NAME }}"
+            docker run -d -p 4200:80 --restart always --name app-ranking-ui ghcr.io/${{ env.GITHUB_REPOSITORY }}:${{ env.GITHUB_REF_NAME }}
