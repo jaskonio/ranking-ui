@@ -1,10 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
-import {TableService} from '../../shared/services/table.service'
+import { Component, Input } from '@angular/core';
 import {LeagueService} from '../../shared/services/league.service'
 import { NgTableComponent } from '../../shared/components/table/ng-table.component';
 import { League, LeagueRawView, RunnerRankingModel } from '../../shared/services/interfaces';
 import { ConlumnsDefinition, TableConfiguracion } from '../../shared/interfaces/interfaces';
-import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-ranking',
@@ -33,8 +31,104 @@ export class RankingComponent {
   public league?: LeagueRawView;
 
   data: RunnerRankingModel[] = []
-  columns: ConlumnsDefinition[] = []
-
+  columns: ConlumnsDefinition[] = [
+    {
+      "key": "id",
+      "value": "ID",
+      "order": 99,
+      "sortable": false,
+      "foreign_key": true,
+      "visible": false
+    },
+    {
+      "key": "position",
+      "value": "Pos",
+      "order": 0,
+      "sortable": true,
+      "activeSortable": true
+    },
+    {
+      "key": "photo_url",
+      "value": "Foto",
+      "order": 1
+    },
+    {
+      "key": "first_name",
+      "value": "Nombre",
+      "order": 2,
+      "sortable": false,
+      "supportImageKey": "photo_url",
+      "supportFilter": true
+    },
+    {
+      "key": "last_name",
+      "value": "Apellido",
+      "order": 5,
+      "sortable": true,
+      "supportFilter": true
+    },
+    {
+      "key": "dorsal",
+      "value": "Dorsal",
+      "order": 6,
+      "sortable": true
+    },
+    {
+      "key": "points",
+      "value": "Puntos",
+      "order": 7,
+      "sortable": true
+    },
+    {
+      "key": "pos_last_race",
+      "value": "Ultima pos",
+      "order": 8,
+      "sortable": true
+    },
+    {
+      "key": "top_five",
+      "value": "Top Five",
+      "order": 9,
+      "sortable": true
+    },
+    {
+      "key": "participations",
+      "value": "Participaciones",
+      "order": 10,
+      "sortable": true
+    },
+    {
+      "key": "best_position",
+      "value": "Mejor Pos",
+      "order": 11,
+      "sortable": true
+    },
+    {
+      "key": "last_position_race",
+      "value": "Ultima pos en carrea",
+      "order": 12,
+      "sortable": true
+    },
+    {
+      "key": "best_avegare_peace",
+      "value": "Mejor media Ritmo",
+      "order": 0,
+      "visible": false
+    },
+    {
+      "key": "best_position_real",
+      "value": "Mejor Pos real",
+      "order": 0,
+      "visible": false
+    },
+    {
+      "key": "nationality",
+      "value": "Nacionalidad",
+      "order": 0,
+      "visible": false
+    }
+  ]
+  
   public configuration:TableConfiguracion = {
     title: '',
     paginator: true,
@@ -44,12 +138,7 @@ export class RankingComponent {
     showCurrentPageReport: true,
   }
 
-  constructor(private tableService: TableService,
-    private leagueService: LeagueService
-  ){
-    this.tableService.getConfig().subscribe( data => {
-      this.columns = data;
-    })
+  constructor(private leagueService: LeagueService){
   }
 
   ngOnInit() {
