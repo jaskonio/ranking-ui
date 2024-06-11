@@ -60,7 +60,6 @@ import { CheckboxModule } from 'primeng/checkbox';
 export class CrudComponent implements OnInit {
   DEFAULT_VALUE_SORT_ORDER: number = 1;
 
-  title_table: string = "Lista de Corredores"
   property_id:string = ""
   fields_filter_support: string[] = []
 
@@ -68,6 +67,7 @@ export class CrudComponent implements OnInit {
   all_visibles_conlumn: ConlumnsDefinition[] = [];
   def_visibles_conlumn: ConlumnsDefinition[] = [];
 
+  @Input() title_table:string = "";
   @Input() service!:ICrudService;
   @Input() formConfiguration?: any = undefined;
   @Input() configuracionActionsCrud: ActionsCrud[]| null = null

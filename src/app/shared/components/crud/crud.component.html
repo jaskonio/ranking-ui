@@ -1,13 +1,11 @@
 <div class="grid">
     <div class="col-12">
-        <div class="card px-6 py-6">
-            <p-toast></p-toast>
-
+        <div class="card">
             <p-toolbar styleClass="mb-4">
                 <ng-template pTemplate="left">
                     <div class="my-2">
-                        <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success mr-2" (click)="openNew()"></button>
-                        <button pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedItems()" [disabled]="!selectedRow || !selectedRow.length"></button>
+                        <button pButton pRipple label="Añadir" icon="pi pi-plus" class="p-button-success mr-2" (click)="openNew()"></button>
+                        <button pButton pRipple label="Eliminar" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedItems()" [disabled]="!selectedRow || !selectedRow.length"></button>
                     </div>
                 </ng-template>
 
@@ -136,3 +134,5 @@
         </p-dialog>
     </div>
 </div>
+
+<p-toast />

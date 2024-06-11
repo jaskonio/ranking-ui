@@ -3,30 +3,30 @@
 
 		<div class="card">
       <form [formGroup]="addLeagueForm" (ngSubmit)="onSubmitAddNewLeague()" novalidate>
-          <h5>Añadir nueva Liga</h5>
+          <h5>Nueva Liga</h5>
           <div class="formgroup-inline">
-            <div class="field col-3">
-              <input pInputText formControlName="name" type="text" placeholder="Nombre de la Liga" class="col-12"/>
+            <div class="col-12">
+              <input pInputText formControlName="name" type="text" placeholder="Nombre de la Liga"/>
               <small class="p-error block" *ngIf="addLeagueForm.get('name')?.invalid && addLeagueForm.get('name')?.dirty">
                 Por favor rellene el campo con un valor valido
               </small>
             </div>
-            <div class="field col-3">
-              <button pButton pRipple icon="pi pi-check" label="Añadir" severity="success" class="col-3" [disabled]="addLeagueForm.invalid"></button>
+            <div class="col-12">
+              <button pButton pRipple icon="pi pi-check" label="Añadir" severity="success" [disabled]="addLeagueForm.invalid"></button>
             </div>
           </div>
       </form>
     </div>
 
     <div class="card">
-      <div class="field col-12 md:col-12">
+      <div class="col-12">
         <div>
           <app-ng-table
             [dataSource]="allLeagues"
             [columns]="getLeagueColumnDefinition()"
             [configuration]="getLeagueTableConfiguration()"/>
-            <div class="field col-3 sm:col-12">
-              <button pButton pRipple icon="pi pi-check" label="Guardar" severity="success" class="col-1" (click)="onSaveAllLeagues()"></button>
+            <div class="field col-12">
+              <button pButton pRipple icon="pi pi-check" label="Guardar" severity="success" (click)="onSaveAllLeagues()"></button>
             </div>
         </div>
       </div>
@@ -36,7 +36,7 @@
     <div class="card">
       <h5>Editar Liga</h5>
 
-      <div class="field col-12 md:col-12">
+      <div class="col-12">
         <p-dropdown
           [options]="allLeagues"
           [(ngModel)]="leagueSelected"
@@ -45,7 +45,7 @@
       </div>
 
       <div class="card" *ngIf="leagueSelected">
-        <div class="field col-12 md:col-12">
+        <div class="col-12">
           <div class="mb-5">
             <form [formGroup]="formGroupPersons">
               <p-multiSelect
@@ -66,7 +66,7 @@
           </div>
         </div>
 
-        <div class="field col-12 md:col-12">
+        <div class="col-12">
           <div class="mb-5">
             <form [formGroup]="raceFormGroup">
               <p-multiSelect
@@ -86,11 +86,13 @@
               (onChange)="onChangeRaceLeagueTable($event)"/>
           </div>
         </div>
-        <div class="field col-3">
-          <button pButton pRipple icon="pi pi-check" label="Guardar" severity="success" class="col-6" (click)="saveLeague($event)"></button>
+        <div class="col-12">
+          <button pButton pRipple icon="pi pi-check" label="Guardar" severity="success"(click)="saveLeague($event)"></button>
         </div>
       </div>
 
     </div>
   </div>
 </div>
+
+<p-toast />

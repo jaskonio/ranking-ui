@@ -1,33 +1,33 @@
 <div class="grid">
-	<div class="col-12 md:col-12">
+	<div class="col-12">
 
     <div class="card">
       <form [formGroup]="seassonForm" (ngSubmit)="onSeasonFormSubmit()" novalidate>
-          <h5>Añadir nueva temporada</h5>
+          <h5>Nueva temporada</h5>
           <div class="formgroup-inline">
-            <div class="field col-3">
-              <input pInputText formControlName="name" type="text" placeholder="Nombre de la temporada" class="col-12"/>
+            <div class="col-12">
+              <input pInputText formControlName="name" type="text" placeholder="Nombre de la temporada"/>
               <small class="p-error block" *ngIf="seassonForm.get('name')?.invalid && seassonForm.get('name')?.dirty">
                 Por favor rellene el campo con un valor valido
               </small>
             </div>
-            <div class="field col-3">
-              <button pButton pRipple icon="pi pi-check" label="Añadir" severity="success" class="col-12" [disabled]="seassonForm.invalid"></button>
+            <div class="col-12">
+              <button pButton pRipple icon="pi pi-check" label="Añadir" severity="success"[disabled]="seassonForm.invalid"></button>
             </div>
           </div>
       </form>
     </div>
 
     <div class="card">
-      <div class="field col-12 md:col-12">
+      <div class="col-12">
         <div>
           <app-ng-table
             [dataSource]="allSeasonItems"
             [columns]="getSeasonColumnDefinition()"
             [configuration]="getSeasonTableConfiguration()"
             (onClickRowEvent)="onClickRowEvent($event)"/>
-            <div class="field col-3 sm:col-12">
-              <button pButton pRipple icon="pi pi-check" label="Guardar" severity="success" class="col-1" (click)="onSaveAllSeasons()" [disabled]="seasonTableEditEnable"></button>
+            <div class="col-12">
+              <button pButton pRipple icon="pi pi-check" label="Guardar" severity="success"(click)="onSaveAllSeasons()" [disabled]="seasonTableEditEnable"></button>
             </div>
         </div>
       </div>
@@ -37,7 +37,7 @@
     <div class="card">
       <h5>Editar temporada</h5>
 
-      <div class="field col-12 md:col-12">
+      <div class="col-12">
         <p-dropdown
           [(ngModel)]="seassonItemSelected"
           [options]="allSeasonItems"
@@ -48,7 +48,7 @@
 
       <div class="card" *ngIf="seassonItemSelected">
 
-        <div class="field col-12 md:col-12">
+        <div class="col-12">
 
           <div class="mb-5">
               <p-multiSelect
@@ -67,8 +67,8 @@
           </div>
 
         </div>
-        <div class="field col-3 sm:col-12">
-          <button pButton pRipple icon="pi pi-check" label="Guardar" severity="success" class="col-1" (click)="onSaveSeason($event)" [disabled]="leagueTableEditEnable"></button>
+        <div class="col-12">
+          <button pButton pRipple icon="pi pi-check" label="Guardar" severity="success" (click)="onSaveSeason($event)" [disabled]="leagueTableEditEnable"></button>
         </div>
       </div>
 
