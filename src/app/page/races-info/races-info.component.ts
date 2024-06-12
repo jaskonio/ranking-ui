@@ -38,8 +38,8 @@ export class RacesInfoComponent {
       placeholder: "Plataforma",
       control_name: "platform",
       control_type:"dropdown",
-      dropdown_options: ['SPORTMANIACS_LATEST', 'VALENCIACIUDADDELRUNNING_LATEST', 'TOPRUN_LATEST'],
-      default_value: 'SPORTMANIACS_LATEST',
+      dropdown_options: ['SPORTMANIACS_LATEST', 'SPORTMANIACS_V1', 'SPORTMANIACS_V2', 'VALENCIACIUDADDELRUNNING_LATEST', 'TOPRUN_LATEST'],
+      default_value: 'SPORTMANIACS_V1',
       validators: [Validators.required]
     },
     {
