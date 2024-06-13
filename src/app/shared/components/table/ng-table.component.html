@@ -84,7 +84,9 @@ editMode="row"
           @else {
             @if (col.key == 'photo_url' ) {
               <td>
-                <img src="{{rowData['photo_url']}}" alt="{{ rowData[col.key] }}" width="40" height="40" class="shadow-4" />
+                <p-chip
+                  image="{{rowData['photo_url']}}" 
+                  styleClass="p-chip-custom"/>
               </td>
             }
             @else {
