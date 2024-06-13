@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, from, map, Observable, of, switchMap, combineLatest } from 'rxjs';
+import { catchError, from, map, Observable, of, switchMap, combineLatest, BehaviorSubject, throwError } from 'rxjs';
 import {ConlumnsDefinition, ICrudService} from '../interfaces/interfaces'
 import { environment } from '../../../environments/environment';
-import { RaceResponse } from './interfaces';
+import { Race, RaceResponse } from './interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +13,9 @@ export class RaceService implements ICrudService{
   enpoint: string = 'raceinfo/'
   url: string = this.baseUrl + this.enpoint
 
+  private allRaces = new BehaviorSubject<Race[]|null>(null);
+  public allRaces$ = this.allRaces.asObservable();
+  
   constructor(private http: HttpClient) {
   }
 
@@ -56,7 +59,7 @@ export class RaceService implements ICrudService{
     },
   ]
 
-  get_data(): Observable<RaceResponse[]> {
+  get_data(): Observable<Race[]> {
     return this.http.get(this.url)
     .pipe(
       map((response: any) => {return response['data']}),
@@ -120,6 +123,12 @@ export class RaceService implements ICrudService{
     )
   }
 
+  reloadData() {
+    this.get_data().subscribe(data => {
+      this.allRaces.next(data);
+    })
+  }
+
   process_race(item:any) {
     return this.http.get(this.url + 'run_process/' + item.id)
     .pipe(
@@ -129,5 +138,10 @@ export class RaceService implements ICrudService{
         throw new Error(err)
       })
     );
+  }
+
+  private handleError(error: any) {
+    console.error('API Error: ', error);
+    return throwError(() => new Error(error));
   }
 }

@@ -93,6 +93,15 @@ export interface RaceResponse {
   race_data_id: boolean
 }
 
+export interface Race {
+  id: string;
+  name: string;
+  url: string;
+  platform: string;
+  processed: boolean;
+  race_data_id: boolean
+}
+
 export interface RaceLeague {
   name: string;
   order: number;

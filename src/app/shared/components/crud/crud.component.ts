@@ -89,7 +89,7 @@ export class CrudComponent implements OnInit {
 
   selectedRow: any[] = [];
 
-  rowsPerPageOptions = [5, 10, 20];
+  rowsPerPageOptions = [5, 10, 20, 100];
 
   tableErrorMessage: string = ""
   tableEmptyMessage: string = "No hay registros"
@@ -302,7 +302,7 @@ export class CrudComponent implements OnInit {
           next: (value) => {
             value .forEach( x => {
               if (x) {
-                this.notificationService.notification =  { severity: 'success', summary: 'Successful', detail: 'Registro Eliminado', life: 3000 }
+                this.notificationService.notification =  { severity: 'success', summary: 'OK', detail: 'Registro Eliminado', life: 3000 }
               }
             })
 
@@ -321,8 +321,12 @@ export class CrudComponent implements OnInit {
           next: (value) => {
             console.log(value)
           },
-          error: err => this.notificationService.notification =  { severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 },
+          error: err => {
+            this.notificationService.notification =  { severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 },
+            this.loadData();
+          },
           complete: () => {
+            this.notificationService.notification =  { severity: 'success', summary: 'OK', detail: 'Accion terminada exitosamente', life: 3000 },
             this.loadData();
           }
       })

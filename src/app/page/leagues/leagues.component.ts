@@ -527,10 +527,12 @@ export class LeaguesComponent implements OnDestroy{
     this.leagueService.process(league).subscribe({
       next(value) {
         console.log(value);
+        this$.notificationService.add({ severity: 'success', summary: 'OK', detail: 'Se ha generado el ranking correctamente', life: 3000 })
         this$.leagueService.reloadData();
       },
       error(err) {
-        console.error(err)
+        console.error(err);
+        this$.notificationService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al generar el ranking', life: 3000 })
       }
     })
   }
