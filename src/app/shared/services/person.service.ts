@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { PersonResponse } from './interfaces';
+import { Person } from './interfaces';
 import { catchError, from, map, Observable, of, switchMap, combineLatest } from 'rxjs';
 import {ConlumnsDefinition, ICrudService} from '../interfaces/interfaces'
 import { environment } from '../../../environments/environment';
@@ -54,7 +54,7 @@ export class PersonService implements ICrudService{
     }
   ]
 
-  get_data(): Observable<PersonResponse[]> {
+  get_data(): Observable<Person[]> {
     return this.http.get(this.url)
     .pipe(
       map((response: any) => {return response['data']}),

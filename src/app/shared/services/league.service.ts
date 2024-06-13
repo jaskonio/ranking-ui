@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { League, LeagueRawView } from './interfaces';
+import { League, LeagueRaw } from './interfaces';
 import { environment } from '../../../environments/environment';
 import { BehaviorSubject, catchError, map, Observable, throwError, zip } from 'rxjs';
 
@@ -21,7 +21,7 @@ export class LeagueService {
     this.reloadData();
   }
 
-  getRawById(league_id: string): Observable<LeagueRawView> {
+  getRawById(league_id: string): Observable<LeagueRaw> {
     return this.http.get(this.urlRaw + league_id)
     .pipe(
       map((response: any) => {return response['data']}),

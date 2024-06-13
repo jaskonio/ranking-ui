@@ -1,14 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { LeagueService } from '../../shared/services/league.service';
-import { NotificationService } from '../../shared/services/notification.service';
 import { DropdownModule } from 'primeng/dropdown';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { PersonService } from '../../shared/services/person.service';
-import { League, PersonResponse, RaceLeague, RaceResponse, RunnerParticipant } from '../../shared/services/interfaces';
+import { League, LeagueRace, LeagueRunnerParticipant, Person, Race, RaceData } from '../../shared/services/interfaces';
 import { RaceService } from '../../shared/services/race.service';
 import { NgTableComponent } from '../../shared/components/table/ng-table.component';
 import { ConlumnsDefinition, TableActions, TableConfiguracion } from '../../shared/interfaces/interfaces';
@@ -16,6 +15,7 @@ import { TableModule } from 'primeng/table';
 import { catchError, forkJoin, Observable, of, Subject, takeUntil } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { RequestLeague, RequestLeagueRace, RequestLeagueRunnerParticipant } from '../../shared/services/request_interfaces';
 
 @Component({
   selector: 'app-leagues',
@@ -40,21 +40,25 @@ export class LeaguesComponent implements OnDestroy{
   allLeagues: League[] = []
   addLeagueForm = new FormGroup({});
 
-  allPersons:PersonResponse[] = []
-  allRunnerParticipant:RunnerParticipant[] = []
+  allPersons:Person[] = []
+  personSelected:Person[] = []
 
-  allRaces:RaceResponse[]= []
-  allRacesLeague:RaceLeague[] =[]
+  runnerParticipantsSelected: LeagueRunnerParticipant[] = []
+  
+  allRunnerParticipant:LeagueRunnerParticipant[] = []
 
-  runnerParticipantsSelected: RunnerParticipant[] = []
-  raceLeagueSelected: RaceLeague[] = []
+  allRaces:Race[]= []
+  allRacesLeague:LeagueRace[] =[]
+
+
+  raceLeagueSelected: LeagueRace[] = []
 
   formGroupPersons = new FormGroup({
-    participantsSelectedControl: new FormControl<RunnerParticipant[]>([], [])
+    persons: new FormControl<Person[]>([], [])
   });
 
   raceFormGroup = new FormGroup({
-    raceLeagueSelectedControl: new FormControl<RaceLeague[]>([], [])
+    raceLeagueSelectedControl: new FormControl<LeagueRace[]>([], [])
   });
 
   _leagueSelected:League|undefined
@@ -116,6 +120,13 @@ export class LeaguesComponent implements OnDestroy{
       "order": 6,
       "editable": true,
       "type": "number"
+    },
+    {
+      "key": "unique_dorsal",
+      "value": "Dorsal unico",
+      "order": 7,
+      "editable": true,
+      "type": "checkbox"
     }
   ]
 
@@ -253,6 +264,15 @@ export class LeaguesComponent implements OnDestroy{
     return this.leagueTableConfiguration;
   }
 
+  onChangeSelectedLeague(event:any) {
+    console.log("onChangeSelectedLeague")
+    console.log(event)
+    console.log(this.leagueSelected)
+    if (this.leagueSelected != undefined) {
+      this.personSelected = this.personSelected.concat(this.leagueSelected?.runner_participants)
+    }
+  }
+
   onSaveAllLeagues() {
     console.log("onSaveAllLeagues")
     console.log(this.allLeagues)
@@ -297,7 +317,7 @@ export class LeaguesComponent implements OnDestroy{
           console.log(value)
           this.allRaces = value
           this.allRacesLeague = this.allRaces.map( race => {
-            let raceLeague:RaceLeague = {
+            let raceLeague:LeagueRace = {
               name: race.name,
               order: 0,
               race_info_id: race.id
@@ -317,37 +337,25 @@ export class LeaguesComponent implements OnDestroy{
 
   // Runner Participants
   updateRunnerParticipantsOptions() {
-    if (this.leagueSelected == undefined) {
-      return;
-    }
+    // if (this.leagueSelected == undefined) {
+    //   return;
+    // }
 
-    this.allRunnerParticipant = []
+    // this.allRunnerParticipant = []
 
-    this.allPersons.map(p => {
-        let newRP: RunnerParticipant = {...p}
-        newRP.dorsal = -1
-        newRP.disqualified_order_race = -1
-        newRP.person_id = p.id
-        this.allRunnerParticipant.push(newRP)
-      }
-    )
+    // let personSelected:LeagueRunnerParticipant[] = []
 
-    let personSelected:RunnerParticipant[] = []
-
-    if (this.leagueSelected.runner_participants) {
-      this.leagueSelected.runner_participants.map( rp => {
-        this.allRunnerParticipant.map( p => {
-          if(rp.person_id == p.id) {
-            p.dorsal = rp.dorsal
-            p.disqualified_order_race = rp.disqualified_order_race
-            personSelected.push(p)
-          }
-        })
-      })
-    }
-    this.formGroupPersons.get('participantsSelectedControl')?.setValue([])
-    this.formGroupPersons.get('participantsSelectedControl')?.setValue(personSelected)
-    this.updateRunnerParticipantsSelected()
+    // if (this.leagueSelected.runner_participants) {
+    //   this.leagueSelected.runner_participants.map( rp => {
+    //     this.allRunnerParticipant.map( p => {
+    //       if(rp.person_id == p.id) {
+    //         p.dorsal = rp.dorsal
+    //         p.disqualified_order_race = rp.disqualified_order_race
+    //         personSelected.push(p)
+    //       }
+    //     })
+    //   })
+    // }
   }
 
   getRunnerParticipants() {
@@ -358,41 +366,72 @@ export class LeaguesComponent implements OnDestroy{
     return this.runnerParticipantsColumnsDefinition
   }
 
-  onChangeRunnerParticipantCombo(event:any) {
-    this.updateRunnerParticipantsSelected()
-  }
+  onChangeSelectedPersons(event:any) {
+    console.log(event)
+    let person_ids_selected:string[] = event.value
+    let persons_selected:Person[] = this.allPersons.filter(p => person_ids_selected.includes(p.id))
 
-  updateRunnerParticipantsSelected() {
-    let control = this.formGroupPersons.get('participantsSelectedControl')
+    let newParticipantSelected = []
 
-    if (control == undefined || control.value == null) {
-      return;
+    for (let index = 0; index < persons_selected.length; index++) {
+      const person_selected = persons_selected[index];
+      
+      let participanteSelected = this.getParticipanteSelectInLeagueSelectedByPersonId(person_selected.id);
+
+      if (participanteSelected != null) {
+        newParticipantSelected.push(participanteSelected)
+      }
+      else {
+        let newParticipant:LeagueRunnerParticipant = {
+          id: person_selected.id,
+          first_name: person_selected.first_name,
+          last_name: person_selected.last_name,
+          gender: person_selected.gender,
+          photo_url: person_selected.photo_url,
+          person_id: person_selected.id,
+        }
+        newParticipantSelected.push(newParticipant)
+      }
     }
 
-    let itemsSelected:RunnerParticipant[] = control.value
+    this.runnerParticipantsSelected = newParticipantSelected;
+  }
 
-    itemsSelected = itemsSelected.map(item => {
-      if (this.leagueSelected == undefined || this.leagueSelected.runner_participants == undefined || this.leagueSelected.runner_participants.length == 0) {
-        return item
+  getParticipanteSelectInLeagueSelectedByPersonId(personId:string) {
+    if (this.leagueSelected == undefined || this.leagueSelected.runner_participants == undefined || this.leagueSelected.runner_participants.length == 0) {
+      return null
+    }
+
+    for (let index = 0; index < this.leagueSelected.runner_participants.length; index++) {
+      let runner_participants = this.leagueSelected.runner_participants[index]
+      if (personId == runner_participants.person_id) {
+        return runner_participants
       }
+    }
+  
+    return null
+  }
+  updateRunnerParticipantsSelected(persons:Person[]) {
+  }
 
-      let new_item = this.leagueSelected.runner_participants.filter(lrp => {
-        if (item.id == lrp.person_id) {
-          return true
+  getParticipantSelectedInLeagueSelected(persons:LeagueRunnerParticipant[]):LeagueRunnerParticipant[] {
+    if (this.leagueSelected == undefined || this.leagueSelected.runner_participants == undefined || this.leagueSelected.runner_participants.length == 0) {
+      return []
+    }
+
+    let itemsSelected = []
+    for (let p_index = 0; p_index < persons.length; p_index++) {
+      let person = persons[p_index];
+
+      for (let index = 0; index < this.leagueSelected.runner_participants.length; index++) {
+        let runner_participants = this.leagueSelected.runner_participants[index]
+        if (person.id == runner_participants.person_id) {
+          itemsSelected.push(runner_participants)
         }
-
-        return false
-      })
-
-      if (new_item.length == 0) {
-        return item
       }
+    }
 
-      return new_item[0]
-    })
-
-
-    this.runnerParticipantsSelected = itemsSelected;
+    return itemsSelected
   }
 
   getRunnerParticipantsConfiguration() {
@@ -408,13 +447,13 @@ export class LeaguesComponent implements OnDestroy{
   }
 
   onChangeRunnerParticipantTable(event:any) {
-    console.log(event)
-    this.runnerParticipantsUpdated = event;
+    // console.log(event)
+    // this.runnerParticipantsUpdated = event;
   }
 
   // Races League
   updateRaceLeagueOptions() {
-    let racesLeagueSelected:RaceLeague[] = []
+    let racesLeagueSelected:LeagueRace[] = []
 
     if (this.leagueSelected?.races) {
       this.leagueSelected?.races.map( r => {
@@ -439,7 +478,7 @@ export class LeaguesComponent implements OnDestroy{
     if (control.value == null ) {
       return;
     }
-    let values:RaceLeague[] = control.value.map((value:RaceLeague, index:number) => {
+    let values:LeagueRace[] = control.value.map((value:LeagueRace, index:number) => {
       value.order = index;
       return value;
     })
@@ -468,38 +507,46 @@ export class LeaguesComponent implements OnDestroy{
   onChangeRaceLeagueTable(event:any) {
     console.log("onChangeRaceLeagueTable")
     console.log(event)
-    this.raceLeagueUpdated = event
   }
 
   // Save League
-  runnerParticipantsUpdated: RunnerParticipant[] = []
-  raceLeagueUpdated: RaceLeague[] = []
 
   saveLeague(event:any) {
-    console.log(this.runnerParticipantsUpdated)
-    console.log(this.raceLeagueUpdated)
+    console.log('saveLeague')
+    console.log(this.runnerParticipantsSelected)
+    // console.log(this.raceLeagueUpdated)
+  
 
-    let runnerParticipartRequest:any = []
-    this.runnerParticipantsUpdated.map(r => {
+    if (this.leagueSelected== undefined) {
+      return
+    }
+  
+    let runnerParticipartRequest:RequestLeagueRunnerParticipant[] = []
+    this.runnerParticipantsSelected.map(r => {
       runnerParticipartRequest.push({
         "person_id": r.person_id,
         "dorsal": r.dorsal,
-        "disqualified_order_race": r.disqualified_order_race
+        "disqualified_order_race": r.disqualified_order_race,
+        "category": '',
+        "unique_dorsal": true
       })
     })
 
-    let racesRequest: any = []
-    this.raceLeagueUpdated.map( r => {
-      racesRequest.push({
-        "name": r.name,
-        "order": r.order,
-        "race_info_id": r.race_info_id
-      })
-    })
+    // let racesRequest: RequestLeagueRace[] = []
+    // this.raceLeagueUpdated.map( r => {
+    //   racesRequest.push({
+    //     "order": r.order,
+    //     "race_info_id": r.race_info_id
+    //   })
+    // })
 
-    let leagueRequest :any = {...this.leagueSelected}
-    leagueRequest['runner_participants'] = runnerParticipartRequest
-    leagueRequest['races'] = racesRequest
+    let leagueRequest:RequestLeague = {
+        id: this.leagueSelected.id,
+        name: this.leagueSelected.name,
+        order: this.leagueSelected.order,
+        // races: racesRequest,
+        runner_participants: runnerParticipartRequest
+    }
 
     console.log(leagueRequest)
 

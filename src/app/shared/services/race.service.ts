@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { catchError, from, map, Observable, of, switchMap, combineLatest, BehaviorSubject, throwError } from 'rxjs';
 import {ConlumnsDefinition, ICrudService} from '../interfaces/interfaces'
 import { environment } from '../../../environments/environment';
-import { Race, RaceResponse } from './interfaces';
+import { Race, RaceRaw } from './interfaces';
 
 @Injectable({
   providedIn: 'root'

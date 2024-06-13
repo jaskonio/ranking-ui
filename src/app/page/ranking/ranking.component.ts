@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import {LeagueService} from '../../shared/services/league.service'
 import { NgTableComponent } from '../../shared/components/table/ng-table.component';
-import { League, LeagueRawView, RunnerRankingModel } from '../../shared/services/interfaces';
+import { League, LeagueRankingRunner, LeagueRaw } from '../../shared/services/interfaces';
 import { ConlumnsDefinition, TableConfiguracion } from '../../shared/interfaces/interfaces';
 
 @Component({
@@ -28,9 +28,9 @@ export class RankingComponent {
     })
   }
 
-  public league?: LeagueRawView;
+  public league?: LeagueRaw;
 
-  data: RunnerRankingModel[] = []
+  data: LeagueRankingRunner[] = []
   columns: ConlumnsDefinition[] = [
     {
       "key": "id",

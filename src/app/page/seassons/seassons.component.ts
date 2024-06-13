@@ -3,7 +3,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { SeasonService } from '../../shared/services/seasson.service';
 import { MessageService } from 'primeng/api';
 import { CommonModule } from '@angular/common';
-import { League, Season, SeasonItem } from '../../shared/services/interfaces';
+import { League, Season, SeasonRaw } from '../../shared/services/interfaces';
 import { DropdownModule } from 'primeng/dropdown';
 import { LeagueService } from '../../shared/services/league.service';
 import { MultiSelectModule } from 'primeng/multiselect';
@@ -34,9 +34,9 @@ export class SeassonsComponent {
     name: new FormControl<string>('', [Validators.required, Validators.maxLength(50)])
   });
 
-  public allSeasonItems: SeasonItem[] = [];
+  public allSeasonItems: SeasonRaw[] = [];
 
-  public seassonItemSelected:SeasonItem | null = null;
+  public seassonItemSelected:SeasonRaw | null = null;
 
   public allLeagues: League[] = [];
 
@@ -136,7 +136,7 @@ export class SeassonsComponent {
       }
 
       seasons.forEach(season => {
-        let item: SeasonItem = {
+        let item: SeasonRaw = {
           id: season.id,
           name: season.name,
           order: season.order,
@@ -295,7 +295,7 @@ export class SeassonsComponent {
     )
   }
 
-  deleteSeason(season:SeasonItem, this$: SeassonsComponent) {
+  deleteSeason(season:SeasonRaw, this$: SeassonsComponent) {
     console.log("deleteSeason")
     console.log(season)
 
