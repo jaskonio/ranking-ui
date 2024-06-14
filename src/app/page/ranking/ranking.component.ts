@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import {LeagueService} from '../../shared/services/league.service'
 import { NgTableComponent } from '../../shared/components/table/ng-table.component';
-import { League, LeagueRankingRunner, LeagueRaw } from '../../shared/services/interfaces';
+import { League, LeagueRankingRunner } from '../../shared/services/interfaces';
 import { ConlumnsDefinition, TableConfiguracion } from '../../shared/interfaces/interfaces';
 
 @Component({
@@ -24,11 +24,10 @@ export class RankingComponent {
     this.leagueService.getByid(value).subscribe(data => {
       this.league = data
       this.configuration.title = this.league.name
-      this.data = this.league.ranking_latest.data;
     })
   }
 
-  public league?: LeagueRaw;
+  public league?: League;
 
   data: LeagueRankingRunner[] = []
   columns: ConlumnsDefinition[] = [

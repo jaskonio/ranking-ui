@@ -39,15 +39,15 @@ import { LeagueManagementService } from '../../shared/services/league_managmentS
 })
 export class LeaguesComponent implements OnDestroy{
   addLeagueForm = new FormGroup({
-    'name': new FormControl('', [Validators.required, Validators.maxLength(50)])
+    name: new FormControl('', [Validators.required, Validators.maxLength(50)])
   });
 
   personsFormGroup = new FormGroup({
-    'persons': new FormControl<Person[]>([],[])
+    persons: new FormControl<Person[]>([],[])
   });
 
   raceFormGroup = new FormGroup({
-    races: new FormControl<LeagueRace[]>([], [])
+    races: new FormControl<Race[]>([], [])
   });
 
   allLeagues: League[] = []
@@ -57,15 +57,7 @@ export class LeaguesComponent implements OnDestroy{
   runnerParticipantsSelected: LeagueRunnerParticipant[] = []
   raceLeagueSelected: LeagueRace[] = []
 
-  _leagueSelected:League|undefined
-
-  get leagueSelected() {
-    return this._leagueSelected
-  }
-
-  set leagueSelected(item) {
-    this._leagueSelected = item
-  }
+  leagueSelected:League|undefined
 
   private destroy$ = new Subject<void>();
 
@@ -261,9 +253,12 @@ export class LeaguesComponent implements OnDestroy{
     }
 
     const persons_related = this.getPersonsRelatedToLeague(this.leagueSelected)
-
     this.updatePersonsFormGroup(persons_related);
     this.runnerParticipantsSelected = this.leagueManagementService.updateRunnerParticipantsSelected(persons_related, this.leagueSelected)
+
+    const races_related = this.getRacesRelatedToLeague(this.leagueSelected)
+    this.updateRaceFormGroup(races_related)
+    this.raceLeagueSelected = this.leagueManagementService.updateRacesLeagueSelected(races_related, this.leagueSelected)
   }
 
   onSaveAllLeagues() {
@@ -342,7 +337,7 @@ export class LeaguesComponent implements OnDestroy{
     this.raceLeagueSelected.map(r => {
       raceParticipartRequest.push({
         order: r.order,
-        race_info_id: r.race_info_id
+        race_info_id: r.id
       })
     })
 
@@ -377,7 +372,7 @@ export class LeaguesComponent implements OnDestroy{
 
   private getPersonsRelatedToLeague(league:League): Person[] {
     const personsRelated: Person[] = [];
-    league.runner_participants.forEach( rp => {
+    league.runner_participants?.forEach( rp => {
       const person = this.allPersons.find(p => rp.id === p.id);
       if (person) {
         personsRelated.push(person);
@@ -385,6 +380,22 @@ export class LeaguesComponent implements OnDestroy{
     });
     
     return personsRelated
+  }
+
+  private getRacesRelatedToLeague(league:League): Race[] {
+    const leagueRacesRelated: Race[] = [];
+    league.races?.forEach( rp => {
+      const race = this.allRaces.find(p => rp.id === p.id);
+      if (race) {
+        leagueRacesRelated.push(race);
+      }
+    });
+    
+    return leagueRacesRelated
+  }
+
+  private updateRaceFormGroup(races: Race[]) {
+    this.raceFormGroup.get('races')?.setValue(races);
   }
 
   private addLeague(league:RequestLeague) {

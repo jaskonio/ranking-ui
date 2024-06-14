@@ -12,7 +12,7 @@ export class LeagueManagementService {
     const newParticipantsSelected: LeagueRunnerParticipant[] = [];
     const existingParticipantsMap = new Map<string, LeagueRunnerParticipant>();
 
-    leagueSelected.runner_participants.forEach(rp => existingParticipantsMap.set(rp.person_id, rp));
+    leagueSelected.runner_participants?.forEach(rp => existingParticipantsMap.set(rp.person_id, rp));
 
     persons.forEach(person => {
       const existingParticipant = existingParticipantsMap.get(person.id);
@@ -32,7 +32,7 @@ export class LeagueManagementService {
     const newRacesSelected: LeagueRace[] = [];
     const existingRaceMap = new Map<string, LeagueRace>();
 
-    leagueSelected.races.forEach(r => existingRaceMap.set(r.name, r));
+    leagueSelected.races?.forEach(r => existingRaceMap.set(r.name, r));
 
     races.forEach(race => {
       const existingParticipant = existingRaceMap.get(race.name);
@@ -63,9 +63,9 @@ export class LeagueManagementService {
 
   private createNewRaceLeague(race:Race): LeagueRace {
     return {
+      id: race.id,
       name:race.name,
       order:0,
-      race_info_id: race.id
     }
   }
 }

@@ -11,10 +11,9 @@ export interface Person {
 export interface Race {
   id: string;
   name: string;
-  url: string;
-  platform: string;
-  processed: boolean;
-  race_data_id: string
+  url?: string;
+  platform?: string;
+  processed?: boolean;
 }
 
 export interface RaceRaw {
@@ -62,30 +61,17 @@ export interface League {
   id: string;
   name: string;
   order: number;
-  races: LeagueRace[];
-  runner_participants: LeagueRunnerParticipant[];
-  ranking_id: string;
-  history_ranking_ids: string[];
+  races?: LeagueRace[];
+  runner_participants?: LeagueRunnerParticipant[];
+  ranking_id?: string;
+  history_ranking_ids?: string[];
 }
 
-export interface LeagueRaw {
-  id: string;
-  name: string;
+export interface LeagueRace extends Race {
   order: number;
-  races: LeagueRace[];
-  runner_participants: LeagueRunnerParticipant[];
-  ranking_latest: LeagueRanking;
-  history_ranking: LeagueRanking[];
 }
 
-export interface LeagueRace {
-  name: string;
-  order: number;
-  runner_ids?: string[];
-  race_info_id: string;
-}
-
-export interface LeagueRunnerParticipant extends Person{
+export interface LeagueRunnerParticipant extends Person {
   person_id: string;
   dorsal?: number;
   category?: string;
