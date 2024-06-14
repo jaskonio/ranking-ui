@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { PersonResponse } from './interfaces';
-import { catchError, from, map, Observable, of, switchMap, combineLatest } from 'rxjs';
+import { Person } from './interfaces';
+import { catchError, from, map, Observable, of, switchMap, combineLatest, BehaviorSubject } from 'rxjs';
 import {ConlumnsDefinition, ICrudService} from '../interfaces/interfaces'
 import { environment } from '../../../environments/environment';
 
@@ -13,7 +13,12 @@ export class PersonService implements ICrudService{
   enpoint: string = 'persons/'
   url: string = this.baseUrl + this.enpoint
 
+  
+  private allPersons = new BehaviorSubject<Person[]|null>(null);
+  public allPersons$ = this.allPersons.asObservable();
+
   constructor(private http: HttpClient) {
+    this.reloadData()
   }
 
   definition_cdolumns: ConlumnsDefinition[] = [
@@ -54,7 +59,7 @@ export class PersonService implements ICrudService{
     }
   ]
 
-  get_data(): Observable<PersonResponse[]> {
+  get_data(): Observable<Person[]> {
     return this.http.get(this.url)
     .pipe(
       map((response: any) => {return response['data']}),
@@ -116,5 +121,11 @@ export class PersonService implements ICrudService{
         return combineLatest(obs$)
       })
     )
+  }
+
+  reloadData() {
+    this.get_data().subscribe(data => {
+      this.allPersons.next(data);
+    })
   }
 }

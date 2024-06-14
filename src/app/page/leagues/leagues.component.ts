@@ -1,14 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { LeagueService } from '../../shared/services/league.service';
-import { NotificationService } from '../../shared/services/notification.service';
 import { DropdownModule } from 'primeng/dropdown';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { PersonService } from '../../shared/services/person.service';
-import { League, PersonResponse, RaceLeague, RaceResponse, RunnerParticipant } from '../../shared/services/interfaces';
+import { League, LeagueRace, LeagueRunnerParticipant, Person, Race } from '../../shared/services/interfaces';
 import { RaceService } from '../../shared/services/race.service';
 import { NgTableComponent } from '../../shared/components/table/ng-table.component';
 import { ConlumnsDefinition, TableActions, TableConfiguracion } from '../../shared/interfaces/interfaces';
@@ -16,6 +15,8 @@ import { TableModule } from 'primeng/table';
 import { catchError, forkJoin, Observable, of, Subject, takeUntil } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { RequestLeague, RequestLeagueRace, RequestLeagueRunnerParticipant } from '../../shared/services/request_interfaces';
+import { LeagueManagementService } from '../../shared/services/league_managmentService';
 
 @Component({
   selector: 'app-leagues',
@@ -32,43 +33,31 @@ import { ToastModule } from 'primeng/toast';
     TableModule,
     ToastModule
   ],
-  providers: [MessageService],
+  providers: [MessageService, LeagueManagementService],
   templateUrl: './leagues.component.html',
   styleUrl: './leagues.component.scss'
 })
 export class LeaguesComponent implements OnDestroy{
-  allLeagues: League[] = []
-  addLeagueForm = new FormGroup({});
+  addLeagueForm = new FormGroup({
+    name: new FormControl('', [Validators.required, Validators.maxLength(50)])
+  });
 
-  allPersons:PersonResponse[] = []
-  allRunnerParticipant:RunnerParticipant[] = []
-
-  allRaces:RaceResponse[]= []
-  allRacesLeague:RaceLeague[] =[]
-
-  runnerParticipantsSelected: RunnerParticipant[] = []
-  raceLeagueSelected: RaceLeague[] = []
-
-  formGroupPersons = new FormGroup({
-    participantsSelectedControl: new FormControl<RunnerParticipant[]>([], [])
+  personsFormGroup = new FormGroup({
+    persons: new FormControl<Person[]>([],[])
   });
 
   raceFormGroup = new FormGroup({
-    raceLeagueSelectedControl: new FormControl<RaceLeague[]>([], [])
+    races: new FormControl<Race[]>([], [])
   });
 
-  _leagueSelected:League|undefined
+  allLeagues: League[] = []
+  allPersons:Person[] = []
+  allRaces:Race[]= []
 
-  get leagueSelected() {
-    return this._leagueSelected
-  }
+  runnerParticipantsSelected: LeagueRunnerParticipant[] = []
+  raceLeagueSelected: LeagueRace[] = []
 
-  set leagueSelected(item) {
-    this._leagueSelected = item
-
-    this.updateRunnerParticipantsOptions();
-    this.updateRaceLeagueOptions();
-  }
+  leagueSelected:League|undefined
 
   private destroy$ = new Subject<void>();
 
@@ -116,6 +105,13 @@ export class LeaguesComponent implements OnDestroy{
       "order": 6,
       "editable": true,
       "type": "number"
+    },
+    {
+      "key": "unique_dorsal",
+      "value": "Dorsal unico",
+      "order": 7,
+      "editable": true,
+      "type": "checkbox"
     }
   ]
 
@@ -198,15 +194,12 @@ export class LeaguesComponent implements OnDestroy{
   constructor(
     private notificationService:MessageService,
     private leagueService:LeagueService,
+    private leagueManagementService: LeagueManagementService,
     private personService:PersonService,
     private raceService:RaceService){
   }
 
   ngOnInit() {
-    this.addLeagueForm = new FormGroup({});
-    let name_control = new FormControl('', [Validators.required, Validators.maxLength(50)])
-    this.addLeagueForm.setControl('name', name_control)
-
     this.leagueService.allLeagues$.pipe(takeUntil(this.destroy$)).subscribe(data => {
       this.allLeagues = data ?? []
 
@@ -217,8 +210,14 @@ export class LeaguesComponent implements OnDestroy{
       })
     });
 
-    this.reloadAllPersons()
-    this.reloadAllRaces()
+    this.personService.allPersons$.pipe(takeUntil(this.destroy$)).subscribe( data => {
+      this.allPersons = data ?? [];
+      console.log(this.allPersons)
+    })
+
+    this.raceService.allRaces$.pipe(takeUntil(this.destroy$)).subscribe( data => {
+      this.allRaces = data ?? []
+    })
   }
 
   ngOnDestroy() {
@@ -227,22 +226,14 @@ export class LeaguesComponent implements OnDestroy{
   }
 
   onSubmitAddNewLeague() {
-    console.log("onSubmitAddNewLeague")
-    console.log(this.addLeagueForm.value)
+    console.log("onSubmitAddNewLeague");
+    console.log(this.addLeagueForm.value);
 
-    this.leagueService.save_item(this.addLeagueForm.value).subscribe(
-      {
-        next: (value) => {
-          console.log(value);
-          this.notificationService.add({ severity: 'success', summary: 'Successful', detail: 'Liga añadida correctamente', life: 3000 })
-        },
-        error: err => this.notificationService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 }),
-        complete: () => {
-          console.log('end ad league');
-          this.leagueService.reloadData();
-        }
-      }
-    )
+    let new_league: RequestLeague = {
+      name: this.addLeagueForm.value.name ?? ''
+    }
+
+    this.addLeague(new_league)
   }
 
   getLeagueColumnDefinition() {
@@ -251,6 +242,23 @@ export class LeaguesComponent implements OnDestroy{
 
   getLeagueTableConfiguration() {
     return this.leagueTableConfiguration;
+  }
+
+  onChangeSelectedLeague(event:any) {
+    console.log("onChangeSelectedLeague")
+    console.log(this.leagueSelected)
+
+    if (!this.leagueSelected) {
+      return;
+    }
+
+    const persons_related = this.getPersonsRelatedToLeague(this.leagueSelected)
+    this.updatePersonsFormGroup(persons_related);
+    this.runnerParticipantsSelected = this.leagueManagementService.updateRunnerParticipantsSelected(persons_related, this.leagueSelected)
+
+    const races_related = this.getRacesRelatedToLeague(this.leagueSelected)
+    this.updateRaceFormGroup(races_related)
+    this.raceLeagueSelected = this.leagueManagementService.updateRacesLeagueSelected(races_related, this.leagueSelected)
   }
 
   onSaveAllLeagues() {
@@ -264,197 +272,36 @@ export class LeaguesComponent implements OnDestroy{
     forkJoin(allLeagueUpdatedObservables).subscribe({
       complete: () => {
         console.log("complete");
-        this.leagueService.reloadData()
+        this.leagueService.reloadData();
+        this.notificationService.add({ severity: 'success', summary: 'Successful', detail: 'Se han actualizado las ligas correctamente.', life: 3000 });
       },
       error: (err) => {
-        console.error(err)
+        console.error(err);
+        this.notificationService.add({ severity: 'error', summary: 'ERROR', detail: 'Ha fallado la actualización de las ligas.', life: 3000 });
       },
     })
-  }
-
-  reloadAllPersons() {
-    this.personService.get_data().subscribe(
-      {
-        next:(value) => {
-          console.log("reloadAllPersons");
-          console.log(value);
-          this.allPersons = value;
-        },
-        error: err => this.notificationService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 }),
-        complete: () => {
-          this.allLeagues
-          console.log('end getAll')
-        }
-      }
-    )
-  }
-
-  reloadAllRaces() {
-    this.raceService.get_data().subscribe(
-      {
-        next: (value) => {
-          console.log("next reloadAllRaces")
-          console.log(value)
-          this.allRaces = value
-          this.allRacesLeague = this.allRaces.map( race => {
-            let raceLeague:RaceLeague = {
-              name: race.name,
-              order: 0,
-              race_info_id: race.id
-            }
-
-            return raceLeague
-          })
-        },
-        error: err => this.notificationService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 }),
-        complete: () => {
-          this.allLeagues
-          console.log('end reloadAllRaces')
-        }
-      }
-    )
   }
 
   // Runner Participants
-  updateRunnerParticipantsOptions() {
-    if (this.leagueSelected == undefined) {
-      return;
-    }
-
-    this.allRunnerParticipant = []
-
-    this.allPersons.map(p => {
-        let newRP: RunnerParticipant = {...p}
-        newRP.dorsal = -1
-        newRP.disqualified_order_race = -1
-        newRP.person_id = p.id
-        this.allRunnerParticipant.push(newRP)
-      }
-    )
-
-    let personSelected:RunnerParticipant[] = []
-
-    if (this.leagueSelected.runner_participants) {
-      this.leagueSelected.runner_participants.map( rp => {
-        this.allRunnerParticipant.map( p => {
-          if(rp.person_id == p.id) {
-            p.dorsal = rp.dorsal
-            p.disqualified_order_race = rp.disqualified_order_race
-            personSelected.push(p)
-          }
-        })
-      })
-    }
-    this.formGroupPersons.get('participantsSelectedControl')?.setValue([])
-    this.formGroupPersons.get('participantsSelectedControl')?.setValue(personSelected)
-    this.updateRunnerParticipantsSelected()
-  }
-
-  getRunnerParticipants() {
-    return this.allRunnerParticipant
-  }
-
   getRunnerParticipantsColumns() {
     return this.runnerParticipantsColumnsDefinition
-  }
-
-  onChangeRunnerParticipantCombo(event:any) {
-    this.updateRunnerParticipantsSelected()
-  }
-
-  updateRunnerParticipantsSelected() {
-    let control = this.formGroupPersons.get('participantsSelectedControl')
-
-    if (control == undefined || control.value == null) {
-      return;
-    }
-
-    let itemsSelected:RunnerParticipant[] = control.value
-
-    itemsSelected = itemsSelected.map(item => {
-      if (this.leagueSelected == undefined || this.leagueSelected.runner_participants == undefined || this.leagueSelected.runner_participants.length == 0) {
-        return item
-      }
-
-      let new_item = this.leagueSelected.runner_participants.filter(lrp => {
-        if (item.id == lrp.person_id) {
-          return true
-        }
-
-        return false
-      })
-
-      if (new_item.length == 0) {
-        return item
-      }
-
-      return new_item[0]
-    })
-
-
-    this.runnerParticipantsSelected = itemsSelected;
   }
 
   getRunnerParticipantsConfiguration() {
     return this.runnerParticipantsTableConfiguration;
   }
 
-  getRacesFromLeague() {
-    if(this.leagueSelected?.races == undefined) {
-      return []
-    }
-
-    return this.leagueSelected?.races
-  }
-
-  onChangeRunnerParticipantTable(event:any) {
+  onChangeSelectedPersons(event:any) {
     console.log(event)
-    this.runnerParticipantsUpdated = event;
+    let persons_selected:Person[] = event.value
+    this.runnerParticipantsSelected = this.leagueManagementService.updateRunnerParticipantsSelected(persons_selected, this.leagueSelected)
   }
 
-  // Races League
-  updateRaceLeagueOptions() {
-    let racesLeagueSelected:RaceLeague[] = []
-
-    if (this.leagueSelected?.races) {
-      this.leagueSelected?.races.map( r => {
-        this.allRacesLeague.map( rl => {
-          if(rl.race_info_id == r.race_info_id) {
-            racesLeagueSelected.push(rl)
-          }
-        })
-      })
-    }
-
-    this.raceFormGroup.get('raceLeagueSelectedControl')?.setValue(racesLeagueSelected)
-    this.updateRaceLeagueSelected()
-  }
-
-  updateRaceLeagueSelected() {
-    let control = this.raceFormGroup.get('raceLeagueSelectedControl')
-
-    if (control == undefined) {
-      return;
-    }
-    if (control.value == null ) {
-      return;
-    }
-    let values:RaceLeague[] = control.value.map((value:RaceLeague, index:number) => {
-      value.order = index;
-      return value;
-    })
-
-    this.raceLeagueSelected = values;
-  }
-
-  getRaceLeagueOptions() {
-    return this.allRacesLeague;
-  }
-
-  onChangeRaceLeagueCombo(event:any) {
-    console.log("onChangeRaceLeagueCombo")
+  // Races
+  onChangeRaceSelected(event: any) {
     console.log(event)
-    this.updateRaceLeagueSelected()
+    let races_selected:Race[] = event.value
+    this.raceLeagueSelected = this.leagueManagementService.updateRacesLeagueSelected(races_selected, this.leagueSelected)
   }
 
   getRaceLeagueColumns() {
@@ -465,43 +312,42 @@ export class LeaguesComponent implements OnDestroy{
     return this.raceLeagueTableConfiguration;
   }
 
-  onChangeRaceLeagueTable(event:any) {
-    console.log("onChangeRaceLeagueTable")
-    console.log(event)
-    this.raceLeagueUpdated = event
-  }
-
   // Save League
-  runnerParticipantsUpdated: RunnerParticipant[] = []
-  raceLeagueUpdated: RaceLeague[] = []
-
   saveLeague(event:any) {
-    console.log(this.runnerParticipantsUpdated)
-    console.log(this.raceLeagueUpdated)
+    console.log('saveLeague')
+    console.log(this.runnerParticipantsSelected)
+    console.log(this.raceLeagueSelected)
 
-    let runnerParticipartRequest:any = []
-    this.runnerParticipantsUpdated.map(r => {
+    if (!this.leagueSelected) {
+      return;
+    }
+  
+    let runnerParticipartRequest:RequestLeagueRunnerParticipant[] = []
+    this.runnerParticipantsSelected.map(r => {
       runnerParticipartRequest.push({
-        "person_id": r.person_id,
-        "dorsal": r.dorsal,
-        "disqualified_order_race": r.disqualified_order_race
+        person_id: r.person_id,
+        dorsal: r.dorsal,
+        disqualified_order_race: r.disqualified_order_race,
+        category: '',
+        unique_dorsal: true
       })
     })
 
-    let racesRequest: any = []
-    this.raceLeagueUpdated.map( r => {
-      racesRequest.push({
-        "name": r.name,
-        "order": r.order,
-        "race_info_id": r.race_info_id
+    let raceParticipartRequest:RequestLeagueRace[] = []
+    this.raceLeagueSelected.map(r => {
+      raceParticipartRequest.push({
+        order: r.order,
+        race_info_id: r.id
       })
     })
 
-    let leagueRequest :any = {...this.leagueSelected}
-    leagueRequest['runner_participants'] = runnerParticipartRequest
-    leagueRequest['races'] = racesRequest
-
-    console.log(leagueRequest)
+    let leagueRequest:RequestLeague = {
+        id: this.leagueSelected.id,
+        name: this.leagueSelected.name,
+        order: this.leagueSelected.order,
+        runner_participants: runnerParticipartRequest,
+        races: raceParticipartRequest,
+    }
 
     this.leagueService.update(leagueRequest).subscribe(
       {
@@ -520,7 +366,55 @@ export class LeaguesComponent implements OnDestroy{
     )
   }
 
-  processLeague(league:League, this$: any) {
+  private updatePersonsFormGroup(persons: Person[]) {
+    this.personsFormGroup.get('persons')?.setValue(persons);
+  }
+
+  private getPersonsRelatedToLeague(league:League): Person[] {
+    const personsRelated: Person[] = [];
+    league.runner_participants?.forEach( rp => {
+      const person = this.allPersons.find(p => rp.id === p.id);
+      if (person) {
+        personsRelated.push(person);
+      }
+    });
+    
+    return personsRelated
+  }
+
+  private getRacesRelatedToLeague(league:League): Race[] {
+    const leagueRacesRelated: Race[] = [];
+    league.races?.forEach( rp => {
+      const race = this.allRaces.find(p => rp.id === p.id);
+      if (race) {
+        leagueRacesRelated.push(race);
+      }
+    });
+    
+    return leagueRacesRelated
+  }
+
+  private updateRaceFormGroup(races: Race[]) {
+    this.raceFormGroup.get('races')?.setValue(races);
+  }
+
+  private addLeague(league:RequestLeague) {
+    this.leagueService.save_item(league).subscribe(
+      {
+        next: (value) => {
+          console.log(value);
+          this.notificationService.add({ severity: 'success', summary: 'Successful', detail: 'Liga añadida correctamente', life: 3000 })
+        },
+        error: err => this.notificationService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 }),
+        complete: () => {
+          console.log('end ad league');
+          this.leagueService.reloadData();
+        }
+      }
+    )
+  }
+
+  private processLeague(league:League, this$: any) {
     console.log("processLeague")
     console.log(league)
 
@@ -537,7 +431,7 @@ export class LeaguesComponent implements OnDestroy{
     })
   }
 
-  deleteLeague(league:League, this$: LeaguesComponent) {
+  private deleteLeague(league:League, this$: LeaguesComponent) {
     console.log("deleteLeague")
     console.log(league)
 
@@ -548,12 +442,13 @@ export class LeaguesComponent implements OnDestroy{
         this$.notificationService.add({ severity: 'success', summary: 'Successful', detail: 'Se ha actualizado correctamente.', life: 3000 });
       },
       error(err) {
-        console.error(err)
+        console.error(err);
+        this$.notificationService.add({ severity: 'error', summary: 'ERROR', detail: 'No se ha actualizado la liga.', life: 3000 });
       },
     })
   }
 
-  updateLeague(league:League) {
+  private updateLeague(league:League) {
     return this.leagueService.update(league).pipe(
       catchError((error:any, caught: Observable<any[]>) => {
         this.notificationService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al actualizar la temporada: ' + league.name, life: 3000 });

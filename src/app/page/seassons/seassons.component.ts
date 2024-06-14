@@ -3,7 +3,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { SeasonService } from '../../shared/services/seasson.service';
 import { MessageService } from 'primeng/api';
 import { CommonModule } from '@angular/common';
-import { League, Season, SeasonItem } from '../../shared/services/interfaces';
+import { League, Season } from '../../shared/services/interfaces';
 import { DropdownModule } from 'primeng/dropdown';
 import { LeagueService } from '../../shared/services/league.service';
 import { MultiSelectModule } from 'primeng/multiselect';
@@ -34,9 +34,9 @@ export class SeassonsComponent {
     name: new FormControl<string>('', [Validators.required, Validators.maxLength(50)])
   });
 
-  public allSeasonItems: SeasonItem[] = [];
+  public allSeasonItems: Season[] = [];
 
-  public seassonItemSelected:SeasonItem | null = null;
+  public seassonItemSelected:Season | null = null;
 
   public allLeagues: League[] = [];
 
@@ -136,18 +136,18 @@ export class SeassonsComponent {
       }
 
       seasons.forEach(season => {
-        let item: SeasonItem = {
+        let item: Season = {
           id: season.id,
           name: season.name,
           order: season.order,
           leagues: []
         }
 
-        this.allLeagues.forEach(league => {
-          if (season.league_ids.includes(league.id)) {
-            item.leagues.push(league)
-          }
-        })
+        // this.allLeagues.forEach(league => {
+        //   if (season.league_ids.includes(league.id)) {
+        //     item.leagues.push(league)
+        //   }
+        // })
 
         this.allSeasonItems.push(item)
       });
@@ -181,9 +181,7 @@ export class SeassonsComponent {
         id: season.id,
         name: season.name,
         order: season.order,
-        league_ids: season.leagues.map(league => {
-          return league.id
-        })
+        leagues: season.leagues
       }
 
       return (this.updateSeason(seasonUpdated))
@@ -271,9 +269,7 @@ export class SeassonsComponent {
       id: this.seassonItemSelected.id,
       name: this.seassonItemSelected.name,
       order: this.seassonItemSelected.order,
-      league_ids: this.leaguesSelected.map(league => {
-        return league.id
-      })
+      leagues: this.leaguesSelected
     }
 
     this.updateSeason(seasonUpdated).subscribe(
@@ -295,7 +291,7 @@ export class SeassonsComponent {
     )
   }
 
-  deleteSeason(season:SeasonItem, this$: SeassonsComponent) {
+  deleteSeason(season:Season, this$: SeassonsComponent) {
     console.log("deleteSeason")
     console.log(season)
 

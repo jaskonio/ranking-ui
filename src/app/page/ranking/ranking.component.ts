@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import {LeagueService} from '../../shared/services/league.service'
 import { NgTableComponent } from '../../shared/components/table/ng-table.component';
-import { League, LeagueRawView, RunnerRankingModel } from '../../shared/services/interfaces';
+import { League, LeagueRankingRunner } from '../../shared/services/interfaces';
 import { ConlumnsDefinition, TableConfiguracion } from '../../shared/interfaces/interfaces';
 
 @Component({
@@ -21,16 +21,23 @@ export class RankingComponent {
   @Input('idRanking') set idRanking(value:any){
     this._idRanking = value;
 
-    this.leagueService.getRawById(value).subscribe(data => {
-      this.league = data
+    this.leagueService.allLeagues$.subscribe(leagues => {
+      let result = leagues?.find(league => league.id == value)
+      if (result == undefined) {
+        return;
+      }
+
+      this.league = result
       this.configuration.title = this.league.name
-      this.data = this.league.ranking_latest.data;
+      if (this.league?.ranking_latest) {
+        this.data = this.league.ranking_latest.data
+      }
     })
   }
 
-  public league?: LeagueRawView;
+  public league?: League;
 
-  data: RunnerRankingModel[] = []
+  data: LeagueRankingRunner[] = []
   columns: ConlumnsDefinition[] = [
     {
       "key": "id",
@@ -128,7 +135,7 @@ export class RankingComponent {
       "visible": false
     }
   ]
-  
+
   public configuration:TableConfiguracion = {
     title: '',
     paginator: true,

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { League, LeagueRawView } from './interfaces';
+import { League } from './interfaces';
 import { environment } from '../../../environments/environment';
 import { BehaviorSubject, catchError, map, Observable, throwError, zip } from 'rxjs';
 
@@ -12,7 +12,6 @@ export class LeagueService {
   baseUrl: string = environment.apiUrlBase
   enpoint: string = 'leagues/'
   url: string = this.baseUrl + this.enpoint
-  urlRaw: string = this.url + 'raw/'
 
   private allLeagues = new BehaviorSubject<League[]|null>(null);
   public allLeagues$ = this.allLeagues.asObservable();
@@ -21,29 +20,12 @@ export class LeagueService {
     this.reloadData();
   }
 
-  getRawById(league_id: string): Observable<LeagueRawView> {
-    return this.http.get(this.urlRaw + league_id)
+  getByid(league_id: string): Observable<League> {
+    return this.http.get(this.url + league_id)
     .pipe(
       map((response: any) => {return response['data']}),
       catchError(this.handleError)
     );
-  }
-
-  getByid(league_id: string): League | null {
-    let leagues = this.allLeagues.value
-
-    if (leagues == null) {
-      return null;
-    }
-
-    for (let index = 0; index < leagues.length; index++) {
-      const element = leagues[index];
-      if (element.id == league_id) {
-        return element
-      }
-    }
-
-    return null
   }
 
   save_item(league:any) {

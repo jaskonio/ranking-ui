@@ -9,7 +9,7 @@ export interface ConlumnsDefinition {
   sortable?: boolean;
   sortableOrder?: string
   activeSortable?: boolean;
-  type?: string; // 'string', 'number', 'image', 'action'
+  type?: string; // 'string', 'number', 'image', 'action', 'checkbox'
   supportImageKey?: string; // name of the key thats contain img value
   supportFilter?: boolean;
   editable?: boolean; //default false

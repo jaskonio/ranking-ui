@@ -7,8 +7,6 @@ import { catchError, Observable, throwError } from 'rxjs';
 
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  console.log('authInterceptor')
-
   const authService = inject(AuthService)
 
   let token = authService.getToken()
@@ -25,8 +23,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 };
 
 export const loginAuthInterceptor: HttpInterceptorFn = (req, next) => {
-  console.log('loginAuthInterceptor')
-
   const authService = inject(AuthService)
   const route = inject(Router)
 

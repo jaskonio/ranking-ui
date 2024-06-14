@@ -41,28 +41,29 @@
           [options]="allLeagues"
           [(ngModel)]="leagueSelected"
           optionLabel="name"
-          placeholder="Selecciona una Liga"/>
+          placeholder="Selecciona una Liga"
+          (onChange)="onChangeSelectedLeague($event)"/>
       </div>
 
       <div class="card" *ngIf="leagueSelected">
         <div class="col-12">
           <div class="mb-5">
-            <form [formGroup]="formGroupPersons">
+            <form [formGroup]="personsFormGroup">
               <p-multiSelect
-                formControlName="participantsSelectedControl"
-                [options]="getRunnerParticipants()"
+                formControlName="persons"
+                [options]="allPersons"
                 optionLabel="first_name"
                 placeholder="Selecciona nuevos participantes"
-                (onChange)="onChangeRunnerParticipantCombo($event)"/>
+                (onChange)="onChangeSelectedPersons($event)"/>
             </form>
+
           </div>
 
           <div>
             <app-ng-table
               [dataSource]="runnerParticipantsSelected"
               [columns]="getRunnerParticipantsColumns()"
-              [configuration]="getRunnerParticipantsConfiguration()"
-              (onChange)="onChangeRunnerParticipantTable($event)"/>
+              [configuration]="getRunnerParticipantsConfiguration()"/>
           </div>
         </div>
 
@@ -70,11 +71,11 @@
           <div class="mb-5">
             <form [formGroup]="raceFormGroup">
               <p-multiSelect
-                formControlName="raceLeagueSelectedControl"
-                [options]="getRaceLeagueOptions()"
+                formControlName="races"
+                [options]="allRaces"
                 optionLabel="name"
                 placeholder="Selecciona nuevas Carreras"
-                (onChange)="onChangeRaceLeagueCombo($event)"/>
+                (onChange)="onChangeRaceSelected($event)"/>
             </form>
           </div>
 
@@ -82,8 +83,7 @@
             <app-ng-table
               [dataSource]="raceLeagueSelected"
               [columns]="getRaceLeagueColumns()"
-              [configuration]="getRaceLeagueTableConfiguration()"
-              (onChange)="onChangeRaceLeagueTable($event)"/>
+              [configuration]="getRaceLeagueTableConfiguration()"/>
           </div>
         </div>
         <div class="col-12">

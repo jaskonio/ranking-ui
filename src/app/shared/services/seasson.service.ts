@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { SeasonInfoView } from './interfaces';
+import { Season } from './interfaces';
 import { environment } from '../../../environments/environment';
 import { BehaviorSubject, Observable, catchError, map, throwError } from 'rxjs';
 
@@ -13,10 +13,10 @@ export class SeasonService {
   enpoint: string = 'season/'
   url: string = this.baseUrl + this.enpoint
 
-  private allSeasson = new BehaviorSubject<SeasonInfoView[]|null>(null);
+  private allSeasson = new BehaviorSubject<Season[]|null>(null);
   public allSeasson$ = this.allSeasson.asObservable();
 
-  private seassonSelected = new BehaviorSubject<SeasonInfoView|null>(null);
+  private seassonSelected = new BehaviorSubject<Season|null>(null);
   public seassonSelected$ = this.seassonSelected.asObservable()
 
   constructor(private http: HttpClient
@@ -24,7 +24,7 @@ export class SeasonService {
     this.reloadData();
   }
 
-  getAllSeasonInfo(): Observable<SeasonInfoView[]> {
+  getAll(): Observable<Season[]> {
     return this.http.get(this.url)
           .pipe(
             map((response: any) => {return response['data']}),
@@ -32,7 +32,7 @@ export class SeasonService {
         );
   }
 
-  save(item:any): Observable<SeasonInfoView[]>{
+  save(item:any): Observable<Season[]>{
     return this.http.post(this.url, item)
       .pipe(
         map((response: any) => {return response['data']}),
@@ -56,12 +56,12 @@ export class SeasonService {
     );
   }
 
-  selectedSeasson(item:SeasonInfoView) {
+  selectedSeason(item:Season) {
     this.seassonSelected.next(item)
   }
 
   reloadData() {
-    this.getAllSeasonInfo().subscribe(data=> {
+    this.getAll().subscribe(data=> {
       this.allSeasson.next(data)
     });
   }
