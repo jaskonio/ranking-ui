@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { League, LeagueRunnerParticipant, Person } from '../../shared/services/interfaces';
+import { League, LeagueRace, LeagueRunnerParticipant, Person, Race } from '../../shared/services/interfaces';
 
 @Injectable({
   providedIn: 'root',
@@ -26,6 +26,26 @@ export class LeagueManagementService {
     return newParticipantsSelected;
   }
 
+  updateRacesLeagueSelected(races:Race[], leagueSelected?: League): LeagueRace[] {
+    if (!leagueSelected) return [];
+
+    const newRacesSelected: LeagueRace[] = [];
+    const existingRaceMap = new Map<string, LeagueRace>();
+
+    leagueSelected.races.forEach(r => existingRaceMap.set(r.name, r));
+
+    races.forEach(race => {
+      const existingParticipant = existingRaceMap.get(race.name);
+      if (existingParticipant) {
+        newRacesSelected.push(existingParticipant);
+      } else {
+        newRacesSelected.push(this.createNewRaceLeague(race));
+      }
+    });
+
+    return newRacesSelected;
+  }
+
   private createNewParticipant(person: Person): LeagueRunnerParticipant {
     return {
       id: person.id,
@@ -39,5 +59,13 @@ export class LeagueManagementService {
       dorsal: 0,
       unique_dorsal: true,
     };
+  }
+
+  private createNewRaceLeague(race:Race): LeagueRace {
+    return {
+      name:race.name,
+      order:0,
+      race_info_id: race.id
+    }
   }
 }

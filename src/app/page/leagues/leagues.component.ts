@@ -15,7 +15,7 @@ import { TableModule } from 'primeng/table';
 import { catchError, forkJoin, Observable, of, Subject, takeUntil } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
-import { RequestLeague, RequestLeagueRunnerParticipant } from '../../shared/services/request_interfaces';
+import { RequestLeague, RequestLeagueRace, RequestLeagueRunnerParticipant } from '../../shared/services/request_interfaces';
 import { LeagueManagementService } from '../../shared/services/league_managmentService';
 
 @Component({
@@ -38,7 +38,6 @@ import { LeagueManagementService } from '../../shared/services/league_managmentS
   styleUrl: './leagues.component.scss'
 })
 export class LeaguesComponent implements OnDestroy{
-  allLeagues: League[] = []
   addLeagueForm = new FormGroup({
     'name': new FormControl('', [Validators.required, Validators.maxLength(50)])
   });
@@ -47,20 +46,16 @@ export class LeaguesComponent implements OnDestroy{
     'persons': new FormControl<Person[]>([],[])
   });
 
+  raceFormGroup = new FormGroup({
+    races: new FormControl<LeagueRace[]>([], [])
+  });
+
+  allLeagues: League[] = []
   allPersons:Person[] = []
+  allRaces:Race[]= []
 
   runnerParticipantsSelected: LeagueRunnerParticipant[] = []
-  
-  allRunnerParticipant:LeagueRunnerParticipant[] = []
-
-  allRaces:Race[]= []
-  allRacesLeague:LeagueRace[] =[]
-
   raceLeagueSelected: LeagueRace[] = []
-
-  raceFormGroup = new FormGroup({
-    raceLeagueSelectedControl: new FormControl<LeagueRace[]>([], [])
-  });
 
   _leagueSelected:League|undefined
 
@@ -268,7 +263,7 @@ export class LeaguesComponent implements OnDestroy{
     const persons_related = this.getPersonsRelatedToLeague(this.leagueSelected)
 
     this.updatePersonsFormGroup(persons_related);
-    this.runnerParticipantsSelected = this.leagueManagementService.updateRunnerParticipantsSelected(pesons_related, this.leagueSelected)
+    this.runnerParticipantsSelected = this.leagueManagementService.updateRunnerParticipantsSelected(persons_related, this.leagueSelected)
   }
 
   onSaveAllLeagues() {
@@ -307,33 +302,56 @@ export class LeaguesComponent implements OnDestroy{
     this.runnerParticipantsSelected = this.leagueManagementService.updateRunnerParticipantsSelected(persons_selected, this.leagueSelected)
   }
 
-  // Save League
+  // Races
+  onChangeRaceSelected(event: any) {
+    console.log(event)
+    let races_selected:Race[] = event.value
+    this.raceLeagueSelected = this.leagueManagementService.updateRacesLeagueSelected(races_selected, this.leagueSelected)
+  }
 
+  getRaceLeagueColumns() {
+    return this.raceLeagueColumnDefinition;
+  }
+
+  getRaceLeagueTableConfiguration() {
+    return this.raceLeagueTableConfiguration;
+  }
+
+  // Save League
   saveLeague(event:any) {
     console.log('saveLeague')
     console.log(this.runnerParticipantsSelected)
+    console.log(this.raceLeagueSelected)
 
-    if (this.leagueSelected== undefined) {
-      return
+    if (!this.leagueSelected) {
+      return;
     }
   
     let runnerParticipartRequest:RequestLeagueRunnerParticipant[] = []
     this.runnerParticipantsSelected.map(r => {
       runnerParticipartRequest.push({
-        "person_id": r.person_id,
-        "dorsal": r.dorsal,
-        "disqualified_order_race": r.disqualified_order_race,
-        "category": '',
-        "unique_dorsal": true
+        person_id: r.person_id,
+        dorsal: r.dorsal,
+        disqualified_order_race: r.disqualified_order_race,
+        category: '',
+        unique_dorsal: true
       })
     })
 
+    let raceParticipartRequest:RequestLeagueRace[] = []
+    this.raceLeagueSelected.map(r => {
+      raceParticipartRequest.push({
+        order: r.order,
+        race_info_id: r.race_info_id
+      })
+    })
 
     let leagueRequest:RequestLeague = {
         id: this.leagueSelected.id,
         name: this.leagueSelected.name,
         order: this.leagueSelected.order,
-        runner_participants: runnerParticipartRequest
+        runner_participants: runnerParticipartRequest,
+        races: raceParticipartRequest,
     }
 
     this.leagueService.update(leagueRequest).subscribe(
