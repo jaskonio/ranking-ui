@@ -21,7 +21,7 @@ export class RankingComponent {
   @Input('idRanking') set idRanking(value:any){
     this._idRanking = value;
 
-    this.leagueService.getRawById(value).subscribe(data => {
+    this.leagueService.getByid(value).subscribe(data => {
       this.league = data
       this.configuration.title = this.league.name
       this.data = this.league.ranking_latest.data;

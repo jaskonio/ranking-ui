@@ -9,6 +9,7 @@ import { RippleModule } from 'primeng/ripple';
 import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { CheckboxModule } from 'primeng/checkbox';
 
 @Component({
   selector: 'app-ng-table',
@@ -22,7 +23,8 @@ import { InputNumberModule } from 'primeng/inputnumber';
     RippleModule,
     InputTextModule,
     FormsModule,
-    InputNumberModule
+    InputNumberModule,
+    CheckboxModule
   ],
   templateUrl: './ng-table.component.html'
 })

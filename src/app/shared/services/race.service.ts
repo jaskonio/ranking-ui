@@ -17,6 +17,7 @@ export class RaceService implements ICrudService{
   public allRaces$ = this.allRaces.asObservable();
   
   constructor(private http: HttpClient) {
+    this.reloadData()
   }
 
   definition_cdolumns: ConlumnsDefinition[] = [
