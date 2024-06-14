@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -7,7 +7,7 @@ import { LeagueService } from '../../shared/services/league.service';
 import { DropdownModule } from 'primeng/dropdown';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { PersonService } from '../../shared/services/person.service';
-import { League, LeagueRace, LeagueRunnerParticipant, Person, Race, RaceData } from '../../shared/services/interfaces';
+import { League, LeagueRace, LeagueRunnerParticipant, Person, Race } from '../../shared/services/interfaces';
 import { RaceService } from '../../shared/services/race.service';
 import { NgTableComponent } from '../../shared/components/table/ng-table.component';
 import { ConlumnsDefinition, TableActions, TableConfiguracion } from '../../shared/interfaces/interfaces';
@@ -15,7 +15,8 @@ import { TableModule } from 'primeng/table';
 import { catchError, forkJoin, Observable, of, Subject, takeUntil } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
-import { RequestLeague, RequestLeagueRace, RequestLeagueRunnerParticipant } from '../../shared/services/request_interfaces';
+import { RequestLeague, RequestLeagueRunnerParticipant } from '../../shared/services/request_interfaces';
+import { LeagueManagementService } from '../../shared/services/league_managmentService';
 
 @Component({
   selector: 'app-leagues',
@@ -32,7 +33,7 @@ import { RequestLeague, RequestLeagueRace, RequestLeagueRunnerParticipant } from
     TableModule,
     ToastModule
   ],
-  providers: [MessageService],
+  providers: [MessageService, LeagueManagementService],
   templateUrl: './leagues.component.html',
   styleUrl: './leagues.component.scss'
 })
@@ -47,7 +48,6 @@ export class LeaguesComponent implements OnDestroy{
   });
 
   allPersons:Person[] = []
-  // personSelected:Person[] = []
 
   runnerParticipantsSelected: LeagueRunnerParticipant[] = []
   
@@ -207,6 +207,7 @@ export class LeaguesComponent implements OnDestroy{
   constructor(
     private notificationService:MessageService,
     private leagueService:LeagueService,
+    private leagueManagementService: LeagueManagementService,
     private personService:PersonService,
     private raceService:RaceService){
   }
@@ -238,9 +239,14 @@ export class LeaguesComponent implements OnDestroy{
   }
 
   onSubmitAddNewLeague() {
-    console.log("onSubmitAddNewLeague")
-    console.log(this.addLeagueForm.value)
-    this.addLeague(this.addLeagueForm.value)
+    console.log("onSubmitAddNewLeague");
+    console.log(this.addLeagueForm.value);
+
+    let new_league: RequestLeague = {
+      name: this.addLeagueForm.value.name ?? ''
+    }
+
+    this.addLeague(new_league)
   }
 
   getLeagueColumnDefinition() {
@@ -255,19 +261,14 @@ export class LeaguesComponent implements OnDestroy{
     console.log("onChangeSelectedLeague")
     console.log(this.leagueSelected)
 
-    if (this.leagueSelected != undefined) {
-      let pesons_related:Person[] = []
-      this.leagueSelected.runner_participants.map( rp => {
-        this.allPersons.map(p => {
-          if (rp.id == p.id) {
-            pesons_related.push(p)
-          }
-        })
-      });
-
-      this.personsFormGroup.get('persons')?.setValue(pesons_related);
-      this.updateRunnerParticipantsSelected(pesons_related)
+    if (!this.leagueSelected) {
+      return;
     }
+
+    const persons_related = this.getPersonsRelatedToLeague(this.leagueSelected)
+
+    this.updatePersonsFormGroup(persons_related);
+    this.runnerParticipantsSelected = this.leagueManagementService.updateRunnerParticipantsSelected(pesons_related, this.leagueSelected)
   }
 
   onSaveAllLeagues() {
@@ -303,54 +304,7 @@ export class LeaguesComponent implements OnDestroy{
   onChangeSelectedPersons(event:any) {
     console.log(event)
     let persons_selected:Person[] = event.value
-
-    this.updateRunnerParticipantsSelected(persons_selected)
-  }
-
-  updateRunnerParticipantsSelected(persons_selected:Person[]) {
-    let newParticipantSelected = []
-
-    for (let index = 0; index < persons_selected.length; index++) {
-      const person_selected = persons_selected[index];
-      
-      let participanteSelected = this.getParticipanteSelectInLeagueSelectedByPersonId(person_selected.id);
-
-      if (participanteSelected != null) {
-        newParticipantSelected.push(participanteSelected)
-      }
-      else {
-        let newParticipant:LeagueRunnerParticipant = {
-          id: person_selected.id,
-          first_name: person_selected.first_name,
-          last_name: person_selected.last_name,
-          gender: person_selected.gender,
-          photo_url: person_selected.photo_url,
-          person_id: person_selected.id,
-          category: '', 
-          disqualified_order_race: -1,
-          dorsal: 0,
-          unique_dorsal: true
-        }
-        newParticipantSelected.push(newParticipant)
-      }
-    }
-
-    this.runnerParticipantsSelected = newParticipantSelected;
-  }
-
-  getParticipanteSelectInLeagueSelectedByPersonId(personId:string) {
-    if (this.leagueSelected == undefined || this.leagueSelected.runner_participants == undefined || this.leagueSelected.runner_participants.length == 0) {
-      return null
-    }
-
-    for (let index = 0; index < this.leagueSelected.runner_participants.length; index++) {
-      let runner_participants = this.leagueSelected.runner_participants[index]
-      if (personId == runner_participants.person_id) {
-        return runner_participants
-      }
-    }
-  
-    return null
+    this.runnerParticipantsSelected = this.leagueManagementService.updateRunnerParticipantsSelected(persons_selected, this.leagueSelected)
   }
 
   // Save League
@@ -399,7 +353,23 @@ export class LeaguesComponent implements OnDestroy{
     )
   }
 
-  private addLeague(league:any) {
+  private updatePersonsFormGroup(persons: Person[]) {
+    this.personsFormGroup.get('persons')?.setValue(persons);
+  }
+
+  private getPersonsRelatedToLeague(league:League): Person[] {
+    const personsRelated: Person[] = [];
+    league.runner_participants.forEach( rp => {
+      const person = this.allPersons.find(p => rp.id === p.id);
+      if (person) {
+        personsRelated.push(person);
+      }
+    });
+    
+    return personsRelated
+  }
+
+  private addLeague(league:RequestLeague) {
     this.leagueService.save_item(league).subscribe(
       {
         next: (value) => {

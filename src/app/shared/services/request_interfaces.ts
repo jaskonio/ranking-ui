@@ -13,9 +13,9 @@ export interface RequestLeagueRunnerParticipant {
 }
 
 export interface RequestLeague {
-  id: string;
+  id?: string;
   name: string;
-  order: number;
+  order?: number;
   races?: RequestLeagueRace[];
   runner_participants?: RequestLeagueRunnerParticipant[];
 }

@@ -86,7 +86,7 @@ export interface LeagueRace {
 }
 
 export interface LeagueRunnerParticipant extends Person{
-  person_id?: string;
+  person_id: string;
   dorsal?: number;
   category?: string;
   disqualified_order_race?: number;
