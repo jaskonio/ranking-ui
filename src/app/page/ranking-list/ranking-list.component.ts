@@ -20,7 +20,7 @@ export class RankingListComponent {
   constructor(private router: Router,
     private seasonService: SeasonService
   ){
-    this.seasonService.getAll().pipe(takeUntil(this.destroy$)).subscribe(seasonsRaw => {
+    this.seasonService.allSeasson$.pipe(takeUntil(this.destroy$)).subscribe(seasonsRaw => {
       console.log("allSeasson$");
       this.seasons = seasonsRaw ?? []
     });

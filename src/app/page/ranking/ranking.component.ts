@@ -21,8 +21,13 @@ export class RankingComponent {
   @Input('idRanking') set idRanking(value:any){
     this._idRanking = value;
 
-    this.leagueService.getByid(value).subscribe(data => {
-      this.league = data
+    this.leagueService.allLeagues$.subscribe(leagues => {
+      let result = leagues?.find(league => league.id == value)
+      if (result == undefined) {
+        return;
+      }
+
+      this.league = result
       this.configuration.title = this.league.name
       if (this.league?.ranking_latest) {
         this.data = this.league.ranking_latest.data
