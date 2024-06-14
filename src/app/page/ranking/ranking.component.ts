@@ -24,6 +24,9 @@ export class RankingComponent {
     this.leagueService.getByid(value).subscribe(data => {
       this.league = data
       this.configuration.title = this.league.name
+      if (this.league?.ranking_latest) {
+        this.data = this.league.ranking_latest.data
+      }
     })
   }
 
@@ -127,7 +130,7 @@ export class RankingComponent {
       "visible": false
     }
   ]
-  
+
   public configuration:TableConfiguracion = {
     title: '',
     paginator: true,

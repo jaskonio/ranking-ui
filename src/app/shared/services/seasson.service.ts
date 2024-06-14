@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Season, SeasonRaw } from './interfaces';
+import { Season } from './interfaces';
 import { environment } from '../../../environments/environment';
 import { BehaviorSubject, Observable, catchError, map, throwError } from 'rxjs';
 
@@ -26,13 +26,6 @@ export class SeasonService {
 
   getAll(): Observable<Season[]> {
     return this.http.get(this.url)
-          .pipe(
-            map((response: any) => {return response['data']}),
-            catchError(this.handleError),
-        );
-  }
-  getAllRaw(): Observable<SeasonRaw[]> {
-    return this.http.get(this.url + 'raw')
           .pipe(
             map((response: any) => {return response['data']}),
             catchError(this.handleError),

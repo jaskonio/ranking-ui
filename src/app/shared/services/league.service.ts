@@ -21,7 +21,7 @@ export class LeagueService {
   }
 
   getByid(league_id: string): Observable<League> {
-    return this.http.get(this.enpoint + league_id)
+    return this.http.get(this.url + league_id)
     .pipe(
       map((response: any) => {return response['data']}),
       catchError(this.handleError)

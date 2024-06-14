@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { SeasonRaw } from '../../shared/services/interfaces';
+import { Season } from '../../shared/services/interfaces';
 import { SeasonService } from '../../shared/services/seasson.service';
 import { combineLatest, Subject, takeUntil } from 'rxjs';
 import { LeagueService } from '../../shared/services/league.service';
@@ -13,14 +13,14 @@ import { LeagueService } from '../../shared/services/league.service';
   styleUrl: './ranking-list.component.scss'
 })
 export class RankingListComponent {
-  seasons: SeasonRaw[] = [];
+  seasons: Season[] = [];
 
   private destroy$ = new Subject<void>();
 
   constructor(private router: Router,
     private seasonService: SeasonService
   ){
-    this.seasonService.getAllRaw().pipe(takeUntil(this.destroy$)).subscribe(seasonsRaw => {
+    this.seasonService.getAll().pipe(takeUntil(this.destroy$)).subscribe(seasonsRaw => {
       console.log("allSeasson$");
       this.seasons = seasonsRaw ?? []
     });

@@ -63,8 +63,8 @@ export interface League {
   order: number;
   races?: LeagueRace[];
   runner_participants?: LeagueRunnerParticipant[];
-  ranking_id?: string;
-  history_ranking_ids?: string[];
+  ranking_latest?: LeagueRanking;
+  history_ranking?: LeagueRanking[];
 }
 
 export interface LeagueRace extends Race {
@@ -80,7 +80,6 @@ export interface LeagueRunnerParticipant extends Person {
 }
 
 export interface LeagueRanking {
-  id: string;
   order: string;
   data: LeagueRankingRunner[];
 }
@@ -100,13 +99,6 @@ export interface LeagueRankingRunner extends LeagueRunnerParticipant{
 
 // Season
 export interface Season {
-  id: string;
-  name: string;
-  order: number
-  league_ids: string[];
-}
-
-export interface SeasonRaw {
   id: string;
   name: string;
   order: number
