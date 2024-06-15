@@ -321,7 +321,7 @@ export class LeaguesComponent implements OnDestroy{
     if (!this.leagueSelected) {
       return;
     }
-  
+
     let runnerParticipartRequest:RequestLeagueRunnerParticipant[] = []
     this.runnerParticipantsSelected.map(r => {
       runnerParticipartRequest.push({
@@ -329,7 +329,7 @@ export class LeaguesComponent implements OnDestroy{
         dorsal: r.dorsal,
         disqualified_order_race: r.disqualified_order_race,
         category: '',
-        unique_dorsal: true
+        unique_dorsal: r.unique_dorsal
       })
     })
 
@@ -378,7 +378,7 @@ export class LeaguesComponent implements OnDestroy{
         personsRelated.push(person);
       }
     });
-    
+
     return personsRelated
   }
 
@@ -390,7 +390,7 @@ export class LeaguesComponent implements OnDestroy{
         leagueRacesRelated.push(race);
       }
     });
-    
+
     return leagueRacesRelated
   }
 
