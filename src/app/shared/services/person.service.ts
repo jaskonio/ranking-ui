@@ -18,7 +18,7 @@ export class PersonService implements ICrudService{
   public allPersons$ = this.allPersons.asObservable();
 
   constructor(private http: HttpClient) {
-    this.reloadData()
+    this.reload_data()
   }
 
 
@@ -117,7 +117,7 @@ export class PersonService implements ICrudService{
     )
   }
 
-  reloadData() {
+  reload_data() {
     this.__update_data().subscribe(data => {
       this.allPersons.next(data);
     })
