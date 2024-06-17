@@ -21,6 +21,7 @@ export class PersonService implements ICrudService{
     this.reloadData()
   }
 
+
   definition_cdolumns: ConlumnsDefinition[] = [
     {
       "key": "id",
@@ -59,15 +60,8 @@ export class PersonService implements ICrudService{
     }
   ]
 
-  get_data(): Observable<Person[]> {
-    return this.http.get(this.url)
-    .pipe(
-      map((response: any) => {return response['data']}),
-      catchError((err, caught) => {
-        console.log('API Error: ' + JSON.stringify(err));
-        throw new Error(err)
-      })
-    );
+  get_data(): Observable<Person[] | null> {
+    return this.allPersons$
   }
 
   get_definition_columns(): Observable<ConlumnsDefinition[]> {
@@ -124,8 +118,19 @@ export class PersonService implements ICrudService{
   }
 
   reloadData() {
-    this.get_data().subscribe(data => {
+    this.__update_data().subscribe(data => {
       this.allPersons.next(data);
     })
+  }
+  
+  __update_data(): Observable<Person[]> {
+    return this.http.get(this.url)
+    .pipe(
+      map((response: any) => {return response['data']}),
+      catchError((err, caught) => {
+        console.log('API Error: ' + JSON.stringify(err));
+        throw new Error(err)
+      })
+    );
   }
 }

@@ -51,6 +51,7 @@ export class LeagueManagementService {
       id: person.id,
       first_name: person.first_name,
       last_name: person.last_name,
+      full_name: person.full_name,
       gender: person.gender,
       photo_url: person.photo_url,
       person_id: person.id,

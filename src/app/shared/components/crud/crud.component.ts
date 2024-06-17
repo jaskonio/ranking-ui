@@ -95,7 +95,7 @@ export class CrudComponent implements OnInit {
   tableEmptyMessage: string = "No hay registros"
   public definitionColumnsObservable$!: Observable<ConlumnsDefinition[]>;
 
-  public rowDataObservable$!: Observable<any[]>;
+  public rowDataObservable$!: Observable<any[]|null>;
 
   constructor(private notificationService: NotificationService
     ,private config: PrimeNGConfig
@@ -103,14 +103,7 @@ export class CrudComponent implements OnInit {
 
   ngOnInit() {
     this.definitionColumnsObservable$ = this.service.get_definition_columns();
-    this.rowDataObservable$ = this.service.get_data()
-      .pipe(
-        catchError((error:any, caught: Observable<any[]>) => {
-          this.tableErrorMessage = "Error al recuperar los datos"
-          this.notificationService.notification = { severity: 'error', summary: 'Error Peticion', detail: 'No se ha precesado la petición', life: 3000 }
-          throw new Error(error)
-        }
-      ));
+    this.rowDataObservable$ = this.service.get_data();
 
     this.loadConlumnsDefinition();
     this.loadData();
@@ -162,6 +155,10 @@ export class CrudComponent implements OnInit {
 
       this.rowDataObservable$.subscribe((data) => {
         console.log("get_data")
+        if (data == null) {
+          return;
+        }
+
         this.setNewDataIntoTable(data)
         this.tableErrorMessage = ""
       })

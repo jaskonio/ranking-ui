@@ -50,7 +50,7 @@ export interface TableConfiguracion {
 }
 
 export interface ICrudService {
-  get_data(): Observable<any[]>;
+  get_data(): Observable<any[] | null>;
   get_definition_columns(): Observable<ConlumnsDefinition[]>;
   save_item(item: any): Observable<any>;
   update_item(item: any): Observable<any>;
