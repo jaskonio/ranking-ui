@@ -95,7 +95,7 @@ export class CrudComponent implements OnInit {
   tableEmptyMessage: string = "No hay registros"
   public definitionColumnsObservable$!: Observable<ConlumnsDefinition[]>;
 
-  public rowDataObservable$!: Observable<any[]>;
+  public rowDataObservable$!: Observable<any[]|null>;
 
   constructor(private notificationService: NotificationService
     ,private config: PrimeNGConfig
@@ -103,14 +103,7 @@ export class CrudComponent implements OnInit {
 
   ngOnInit() {
     this.definitionColumnsObservable$ = this.service.get_definition_columns();
-    this.rowDataObservable$ = this.service.get_data()
-      .pipe(
-        catchError((error:any, caught: Observable<any[]>) => {
-          this.tableErrorMessage = "Error al recuperar los datos"
-          this.notificationService.notification = { severity: 'error', summary: 'Error Peticion', detail: 'No se ha precesado la petición', life: 3000 }
-          throw new Error(error)
-        }
-      ));
+    this.rowDataObservable$ = this.service.get_data();
 
     this.loadConlumnsDefinition();
     this.loadData();
@@ -162,6 +155,10 @@ export class CrudComponent implements OnInit {
 
       this.rowDataObservable$.subscribe((data) => {
         console.log("get_data")
+        if (data == null) {
+          return;
+        }
+
         this.setNewDataIntoTable(data)
         this.tableErrorMessage = ""
       })
@@ -247,16 +244,14 @@ export class CrudComponent implements OnInit {
       this.service.save_item(item).subscribe(
         {
           next: (item) => {
-            if (item){
+            if (item) {
+              this.service.reload_data();
               this.notificationService.notification = { severity: 'success', summary: 'Successful', detail: 'Registro Añadido', life: 3000 }
             }
           },
           error: err => {
             console.error(err)
             this.notificationService.notification =  { severity: 'error', summary: 'eroor', detail: 'error al processar', life: 3000 }
-          },
-          complete: () => {
-            this.loadData();
           }
         })
     }
@@ -266,15 +261,13 @@ export class CrudComponent implements OnInit {
         {
           next: (item) => {
             if (item){
+              this.service.reload_data();
               this.notificationService.notification = { severity: 'success', summary: 'Successful', detail: 'Registro Actualizado', life: 3000 }
             }
           },
           error: err => {
             console.error(err)
             this.notificationService.notification =  { severity: 'error', summary: 'error', detail: 'error al processar', life: 3000 }
-          },
-          complete: () => {
-            this.loadData();
           }
         })
     }
@@ -284,13 +277,13 @@ export class CrudComponent implements OnInit {
         {
         next: (is_ok) => {
           if (is_ok){
+            this.service.reload_data();
             this.notificationService.notification = { severity: 'success', summary: 'Successful', detail: 'Registro Eliminado', life: 3000 }
           }
         },
         error: err => this.notificationService.notification =  { severity: 'error', summary: 'eroor', detail: 'error al processar', life: 3000 },
         complete: () => {
           this.selectedRow = [];
-          this.loadData();
           this.item_to_edit_or_update_or_delete = {};
         }
       })
@@ -302,6 +295,7 @@ export class CrudComponent implements OnInit {
           next: (value) => {
             value .forEach( x => {
               if (x) {
+                this.service.reload_data();
                 this.notificationService.notification =  { severity: 'success', summary: 'OK', detail: 'Registro Eliminado', life: 3000 }
               }
             })
@@ -310,7 +304,6 @@ export class CrudComponent implements OnInit {
           error: err => this.notificationService.notification =  { severity: 'error', summary: 'eroor', detail: 'error al processar', life: 3000 },
           complete: () => {
             this.selectedRow = [];
-            this.loadData();
           }
       })
     }
@@ -319,16 +312,13 @@ export class CrudComponent implements OnInit {
       callback.subscribe(
         {
           next: (value) => {
-            console.log(value)
+            console.log(value);
+            this.notificationService.notification = { severity: 'success', summary: 'OK', detail: 'Accion terminada exitosamente', life: 3000 }
+            this.service.reload_data()
           },
-          error: err => {
-            this.notificationService.notification =  { severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 },
-            this.loadData();
-          },
-          complete: () => {
-            this.notificationService.notification =  { severity: 'success', summary: 'OK', detail: 'Accion terminada exitosamente', life: 3000 },
-            this.loadData();
+          error: (err) => {
+            this.notificationService.notification = { severity: 'error', summary: 'ERROR', detail: 'Error al descargar los datos', life: 3000 }
           }
-      })
+        })
     }
 }
