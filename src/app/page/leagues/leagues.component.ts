@@ -220,7 +220,7 @@ export class LeaguesComponent implements OnDestroy{
 
       this.runnerParticipantsColumnsDefinition.map( item => {
         if (item.key == 'disqualified_order_race') {
-          item.dropdownValue = this.allRaces;
+          item.dropdownValue = [...this.allRaces];
           item.dropdownValue.push({id: -1, name: 'Ninguna'})
         }
       })
