@@ -200,4 +200,9 @@ export class NgTableComponent {
   getActionStyles(customStyles: string) {
     return 'p-button-rounded p-button-text mr-2 ' + customStyles
   }
+
+  onRowReorder(event:any) {
+    console.log(event)
+    this.onChange.emit(this.dataSource);
+  }
 }

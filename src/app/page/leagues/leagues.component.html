@@ -83,7 +83,8 @@
             <app-ng-table
               [dataSource]="raceLeagueSelected"
               [columns]="getRaceLeagueColumns()"
-              [configuration]="getRaceLeagueTableConfiguration()"/>
+              [configuration]="getRaceLeagueTableConfiguration()"
+              (onChange)="onTableChangeRaceSelected($event)"/>
           </div>
         </div>
         <div class="col-12">

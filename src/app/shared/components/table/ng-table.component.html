@@ -13,10 +13,11 @@ responsiveLayout="scroll"
 [rowHover]="configuration.rowHover"
 [sortField]="sortFieldSelected"
 [sortOrder]="sortOrderSelected"
-
+[reorderableColumns]="configuration.reorderable"
 [(selection)]="selectedRow"
 styleClass="p-datatable-striped"
 [tableStyle]="{'min-width': '50rem'}"
+(onRowReorder)="onRowReorder($event)"
 editMode="row"
 >
   <ng-template pTemplate="caption">
@@ -31,6 +32,12 @@ editMode="row"
 
   <ng-template pTemplate="header">
       <tr>
+        @if (configuration.reorderable == true) {
+          <th>
+            <!-- Column to bars actions -->
+          </th>
+        }
+
         @if (configuration.columnCheckboxEnable) {
           <th style="width: 3rem">
             <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
@@ -43,6 +50,7 @@ editMode="row"
             <p-sortIcon field="{{col.key}}"></p-sortIcon>
           }
         </th>
+
         <th>
           <!-- Column to button actions -->
         </th>
@@ -51,7 +59,12 @@ editMode="row"
 
   <ng-template pTemplate="body" let-rowData let-columns="columns" let-editing="editing" let-index="rowIndex">
 
-      <tr [pEditableRow]="rowData">
+      <tr [pEditableRow]="rowData" [pReorderableRow]="index" >
+        @if (configuration.reorderable == true) {
+          <td>
+            <span class="pi pi-bars" pReorderableRowHandle></span>
+          </td>
+        }
 
         @if (configuration.columnCheckboxEnable) {
           <td>

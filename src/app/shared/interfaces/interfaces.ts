@@ -48,6 +48,7 @@ export interface TableConfiguracion {
   buttonActions?: TableActionType[];
   editableRow?: boolean; // default false
   columnCheckboxEnable?: boolean; // default false
+  reorderable?: boolean
 }
 
 export interface ICrudService {

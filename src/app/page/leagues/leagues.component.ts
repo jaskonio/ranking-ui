@@ -12,7 +12,7 @@ import { RaceService } from '../../shared/services/race.service';
 import { NgTableComponent } from '../../shared/components/table/ng-table.component';
 import { ConlumnsDefinition, TableActions, TableConfiguracion } from '../../shared/interfaces/interfaces';
 import { TableModule } from 'primeng/table';
-import { catchError, forkJoin, Observable, of, Subject, takeUntil } from 'rxjs';
+import { catchError, forkJoin, Observable, of, Subject, takeUntil, map, switchMap } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { RequestLeague, RequestLeagueRace, RequestLeagueRunnerParticipant } from '../../shared/services/request_interfaces';
@@ -145,10 +145,11 @@ export class LeaguesComponent implements OnDestroy{
   private raceLeagueTableConfiguration:TableConfiguracion = {
     title: "Carreras",
     paginator: true,
-    editableRow: true,
+    editableRow: false,
     rowsPerPageOptions: [5, 10, 50],
     rows: 10,
     showCurrentPageReport: true,
+    reorderable: true
   }
 
   private leagueColumnDefinition: ConlumnsDefinition[] = [
@@ -348,13 +349,26 @@ export class LeaguesComponent implements OnDestroy{
       })
     })
 
+    raceParticipartRequest = raceParticipartRequest.sort( (a,b) => {
+      if (a.order < b.order) {
+        return -1
+      }
+
+      if (a.order > b.order) {
+        return 1;
+      }
+
+      return 0;
+    })
+
     let leagueRequest:RequestLeague = {
         id: this.leagueSelected.id,
         name: this.leagueSelected.name,
         order: this.leagueSelected.order,
         runner_participants: runnerParticipartRequest,
-        races: raceParticipartRequest,
+        races: raceParticipartRequest
     }
+    console.log(leagueRequest);
 
     this.leagueService.update(leagueRequest).subscribe(
       {
@@ -371,6 +385,12 @@ export class LeaguesComponent implements OnDestroy{
         }
       }
     )
+  }
+
+  onTableChangeRaceSelected(tableData:LeagueRace[]) {
+    console.log(tableData);
+    tableData.forEach( (row, index) => row.order = index);
+    this.raceLeagueSelected = tableData
   }
 
   private updatePersonsFormGroup(persons: Person[]) {
