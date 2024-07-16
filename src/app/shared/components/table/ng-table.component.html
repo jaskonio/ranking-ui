@@ -16,6 +16,7 @@ responsiveLayout="scroll"
 
 [(selection)]="selectedRow"
 styleClass="p-datatable-striped"
+[tableStyle]="{'min-width': '50rem'}"
 editMode="row"
 >
   <ng-template pTemplate="caption">
@@ -27,6 +28,7 @@ editMode="row"
           </span>
       </div>
   </ng-template>
+
   <ng-template pTemplate="header">
       <tr>
         @if (configuration.columnCheckboxEnable) {
@@ -73,6 +75,15 @@ editMode="row"
                         [(ngModel)]="dataSource[index][col.key]"
                         [binary]="true"></p-checkbox>
                     }
+                    @else if (col.type == "dropdown") {
+                      <p-dropdown
+                        [options]="col.dropdownValue"
+                        [(ngModel)]="dataSource[index][col.key]"
+                        optionValue="id"
+                        optionLabel="name"
+                        placeholder="Selecciona una carrera"
+                        scrollHeight="100px"/>
+                    }
                     @else {
                       <input
                       pInputText
@@ -81,7 +92,7 @@ editMode="row"
                     }
                   </ng-template>
                   <ng-template pTemplate="output">
-                      {{ getValue(dataSource[index], col.key, index) }}
+                      {{ getValue(col, index) }}
                   </ng-template>
               </p-cellEditor>
             </td>
@@ -90,7 +101,7 @@ editMode="row"
             @if (col.key == 'photo_url' ) {
               <td>
                 <p-chip
-                  image="{{rowData['photo_url']}}" 
+                  image="{{rowData['photo_url']}}"
                   styleClass="p-chip-custom"/>
               </td>
             }
@@ -108,7 +119,7 @@ editMode="row"
               }
 
               @if ( configuration.editableRow) {
-                <button *ngIf="!editing" pButton pRipple pInitEditableRow icon="pi pi-pencil" (click)="onRowEditInit(rowData, index)" class="p-button-rounded p-button-text" ></button>
+                <button *ngIf="!editing" pButton pRipple pInitEditableRow icon="pi pi-pencil" (click)="onRowEditInit(rowData, index)" class="p-button-rounded p-button-text" [disabled]="editActionActive"></button>
                 <button *ngIf="editing" pButton pRipple pSaveEditableRow  icon="pi pi-check" (click)="onRowEditSave(rowData, index)" class="p-button-rounded p-button-text p-button-success mr-2"></button>
                 <button *ngIf="editing" pButton pRipple pCancelEditableRow icon="pi pi-times" (click)="onRowEditCancel(rowData, index)" class="p-button-rounded p-button-text p-button-danger"></button>
               }

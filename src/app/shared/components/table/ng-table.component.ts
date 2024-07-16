@@ -10,6 +10,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { CheckboxModule } from 'primeng/checkbox';
+import { DropdownModule } from 'primeng/dropdown';
 
 @Component({
   selector: 'app-ng-table',
@@ -24,7 +25,8 @@ import { CheckboxModule } from 'primeng/checkbox';
     InputTextModule,
     FormsModule,
     InputNumberModule,
-    CheckboxModule
+    CheckboxModule,
+    DropdownModule
   ],
   templateUrl: './ng-table.component.html'
 })
@@ -135,6 +137,7 @@ export class NgTableComponent {
     return "No data"
   }
 
+  editActionActive:boolean = false
   clonedDataSource:any = {}
 
   onRowEditInit(rowData: any, index:number) {
@@ -145,6 +148,7 @@ export class NgTableComponent {
 
     this.onClickRowEvent.emit(TableActions.EDIT)
     this.globalFilterDiabled = true
+    this.editActionActive = true
   }
 
   onRowEditSave(rowData: any, index:number) {
@@ -158,6 +162,7 @@ export class NgTableComponent {
     this.onClickRowEvent.emit(TableActions.SAVE);
 
     this.globalFilterDiabled = false
+    this.editActionActive = false
   }
 
   onRowEditCancel(rowData: any, index: number) {
@@ -170,10 +175,26 @@ export class NgTableComponent {
     console.log("end")
 
     this.globalFilterDiabled = false
+    this.editActionActive = false
   }
 
-  getValue( row: any, col:string, index:number) {
-    return this.dataSource[index][col]
+  getValue(columnDefinition:ConlumnsDefinition, index:number) {
+
+    if (columnDefinition.type == 'dropdown') {
+      const value = this.dataSource[index][columnDefinition.key]
+
+      const labelValue = columnDefinition.dropdownValue?.filter(item => item.id == value)
+
+      if (labelValue == undefined) {
+        throw Error('Label not found')
+      }
+
+      return labelValue[0]['name']
+    }
+    else {
+      return this.dataSource[index][columnDefinition.key]
+    }
+    throw Error('Not Supported type')
   }
 
   getActionStyles(customStyles: string) {

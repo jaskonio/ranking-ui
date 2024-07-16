@@ -101,14 +101,14 @@ export class LeaguesComponent implements OnDestroy{
     },
     {
       "key": "disqualified_order_race",
-      "value": "Nº Carrera descalificado/a",
+      "value": "Descalificado/a desde la carrera",
       "order": 6,
       "editable": true,
-      "type": "number"
+      "type": "dropdown"
     },
     {
       "key": "unique_dorsal",
-      "value": "Dorsal unico",
+      "value": "Inscripto al circuito",
       "order": 7,
       "editable": true,
       "type": "checkbox"
@@ -216,7 +216,14 @@ export class LeaguesComponent implements OnDestroy{
     })
 
     this.raceService.allRaces$.pipe(takeUntil(this.destroy$)).subscribe( data => {
-      this.allRaces = data ?? []
+      this.allRaces = data ?? [];
+
+      this.runnerParticipantsColumnsDefinition.map( item => {
+        if (item.key == 'disqualified_order_race') {
+          item.dropdownValue = this.allRaces;
+          item.dropdownValue.push({id: -1, name: 'Ninguna'})
+        }
+      })
     })
   }
 
